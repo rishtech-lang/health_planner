@@ -82,9 +82,28 @@ function generatePlan() {
     let ageGroup = age < 13 ? "child" : "teen";
 
     let meals = {
-        "lose": ["Oats", "Salad + protein", "Soup"],
-        "gain": ["Shake + nuts", "Rice + protein", "Full dinner"],
-        "maintain": ["Poha", "Balanced meal", "Light dinner"]
+    "lose": {
+        "Monday": ["Oats", "Salad", "Soup"],
+        "Tuesday": ["Fruit bowl", "Dal", "Veg soup"],
+        "Wednesday": ["Smoothie", "Roti + sabzi", "Light meal"],
+        "Thursday": ["Apple", "Paneer salad", "Soup"],
+        "Friday": ["Poha", "Dal + roti", "Soup"]
+    },
+    "gain": {
+        "Monday": ["Shake", "Rice + paneer", "Full meal"],
+        "Tuesday": ["Banana milk", "Dal + rice", "Paneer"],
+        "Wednesday": ["Oats + nuts", "Rice", "Curd"],
+        "Thursday": ["Smoothie", "Paneer + roti", "Veg"],
+        "Friday": ["Upma", "Dal + rice", "Curd"]
+    },
+    "maintain": {
+        "Monday": ["Poha", "Dal + roti", "Veg"],
+        "Tuesday": ["Milk + fruit", "Rice + dal", "Light meal"],
+        "Wednesday": ["Upma", "Roti + veg", "Soup"],
+        "Thursday": ["Oats", "Paneer + roti", "Veg"],
+        "Friday": ["Idli", "Dal + rice", "Light sabzi"]
+    }
+};
     };
 
     let weekDays = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
@@ -98,15 +117,16 @@ function generatePlan() {
 
     output += "<h2>🍽 Weekly Meal Plan</h2>";
 
-    weekDays.forEach(day => {
-        output += `
-            <p><b>${day}</b><br>
-            Breakfast: ${meals[goal][0]}<br>
-            Lunch: ${meals[goal][1]}<br>
-            Dinner: ${meals[goal][2]}</p>
-        `;
-    });
+   weekDays.forEach(day => {
+    let dayMeals = meals[goal][day];
 
+    output += `
+        <p><b>${day}</b><br>
+        Breakfast: ${dayMeals[0]}<br>
+        Lunch: ${dayMeals[1]}<br>
+        Dinner: ${dayMeals[2]}</p>
+    `;
+});
     document.getElementById("output").innerHTML = output;
 }
 </script>
