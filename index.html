@@ -72,131 +72,119 @@ function generatePlan() {
     let water = Number(document.getElementById("water").value);
     let diet = document.getElementById("diet").value;
 
-    if (!week) {
-    output = "Error loading meal plan!";
-}
+    // GOAL
+    let goal = "maintain";
+    if (target < weight) goal = "lose";
+    else if (target > weight) goal = "gain";
 
-    
-   let ageGroup = age < 13 ? "child" : "teen";
-let week = meals[diet][ageGroup][goal];
-
-    
-    weekDays.forEach(day => {
-    let dayMeals = week[day];
-
-    output += `
-        <p><b>${day}</b><br>
-        Breakfast: ${dayMeals[0]}<br>
-        Lunch: ${dayMeals[1]}<br>
-        Dinner: ${dayMeals[2]}</p>
-    `;
-});
-
+    // BMI
     let bmiVal = bmi(weight, height);
     let category = bmiCategory(bmiVal);
 
+    // AGE GROUP
     let ageGroup = age < 13 ? "child" : "teen";
 
-   let meals = {
-       
-    "veg": {
-        "child": {
-            "lose": {
-                "Monday": ["Fruit bowl", "Dal + rice", "Veg soup"],
-                "Tuesday": ["Milk + banana", "Roti + sabzi", "Khichdi"],
-                "Wednesday": ["Oats", "Dal + salad", "Soup"],
-                "Thursday": ["Apple + milk", "Paneer + roti", "Light meal"],
-                "Friday": ["Poha", "Rice + dal", "Soup"]
+    // MEALS DATABASE
+    let meals = {
+        "veg": {
+            "child": {
+                "lose": {
+                    "Monday": ["Fruit bowl", "Dal + rice", "Veg soup"],
+                    "Tuesday": ["Milk + banana", "Roti + sabzi", "Khichdi"],
+                    "Wednesday": ["Oats", "Dal + salad", "Soup"],
+                    "Thursday": ["Apple + milk", "Paneer + roti", "Light meal"],
+                    "Friday": ["Poha", "Rice + dal", "Soup"]
+                },
+                "gain": {
+                    "Monday": ["Milkshake", "Rice + paneer", "Roti + veg"],
+                    "Tuesday": ["Banana milk", "Dal + rice", "Paneer"],
+                    "Wednesday": ["Oats + nuts", "Rice + dal", "Curd"],
+                    "Thursday": ["Smoothie", "Paneer + roti", "Veg"],
+                    "Friday": ["Upma", "Dal + rice", "Curd"]
+                },
+                "maintain": {
+                    "Monday": ["Poha", "Dal + roti", "Veg"],
+                    "Tuesday": ["Milk + fruit", "Rice + dal", "Light meal"],
+                    "Wednesday": ["Upma", "Roti + veg", "Soup"],
+                    "Thursday": ["Oats", "Paneer + roti", "Veg"],
+                    "Friday": ["Idli", "Dal + rice", "Light sabzi"]
+                }
             },
-            "gain": {
-                "Monday": ["Milkshake", "Rice + paneer", "Roti + veg"],
-                "Tuesday": ["Banana milk", "Dal + rice", "Paneer"],
-                "Wednesday": ["Oats + nuts", "Rice + dal", "Curd"],
-                "Thursday": ["Smoothie", "Paneer + roti", "Veg"],
-                "Friday": ["Upma", "Dal + rice", "Curd"]
-            },
-            "maintain": {
-                "Monday": ["Poha", "Dal + roti", "Veg"],
-                "Tuesday": ["Milk + fruit", "Rice + dal", "Light meal"],
-                "Wednesday": ["Upma", "Roti + veg", "Soup"],
-                "Thursday": ["Oats", "Paneer + roti", "Veg"],
-                "Friday": ["Idli", "Dal + rice", "Light sabzi"]
+            "teen": {
+                "lose": {
+                    "Monday": ["Oats", "Salad + dal", "Soup"],
+                    "Tuesday": ["Fruit bowl", "Roti + veg", "Light dinner"],
+                    "Wednesday": ["Smoothie", "Dal + rice", "Soup"],
+                    "Thursday": ["Apple", "Paneer salad", "Light meal"],
+                    "Friday": ["Poha", "Dal + roti", "Soup"]
+                },
+                "gain": {
+                    "Monday": ["Shake + nuts", "Rice + paneer", "Roti + veg"],
+                    "Tuesday": ["Banana shake", "Dal + rice", "Paneer"],
+                    "Wednesday": ["Oats + nuts", "Rice + dal", "Curd"],
+                    "Thursday": ["Smoothie", "Paneer + roti", "Veg"],
+                    "Friday": ["Upma", "Dal + rice", "Curd"]
+                },
+                "maintain": {
+                    "Monday": ["Poha", "Dal + roti", "Veg"],
+                    "Tuesday": ["Milk + fruit", "Rice + dal", "Light meal"],
+                    "Wednesday": ["Upma", "Roti + veg", "Soup"],
+                    "Thursday": ["Oats", "Paneer + roti", "Veg"],
+                    "Friday": ["Idli", "Dal + rice", "Light sabzi"]
+                }
             }
         },
-        "teen": {
-            "lose": {
-                "Monday": ["Oats", "Salad + dal", "Soup"],
-                "Tuesday": ["Fruit bowl", "Roti + veg", "Light dinner"],
-                "Wednesday": ["Smoothie", "Dal + rice", "Soup"],
-                "Thursday": ["Apple", "Paneer salad", "Light meal"],
-                "Friday": ["Poha", "Dal + roti", "Soup"]
+        "non-veg": {
+            "child": {
+                "lose": {
+                    "Monday": ["Boiled eggs", "Chicken salad", "Soup"],
+                    "Tuesday": ["Egg + milk", "Grilled chicken", "Light meal"],
+                    "Wednesday": ["Eggs", "Chicken + rice", "Soup"],
+                    "Thursday": ["Milk", "Fish + roti", "Light meal"],
+                    "Friday": ["Eggs", "Chicken salad", "Soup"]
+                },
+                "gain": {
+                    "Monday": ["Egg + milk", "Chicken + rice", "Fish"],
+                    "Tuesday": ["Omelette", "Chicken + roti", "Egg meal"],
+                    "Wednesday": ["Eggs", "Chicken + rice", "Fish"],
+                    "Thursday": ["Milk", "Chicken + roti", "Egg meal"],
+                    "Friday": ["Omelette", "Chicken + rice", "Fish"]
+                },
+                "maintain": {
+                    "Monday": ["Eggs", "Chicken + roti", "Light meal"],
+                    "Tuesday": ["Omelette", "Chicken + rice", "Soup"],
+                    "Wednesday": ["Eggs", "Fish + roti", "Light meal"],
+                    "Thursday": ["Milk", "Chicken", "Soup"],
+                    "Friday": ["Eggs", "Chicken + rice", "Light"]
+                }
             },
-            "gain": {
-                "Monday": ["Shake + nuts", "Rice + paneer", "Roti + veg"],
-                "Tuesday": ["Banana shake", "Dal + rice", "Paneer"],
-                "Wednesday": ["Oats + nuts", "Rice + dal", "Curd"],
-                "Thursday": ["Smoothie", "Paneer + roti", "Veg"],
-                "Friday": ["Upma", "Dal + rice", "Curd"]
-            },
-            "maintain": {
-                "Monday": ["Poha", "Dal + roti", "Veg"],
-                "Tuesday": ["Milk + fruit", "Rice + dal", "Light meal"],
-                "Wednesday": ["Upma", "Roti + veg", "Soup"],
-                "Thursday": ["Oats", "Paneer + roti", "Veg"],
-                "Friday": ["Idli", "Dal + rice", "Light sabzi"]
+            "teen": {
+                "lose": {
+                    "Monday": ["Boiled eggs", "Grilled chicken", "Soup"],
+                    "Tuesday": ["Egg whites", "Chicken salad", "Light dinner"],
+                    "Wednesday": ["Eggs", "Chicken + rice", "Soup"],
+                    "Thursday": ["Milk", "Fish", "Light meal"],
+                    "Friday": ["Eggs", "Chicken salad", "Soup"]
+                },
+                "gain": {
+                    "Monday": ["Eggs + milk", "Chicken + rice", "Fish"],
+                    "Tuesday": ["Omelette", "Chicken + roti", "Eggs"],
+                    "Wednesday": ["Eggs", "Chicken + rice", "Fish"],
+                    "Thursday": ["Milk", "Chicken + roti", "Egg meal"],
+                    "Friday": ["Omelette", "Chicken + rice", "Fish"]
+                },
+                "maintain": {
+                    "Monday": ["Eggs", "Chicken + roti", "Light meal"],
+                    "Tuesday": ["Omelette", "Chicken + rice", "Soup"],
+                    "Wednesday": ["Eggs", "Fish + roti", "Light meal"],
+                    "Thursday": ["Milk", "Chicken", "Soup"],
+                    "Friday": ["Eggs", "Chicken + rice", "Light"]
+                }
             }
         }
-    },
+    };
 
-    "non-veg": {
-        "child": {
-            "lose": {
-                "Monday": ["Boiled eggs", "Chicken salad", "Soup"],
-                "Tuesday": ["Egg + milk", "Grilled chicken", "Light meal"],
-                "Wednesday": ["Eggs", "Chicken + rice", "Soup"],
-                "Thursday": ["Milk", "Fish + roti", "Light meal"],
-                "Friday": ["Eggs", "Chicken salad", "Soup"]
-            },
-            "gain": {
-                "Monday": ["Egg + milk", "Chicken + rice", "Fish"],
-                "Tuesday": ["Omelette", "Chicken + roti", "Egg meal"],
-                "Wednesday": ["Eggs", "Chicken + rice", "Fish"],
-                "Thursday": ["Milk", "Chicken + roti", "Egg meal"],
-                "Friday": ["Omelette", "Chicken + rice", "Fish"]
-            },
-            "maintain": {
-                "Monday": ["Eggs", "Chicken + roti", "Light meal"],
-                "Tuesday": ["Omelette", "Chicken + rice", "Soup"],
-                "Wednesday": ["Eggs", "Fish + roti", "Light meal"],
-                "Thursday": ["Milk", "Chicken", "Soup"],
-                "Friday": ["Eggs", "Chicken + rice", "Light"]
-            }
-        },
-        "teen": {
-            "lose": {
-                "Monday": ["Boiled eggs", "Grilled chicken", "Soup"],
-                "Tuesday": ["Egg whites", "Chicken salad", "Light dinner"],
-                "Wednesday": ["Eggs", "Chicken + rice", "Soup"],
-                "Thursday": ["Milk", "Fish", "Light meal"],
-                "Friday": ["Eggs", "Chicken salad", "Soup"]
-            },
-            "gain": {
-                "Monday": ["Eggs + milk", "Chicken + rice", "Fish"],
-                "Tuesday": ["Omelette", "Chicken + roti", "Eggs"],
-                "Wednesday": ["Eggs", "Chicken + rice", "Fish"],
-                "Thursday": ["Milk", "Chicken + roti", "Egg meal"],
-                "Friday": ["Omelette", "Chicken + rice", "Fish"]
-            },
-            "maintain": {
-                "Monday": ["Eggs", "Chicken + roti", "Light meal"],
-                "Tuesday": ["Omelette", "Chicken + rice", "Soup"],
-                "Wednesday": ["Eggs", "Fish + roti", "Light meal"],
-                "Thursday": ["Milk", "Chicken", "Soup"],
-                "Friday": ["Eggs", "Chicken + rice", "Light"]
-            }
-        }
-    }
-};
+    let week = meals[diet][ageGroup][goal];
 
     let weekDays = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 
@@ -205,20 +193,20 @@ let week = meals[diet][ageGroup][goal];
         BMI: ${bmiVal} (${category})<br>
         Goal: ${goal}<br>
         Hydration: ${water >= 0.5 ? "Good 💧" : "Drink more!"}<br><br>
+        <h2>🍽 Weekly Meal Plan</h2>
     `;
 
-    output += "<h2>🍽 Weekly Meal Plan</h2>";
+    weekDays.forEach(day => {
+        let dayMeals = week[day];
 
-   weekDays.forEach(day => {
-    let dayMeals = meals[goal][day];
+        output += `
+            <p><b>${day}</b><br>
+            Breakfast: ${dayMeals[0]}<br>
+            Lunch: ${dayMeals[1]}<br>
+            Dinner: ${dayMeals[2]}</p>
+        `;
+    });
 
-    output += `
-        <p><b>${day}</b><br>
-        Breakfast: ${dayMeals[0]}<br>
-        Lunch: ${dayMeals[1]}<br>
-        Dinner: ${dayMeals[2]}</p>
-    `;
-});
     document.getElementById("output").innerHTML = output;
 }
 </script>
