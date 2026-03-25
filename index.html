@@ -2,30 +2,51 @@
 <html>
 <head>
     <title>Ultra Health Planner</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <style>
         body {
             font-family: Arial;
             background: #0f172a;
             color: white;
             text-align: center;
-            padding: 20px;
-        }
-        input, select, button {
-            margin: 8px;
             padding: 10px;
-            border-radius: 10px;
-            border: none;
         }
-        button {
-            background: #22c55e;
-            color: white;
-            cursor: pointer;
+
+        h1 {
+            font-size: 28px;
         }
+
         .card {
             background: #1e293b;
             padding: 20px;
             border-radius: 20px;
-            margin-top: 20px;
+            margin: 15px auto;
+            max-width: 400px;
+        }
+
+        input, select, button {
+            width: 90%;
+            margin: 8px;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+        }
+
+        button {
+            background: #22c55e;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        p {
+            text-align: left;
         }
     </style>
 </head>
@@ -35,16 +56,16 @@
 <h1>🚀 Ultra Health Planner</h1>
 
 <div class="card">
-    <input id="age" placeholder="Age"><br>
-    <input id="height" placeholder="Height (cm)"><br>
-    <input id="weight" placeholder="Current Weight (kg)"><br>
-    <input id="target" placeholder="Target Weight (kg)"><br>
-    <input id="water" placeholder="Water Intake (liters)"><br>
+    <input id="age" placeholder="Age">
+    <input id="height" placeholder="Height (cm)">
+    <input id="weight" placeholder="Current Weight (kg)">
+    <input id="target" placeholder="Target Weight (kg)">
+    <input id="water" placeholder="Water Intake (liters)">
 
     <select id="diet">
         <option value="veg">Veg</option>
         <option value="non-veg">Non-Veg</option>
-    </select><br>
+    </select>
 
     <button onclick="generatePlan()">Generate Plan</button>
 </div>
@@ -72,111 +93,109 @@ function generatePlan() {
     let water = Number(document.getElementById("water").value);
     let diet = document.getElementById("diet").value;
 
-    // GOAL
+    // Goal detection
     let goal = "maintain";
     if (target < weight) goal = "lose";
     else if (target > weight) goal = "gain";
 
-    // BMI
     let bmiVal = bmi(weight, height);
     let category = bmiCategory(bmiVal);
 
-    // AGE GROUP
     let ageGroup = age < 13 ? "child" : "teen";
 
-    // MEALS DATABASE
+    // SIMPLE MEAL DATABASE (WORKING)
     let meals = {
         "veg": {
             "child": {
                 "lose": {
-                    "Monday": ["Fruit bowl", "Dal + rice", "Veg soup"],
+                    "Monday": ["Fruit bowl", "Dal + rice", "Soup"],
                     "Tuesday": ["Milk + banana", "Roti + sabzi", "Khichdi"],
                     "Wednesday": ["Oats", "Dal + salad", "Soup"],
-                    "Thursday": ["Apple + milk", "Paneer + roti", "Light meal"],
+                    "Thursday": ["Apple + milk", "Paneer", "Light meal"],
                     "Friday": ["Poha", "Rice + dal", "Soup"]
                 },
                 "gain": {
-                    "Monday": ["Milkshake", "Rice + paneer", "Roti + veg"],
+                    "Monday": ["Milkshake", "Rice + paneer", "Roti"],
                     "Tuesday": ["Banana milk", "Dal + rice", "Paneer"],
-                    "Wednesday": ["Oats + nuts", "Rice + dal", "Curd"],
-                    "Thursday": ["Smoothie", "Paneer + roti", "Veg"],
+                    "Wednesday": ["Oats + nuts", "Rice", "Curd"],
+                    "Thursday": ["Smoothie", "Paneer", "Veg"],
                     "Friday": ["Upma", "Dal + rice", "Curd"]
                 },
                 "maintain": {
                     "Monday": ["Poha", "Dal + roti", "Veg"],
-                    "Tuesday": ["Milk + fruit", "Rice + dal", "Light meal"],
+                    "Tuesday": ["Milk + fruit", "Rice + dal", "Light"],
                     "Wednesday": ["Upma", "Roti + veg", "Soup"],
-                    "Thursday": ["Oats", "Paneer + roti", "Veg"],
-                    "Friday": ["Idli", "Dal + rice", "Light sabzi"]
+                    "Thursday": ["Oats", "Paneer", "Veg"],
+                    "Friday": ["Idli", "Dal + rice", "Light"]
                 }
             },
             "teen": {
                 "lose": {
-                    "Monday": ["Oats", "Salad + dal", "Soup"],
-                    "Tuesday": ["Fruit bowl", "Roti + veg", "Light dinner"],
+                    "Monday": ["Oats", "Salad", "Soup"],
+                    "Tuesday": ["Fruit bowl", "Roti", "Light"],
                     "Wednesday": ["Smoothie", "Dal + rice", "Soup"],
-                    "Thursday": ["Apple", "Paneer salad", "Light meal"],
+                    "Thursday": ["Apple", "Paneer", "Light"],
                     "Friday": ["Poha", "Dal + roti", "Soup"]
                 },
                 "gain": {
-                    "Monday": ["Shake + nuts", "Rice + paneer", "Roti + veg"],
+                    "Monday": ["Shake", "Rice + paneer", "Roti"],
                     "Tuesday": ["Banana shake", "Dal + rice", "Paneer"],
-                    "Wednesday": ["Oats + nuts", "Rice + dal", "Curd"],
-                    "Thursday": ["Smoothie", "Paneer + roti", "Veg"],
+                    "Wednesday": ["Oats + nuts", "Rice", "Curd"],
+                    "Thursday": ["Smoothie", "Paneer", "Veg"],
                     "Friday": ["Upma", "Dal + rice", "Curd"]
                 },
                 "maintain": {
                     "Monday": ["Poha", "Dal + roti", "Veg"],
-                    "Tuesday": ["Milk + fruit", "Rice + dal", "Light meal"],
+                    "Tuesday": ["Milk + fruit", "Rice + dal", "Light"],
                     "Wednesday": ["Upma", "Roti + veg", "Soup"],
-                    "Thursday": ["Oats", "Paneer + roti", "Veg"],
-                    "Friday": ["Idli", "Dal + rice", "Light sabzi"]
+                    "Thursday": ["Oats", "Paneer", "Veg"],
+                    "Friday": ["Idli", "Dal + rice", "Light"]
                 }
             }
         },
         "non-veg": {
             "child": {
                 "lose": {
-                    "Monday": ["Boiled eggs", "Chicken salad", "Soup"],
-                    "Tuesday": ["Egg + milk", "Grilled chicken", "Light meal"],
+                    "Monday": ["Eggs", "Chicken salad", "Soup"],
+                    "Tuesday": ["Egg + milk", "Chicken", "Light"],
                     "Wednesday": ["Eggs", "Chicken + rice", "Soup"],
-                    "Thursday": ["Milk", "Fish + roti", "Light meal"],
-                    "Friday": ["Eggs", "Chicken salad", "Soup"]
+                    "Thursday": ["Milk", "Fish", "Light"],
+                    "Friday": ["Eggs", "Chicken", "Soup"]
                 },
                 "gain": {
                     "Monday": ["Egg + milk", "Chicken + rice", "Fish"],
-                    "Tuesday": ["Omelette", "Chicken + roti", "Egg meal"],
+                    "Tuesday": ["Omelette", "Chicken", "Egg meal"],
                     "Wednesday": ["Eggs", "Chicken + rice", "Fish"],
-                    "Thursday": ["Milk", "Chicken + roti", "Egg meal"],
+                    "Thursday": ["Milk", "Chicken", "Egg"],
                     "Friday": ["Omelette", "Chicken + rice", "Fish"]
                 },
                 "maintain": {
-                    "Monday": ["Eggs", "Chicken + roti", "Light meal"],
+                    "Monday": ["Eggs", "Chicken", "Light"],
                     "Tuesday": ["Omelette", "Chicken + rice", "Soup"],
-                    "Wednesday": ["Eggs", "Fish + roti", "Light meal"],
+                    "Wednesday": ["Eggs", "Fish", "Light"],
                     "Thursday": ["Milk", "Chicken", "Soup"],
                     "Friday": ["Eggs", "Chicken + rice", "Light"]
                 }
             },
             "teen": {
                 "lose": {
-                    "Monday": ["Boiled eggs", "Grilled chicken", "Soup"],
-                    "Tuesday": ["Egg whites", "Chicken salad", "Light dinner"],
+                    "Monday": ["Eggs", "Chicken", "Soup"],
+                    "Tuesday": ["Egg whites", "Chicken salad", "Light"],
                     "Wednesday": ["Eggs", "Chicken + rice", "Soup"],
-                    "Thursday": ["Milk", "Fish", "Light meal"],
-                    "Friday": ["Eggs", "Chicken salad", "Soup"]
+                    "Thursday": ["Milk", "Fish", "Light"],
+                    "Friday": ["Eggs", "Chicken", "Soup"]
                 },
                 "gain": {
                     "Monday": ["Eggs + milk", "Chicken + rice", "Fish"],
-                    "Tuesday": ["Omelette", "Chicken + roti", "Eggs"],
+                    "Tuesday": ["Omelette", "Chicken", "Eggs"],
                     "Wednesday": ["Eggs", "Chicken + rice", "Fish"],
-                    "Thursday": ["Milk", "Chicken + roti", "Egg meal"],
+                    "Thursday": ["Milk", "Chicken", "Egg"],
                     "Friday": ["Omelette", "Chicken + rice", "Fish"]
                 },
                 "maintain": {
-                    "Monday": ["Eggs", "Chicken + roti", "Light meal"],
+                    "Monday": ["Eggs", "Chicken", "Light"],
                     "Tuesday": ["Omelette", "Chicken + rice", "Soup"],
-                    "Wednesday": ["Eggs", "Fish + roti", "Light meal"],
+                    "Wednesday": ["Eggs", "Fish", "Light"],
                     "Thursday": ["Milk", "Chicken", "Soup"],
                     "Friday": ["Eggs", "Chicken + rice", "Light"]
                 }
@@ -185,7 +204,6 @@ function generatePlan() {
     };
 
     let week = meals[diet][ageGroup][goal];
-
     let weekDays = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 
     let output = `
@@ -198,7 +216,6 @@ function generatePlan() {
 
     weekDays.forEach(day => {
         let dayMeals = week[day];
-
         output += `
             <p><b>${day}</b><br>
             Breakfast: ${dayMeals[0]}<br>
