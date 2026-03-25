@@ -72,13 +72,15 @@ function generatePlan() {
     let water = Number(document.getElementById("water").value);
     let diet = document.getElementById("diet").value;
 
-   let ageGroup = age < 13 ? "child" : "teen";
-let week = meals[diet][ageGroup][goal];
-
     if (!week) {
     output = "Error loading meal plan!";
 }
 
+    
+   let ageGroup = age < 13 ? "child" : "teen";
+let week = meals[diet][ageGroup][goal];
+
+    
     weekDays.forEach(day => {
     let dayMeals = week[day];
 
