@@ -11,19 +11,16 @@ body{
     background:linear-gradient(135deg,#0ea5e9,#1e3a8a);
     color:white;
     text-align:center;
-    overflow:hidden;
 }
 
 /* LOGO */
 .logo{
-    font-size:36px;
-    font-weight:bold;
-    margin-top:10px;
+    font-size:32px;
+    margin:10px;
     color:#38bdf8;
-    text-shadow:0 0 10px #0ea5e9;
 }
 
-/* FLOATING ORGANS */
+/* ORGANS */
 .organ{
     position:absolute;
     font-size:30px;
@@ -37,7 +34,7 @@ body{
     100%{transform:translateY(0);}
 }
 
-/* UI */
+/* CARD */
 .card{
     background:rgba(255,255,255,0.1);
     margin:10px auto;
@@ -49,29 +46,28 @@ body{
     z-index:2;
 }
 
-input,select,button{
-    width:90%;
-    padding:10px;
-    margin:5px;
-    border-radius:10px;
-    border:none;
+/* FULL SCREEN INFO PAGE */
+#organPage{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#0f172a;
+    color:white;
+    display:none;
+    z-index:999;
+    padding:20px;
+    overflow:auto;
 }
 
 button{
+    padding:10px;
+    margin-top:20px;
+    border:none;
+    border-radius:10px;
     background:#38bdf8;
     color:white;
-}
-
-/* popup */
-#info{
-    position:fixed;
-    bottom:10px;
-    left:50%;
-    transform:translateX(-50%);
-    background:black;
-    padding:10px;
-    border-radius:10px;
-    display:none;
 }
 </style>
 </head>
@@ -80,100 +76,70 @@ button{
 
 <div class="logo">⚡ BodyXP</div>
 
-<!-- ORGANS -->
-<div class="organ" style="top:20%; left:10%" onclick="showInfo('❤️ Heart pumps blood')">❤️</div>
-<div class="organ" style="top:40%; left:80%" onclick="showInfo('🧠 Brain controls body')">🧠</div>
-<div class="organ" style="top:70%; left:20%" onclick="showInfo('🫁 Lungs help breathing')">🫁</div>
+<!-- MANY ORGANS -->
+<div class="organ" style="top:10%; left:10%" onclick="openOrgan('heart')">❤️</div>
+<div class="organ" style="top:20%; left:80%" onclick="openOrgan('brain')">🧠</div>
+<div class="organ" style="top:70%; left:10%" onclick="openOrgan('lungs')">🫁</div>
+<div class="organ" style="top:60%; left:80%" onclick="openOrgan('liver')">🧬</div>
+<div class="organ" style="top:40%; left:50%" onclick="openOrgan('stomach')">🍽</div>
+<div class="organ" style="top:80%; left:50%" onclick="openOrgan('kidney')">🫘</div>
 
 <div class="card">
-<input id="age" placeholder="Age">
-<input id="height" placeholder="Height">
-<input id="weight" placeholder="Weight">
-<input id="target" placeholder="Target">
-<input id="water" placeholder="Water">
-
-<select id="diet">
-<option value="veg">Veg</option>
-<option value="non-veg">Non-Veg</option>
-</select>
-
-<button onclick="generate()">Generate</button>
-<button onclick="voice()">🎤 Voice</button>
+<h3>Click any organ 👆</h3>
 </div>
 
-<div id="output" class="card"></div>
-<div id="info"></div>
+<!-- FULL PAGE -->
+<div id="organPage">
+<h2 id="organTitle"></h2>
+<p id="organText"></p>
+<button onclick="closePage()">⬅ Back</button>
+</div>
 
 <script>
-// VOICE FIX 🎤
-function voice(){
-    let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    if(!SR){
-        alert("Voice not supported");
-        return;
-    }
-
-    let rec = new SR();
-    rec.start();
-
-    rec.onresult = e=>{
-        let t = e.results[0][0].transcript.toLowerCase();
-
-        if(t.includes("age")) age.value = t.match(/\d+/);
-        if(t.includes("weight")) weight.value = t.match(/\d+/);
-        if(t.includes("height")) height.value = t.match(/\d+/);
-
-        alert("Heard: "+t);
-    }
-}
-
-// MEAL PLAN 📅
-let meals = {
-veg:{
-Monday:["Oats","Dal rice","Soup"],
-Tuesday:["Poha","Roti sabzi","Salad"],
-Wednesday:["Upma","Paneer","Soup"],
-Thursday:["Idli","Dal","Veg meal"],
-Friday:["Paratha","Rice","Light meal"]
+// ORGAN DATA 📖
+let organData = {
+heart:{
+title:"❤️ Heart",
+text:"The heart pumps blood throughout your body. It beats about 100,000 times a day and supplies oxygen."
 },
-"non-veg":{
-Monday:["Eggs","Chicken rice","Soup"],
-Tuesday:["Omelette","Fish","Light"],
-Wednesday:["Eggs","Chicken","Soup"],
-Thursday:["Toast eggs","Fish","Meal"],
-Friday:["Eggs","Chicken","Soup"]
+brain:{
+title:"🧠 Brain",
+text:"The brain controls everything — thoughts, memory, movement, and emotions."
+},
+lungs:{
+title:"🫁 Lungs",
+text:"Lungs help you breathe. They take in oxygen and remove carbon dioxide."
+},
+liver:{
+title:"🧬 Liver",
+text:"The liver cleans your blood and helps digest food."
+},
+stomach:{
+title:"🍽 Stomach",
+text:"The stomach breaks down food using acids and enzymes."
+},
+kidney:{
+title:"🫘 Kidneys",
+text:"Kidneys filter waste from your blood and produce urine."
 }
 };
 
-// MAIN
-function generate(){
-    let diet=document.getElementById("diet").value;
+// OPEN FULL PAGE 🚀
+function openOrgan(name){
+    let data = organData[name];
 
-    let week=meals[diet];
+    document.getElementById("organTitle").innerText = data.title;
+    document.getElementById("organText").innerText = data.text;
 
-    let out="<h3>📅 Weekly Plan</h3>";
-
-    for(let day in week){
-        let m=week[day];
-        out+=`
-        <p><b>${day}</b><br>
-        Breakfast: ${m[0]}<br>
-        Lunch: ${m[1]}<br>
-        Dinner: ${m[2]}</p>`;
-    }
-
-    document.getElementById("output").innerHTML=out;
+    document.getElementById("organPage").style.display = "block";
 }
 
-// ORGAN INFO
-function showInfo(text){
-    let box=document.getElementById("info");
-    box.innerText=text;
-    box.style.display="block";
-
-    setTimeout(()=>box.style.display="none",2000);
+// CLOSE PAGE
+function closePage(){
+    document.getElementById("organPage").style.display = "none";
 }
+
 </script>
 
 </body>
