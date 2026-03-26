@@ -8,29 +8,22 @@
 body{
     margin:0;
     font-family:sans-serif;
-    background:linear-gradient(135deg,#ff0000,#000000);
+    background:linear-gradient(135deg,#0ea5e9,#1e3a8a);
     color:white;
     text-align:center;
 }
 
-/* 🔥 LOGO */
 .logo{
     font-size:32px;
     font-weight:bold;
     margin-top:15px;
-    background:linear-gradient(45deg,#ff0000,#ffffff);
-    -webkit-background-clip:text;
-    -webkit-text-fill-color:transparent;
-    text-shadow:0 0 10px rgba(255,0,0,0.5);
 }
 
 .tagline{
     font-size:12px;
     opacity:0.8;
-    margin-bottom:10px;
 }
 
-/* UI */
 .card{
     background:rgba(255,255,255,0.1);
     margin:15px auto;
@@ -38,7 +31,6 @@ body{
     border-radius:20px;
     max-width:400px;
     backdrop-filter:blur(10px);
-    box-shadow:0 0 20px rgba(255,0,0,0.3);
 }
 
 input,select,button{
@@ -50,23 +42,12 @@ input,select,button{
 }
 
 button{
-    background:#ff0000;
+    background:#0ea5e9;
     color:white;
     font-weight:bold;
     cursor:pointer;
 }
 
-button:hover{
-    transform:scale(1.05);
-}
-
-/* avatar */
-#avatar{
-    font-size:60px;
-    margin:10px;
-}
-
-/* tip animation */
 #tip{
     margin-top:10px;
     opacity:0;
@@ -82,8 +63,6 @@ button:hover{
 
 <div class="logo">⚡ BodyXP</div>
 <div class="tagline">Level Up Your Body</div>
-
-<div id="avatar">🙂</div>
 
 <div class="card">
 <input id="age" placeholder="Age">
@@ -113,7 +92,7 @@ function bmi(w,h){
     return (w/((h/100)**2)).toFixed(2);
 }
 
-// XP + LEVEL
+// XP SYSTEM
 function updateXP(){
     let xp = Number(localStorage.getItem("xp")) || 0;
     xp += 10;
@@ -123,22 +102,11 @@ function updateXP(){
 
     document.getElementById("xpBox").innerHTML =
         `🏆 XP: ${xp} | Level: ${level}`;
-
-    updateAvatar(xp);
-}
-
-// AVATAR
-function updateAvatar(xp){
-    let a=document.getElementById("avatar");
-
-    if(xp<50) a.innerHTML="🙂";
-    else if(xp<150) a.innerHTML="💪";
-    else a.innerHTML="🔥";
 }
 
 // SAVE WEIGHT
 function saveWeight(w){
-    let data=JSON.parse(localStorage.getItem("weights"))||[];
+    let data = JSON.parse(localStorage.getItem("weights")) || [];
     data.push(w);
     localStorage.setItem("weights",JSON.stringify(data));
 }
@@ -148,7 +116,7 @@ function drawChart(){
     let c=document.getElementById("chart");
     let ctx=c.getContext("2d");
 
-    let data=JSON.parse(localStorage.getItem("weights"))||[];
+    let data = JSON.parse(localStorage.getItem("weights")) || [];
 
     ctx.clearRect(0,0,300,200);
 
@@ -156,13 +124,13 @@ function drawChart(){
     data.forEach((w,i)=>{
         let x=i*30;
         let y=200-w;
-        if(i==0) ctx.moveTo(x,y);
+        if(i===0) ctx.moveTo(x,y);
         else ctx.lineTo(x,y);
     });
     ctx.stroke();
 }
 
-// VOICE
+// VOICE INPUT
 function startVoice(){
     let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -171,14 +139,14 @@ function startVoice(){
         return;
     }
 
-    let rec=new SR();
+    let rec = new SR();
     rec.start();
 
-    rec.onresult=e=>{
-        let t=e.results[0][0].transcript.toLowerCase();
+    rec.onresult = e=>{
+        let t = e.results[0][0].transcript.toLowerCase();
 
-        if(t.includes("age")) age.value=t.replace(/\D/g,'');
-        if(t.includes("weight")) weight.value=t.replace(/\D/g,'');
+        if(t.includes("age")) age.value = t.replace(/\D/g,'');
+        if(t.includes("weight")) weight.value = t.replace(/\D/g,'');
 
         alert("Heard: "+t);
     }
@@ -190,26 +158,30 @@ function random(arr){
 }
 
 let foods={
-    veg:["Paneer","Dal","Oats","Fruit","Roti","Soup"],
-    nonveg:["Chicken","Fish","Eggs","Grilled chicken"]
+    veg:["Paneer","Dal","Oats","Fruit","Roti","Soup","Upma","Poha"],
+    nonveg:["Chicken","Fish","Eggs","Grilled chicken","Chicken curry"]
 };
 
-// TIPS ROTATION
-let tips=[
-"💧 Drink water",
-"🏃 Stay active",
-"🥦 Eat healthy",
-"😴 Sleep well",
-"🔥 Stay consistent"
-];
+// TIPS SYSTEM
+let tipInterval;
 
 function startTips(extra){
+    clearInterval(tipInterval);
+
+    let tips=[
+        "💧 Drink enough water",
+        "🏃 Stay active",
+        "🥦 Eat healthy",
+        "😴 Sleep well",
+        "🔥 Stay consistent"
+    ];
+
     if(extra) tips.push(extra);
 
     let i=0;
     let box=document.getElementById("tip");
 
-    setInterval(()=>{
+    tipInterval = setInterval(()=>{
         box.classList.remove("show");
 
         setTimeout(()=>{
@@ -221,7 +193,7 @@ function startTips(extra){
     },3000);
 }
 
-// MAIN
+// MAIN FUNCTION
 function generate(){
     let ageVal=Number(age.value);
     let h=Number(height.value);
@@ -248,7 +220,7 @@ function generate(){
     let type=(diet==="veg")?"veg":"nonveg";
 
     let output=`
-    <h3>📊 Report</h3>
+    <h3>📊 Health Report</h3>
     BMI: ${bmiVal}<br>
     Goal: ${goal}<br>
     Water: ${waterVal}<br><br>
@@ -263,13 +235,13 @@ function generate(){
 
     let extra=null;
     if(diet==="non-veg"){
-        extra="⚠️ No milk with fish/chicken";
+        extra="⚠️ Avoid milk with fish/chicken";
     }
 
     startTips(extra);
 }
 
-// load
+// LOAD SAVED DATA
 drawChart();
 updateXP();
 </script>
