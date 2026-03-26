@@ -11,50 +11,67 @@ body{
     background:linear-gradient(135deg,#0ea5e9,#1e3a8a);
     color:white;
     text-align:center;
+    overflow:hidden;
 }
 
+/* LOGO */
 .logo{
-    font-size:32px;
+    font-size:36px;
     font-weight:bold;
-    margin-top:15px;
+    margin-top:10px;
+    color:#38bdf8;
+    text-shadow:0 0 10px #0ea5e9;
 }
 
-.tagline{
-    font-size:12px;
-    opacity:0.8;
+/* FLOATING ORGANS */
+.organ{
+    position:absolute;
+    font-size:30px;
+    animation:float 6s infinite ease-in-out;
+    cursor:pointer;
 }
 
+@keyframes float{
+    0%{transform:translateY(0);}
+    50%{transform:translateY(-20px);}
+    100%{transform:translateY(0);}
+}
+
+/* UI */
 .card{
     background:rgba(255,255,255,0.1);
-    margin:15px auto;
-    padding:20px;
+    margin:10px auto;
+    padding:15px;
     border-radius:20px;
-    max-width:400px;
+    max-width:350px;
     backdrop-filter:blur(10px);
+    position:relative;
+    z-index:2;
 }
 
 input,select,button{
     width:90%;
     padding:10px;
-    margin:6px;
+    margin:5px;
     border-radius:10px;
     border:none;
 }
 
 button{
-    background:#0ea5e9;
+    background:#38bdf8;
     color:white;
-    font-weight:bold;
-    cursor:pointer;
 }
 
-#tip{
-    margin-top:10px;
-    opacity:0;
-    transition:opacity 1s;
-}
-.show{
-    opacity:1;
+/* popup */
+#info{
+    position:fixed;
+    bottom:10px;
+    left:50%;
+    transform:translateX(-50%);
+    background:black;
+    padding:10px;
+    border-radius:10px;
+    display:none;
 }
 </style>
 </head>
@@ -62,76 +79,34 @@ button{
 <body>
 
 <div class="logo">⚡ BodyXP</div>
-<div class="tagline">Level Up Your Body</div>
+
+<!-- ORGANS -->
+<div class="organ" style="top:20%; left:10%" onclick="showInfo('❤️ Heart pumps blood')">❤️</div>
+<div class="organ" style="top:40%; left:80%" onclick="showInfo('🧠 Brain controls body')">🧠</div>
+<div class="organ" style="top:70%; left:20%" onclick="showInfo('🫁 Lungs help breathing')">🫁</div>
 
 <div class="card">
 <input id="age" placeholder="Age">
-<input id="height" placeholder="Height (cm)">
+<input id="height" placeholder="Height">
 <input id="weight" placeholder="Weight">
-<input id="target" placeholder="Target Weight">
-<input id="water" placeholder="Water Intake">
+<input id="target" placeholder="Target">
+<input id="water" placeholder="Water">
 
 <select id="diet">
-<option value="veg">🥦 Veg</option>
-<option value="non-veg">🍗 Non-Veg</option>
+<option value="veg">Veg</option>
+<option value="non-veg">Non-Veg</option>
 </select>
 
-<button onclick="generate()">🚀 Generate</button>
-<button onclick="startVoice()">🎤 Voice</button>
+<button onclick="generate()">Generate</button>
+<button onclick="voice()">🎤 Voice</button>
 </div>
 
 <div id="output" class="card"></div>
-<div id="xpBox" class="card"></div>
-<div id="tip"></div>
-
-<canvas id="chart" width="300" height="200"></canvas>
+<div id="info"></div>
 
 <script>
-// BMI
-function bmi(w,h){
-    return (w/((h/100)**2)).toFixed(2);
-}
-
-// XP SYSTEM
-function updateXP(){
-    let xp = Number(localStorage.getItem("xp")) || 0;
-    xp += 10;
-    let level = Math.floor(xp/50);
-
-    localStorage.setItem("xp",xp);
-
-    document.getElementById("xpBox").innerHTML =
-        `🏆 XP: ${xp} | Level: ${level}`;
-}
-
-// SAVE WEIGHT
-function saveWeight(w){
-    let data = JSON.parse(localStorage.getItem("weights")) || [];
-    data.push(w);
-    localStorage.setItem("weights",JSON.stringify(data));
-}
-
-// GRAPH
-function drawChart(){
-    let c=document.getElementById("chart");
-    let ctx=c.getContext("2d");
-
-    let data = JSON.parse(localStorage.getItem("weights")) || [];
-
-    ctx.clearRect(0,0,300,200);
-
-    ctx.beginPath();
-    data.forEach((w,i)=>{
-        let x=i*30;
-        let y=200-w;
-        if(i===0) ctx.moveTo(x,y);
-        else ctx.lineTo(x,y);
-    });
-    ctx.stroke();
-}
-
-// VOICE INPUT
-function startVoice(){
+// VOICE FIX 🎤
+function voice(){
     let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
     if(!SR){
@@ -145,105 +120,60 @@ function startVoice(){
     rec.onresult = e=>{
         let t = e.results[0][0].transcript.toLowerCase();
 
-        if(t.includes("age")) age.value = t.replace(/\D/g,'');
-        if(t.includes("weight")) weight.value = t.replace(/\D/g,'');
+        if(t.includes("age")) age.value = t.match(/\d+/);
+        if(t.includes("weight")) weight.value = t.match(/\d+/);
+        if(t.includes("height")) height.value = t.match(/\d+/);
 
         alert("Heard: "+t);
     }
 }
 
-// AI MEALS
-function random(arr){
-    return arr[Math.floor(Math.random()*arr.length)];
+// MEAL PLAN 📅
+let meals = {
+veg:{
+Monday:["Oats","Dal rice","Soup"],
+Tuesday:["Poha","Roti sabzi","Salad"],
+Wednesday:["Upma","Paneer","Soup"],
+Thursday:["Idli","Dal","Veg meal"],
+Friday:["Paratha","Rice","Light meal"]
+},
+"non-veg":{
+Monday:["Eggs","Chicken rice","Soup"],
+Tuesday:["Omelette","Fish","Light"],
+Wednesday:["Eggs","Chicken","Soup"],
+Thursday:["Toast eggs","Fish","Meal"],
+Friday:["Eggs","Chicken","Soup"]
 }
-
-let foods={
-    veg:["Paneer","Dal","Oats","Fruit","Roti","Soup","Upma","Poha"],
-    nonveg:["Chicken","Fish","Eggs","Grilled chicken","Chicken curry"]
 };
 
-// TIPS SYSTEM
-let tipInterval;
-
-function startTips(extra){
-    clearInterval(tipInterval);
-
-    let tips=[
-        "💧 Drink enough water",
-        "🏃 Stay active",
-        "🥦 Eat healthy",
-        "😴 Sleep well",
-        "🔥 Stay consistent"
-    ];
-
-    if(extra) tips.push(extra);
-
-    let i=0;
-    let box=document.getElementById("tip");
-
-    tipInterval = setInterval(()=>{
-        box.classList.remove("show");
-
-        setTimeout(()=>{
-            box.innerText=tips[i];
-            box.classList.add("show");
-            i=(i+1)%tips.length;
-        },500);
-
-    },3000);
-}
-
-// MAIN FUNCTION
+// MAIN
 function generate(){
-    let ageVal=Number(age.value);
-    let h=Number(height.value);
-    let w=Number(weight.value);
-    let t=Number(target.value);
-    let waterVal=Number(water.value);
     let diet=document.getElementById("diet").value;
 
-    if(!ageVal||!h||!w){
-        alert("Fill all fields!");
-        return;
+    let week=meals[diet];
+
+    let out="<h3>📅 Weekly Plan</h3>";
+
+    for(let day in week){
+        let m=week[day];
+        out+=`
+        <p><b>${day}</b><br>
+        Breakfast: ${m[0]}<br>
+        Lunch: ${m[1]}<br>
+        Dinner: ${m[2]}</p>`;
     }
 
-    let goal="maintain";
-    if(t<w) goal="lose";
-    else if(t>w) goal="gain";
-
-    let bmiVal=bmi(w,h);
-
-    saveWeight(w);
-    drawChart();
-    updateXP();
-
-    let type=(diet==="veg")?"veg":"nonveg";
-
-    let output=`
-    <h3>📊 Health Report</h3>
-    BMI: ${bmiVal}<br>
-    Goal: ${goal}<br>
-    Water: ${waterVal}<br><br>
-
-    <h3>🍽 AI Meals</h3>
-    Breakfast: ${random(foods[type])}<br>
-    Lunch: ${random(foods[type])}<br>
-    Dinner: ${random(foods[type])}<br>
-    `;
-
-    document.getElementById("output").innerHTML=output;
-
-    let extra=null;
-    if(diet==="non-veg"){
-        extra="⚠️ Avoid milk with fish/chicken";
-    }
-
-    startTips(extra);
+    document.getElementById("output").innerHTML=out;
 }
 
-// LOAD SAVED DATA
-drawChart();
-updateXP();
+// ORGAN INFO
+function showInfo(text){
+    let box=document.getElementById("info");
+    box.innerText=text;
+    box.style.display="block";
+
+    setTimeout(()=>box.style.display="none",2000);
+}
 </script>
 
 </body>
