@@ -1,134 +1,277 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Ultra Health AI</title>
+<title>BodyXP</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
+body{
     margin:0;
     font-family:sans-serif;
-    background:linear-gradient(135deg,#ff4d4d,#ffffff);
+    background:linear-gradient(135deg,#ff0000,#000000);
+    color:white;
     text-align:center;
 }
 
-.card {
-    background:white;
+/* 🔥 LOGO */
+.logo{
+    font-size:32px;
+    font-weight:bold;
+    margin-top:15px;
+    background:linear-gradient(45deg,#ff0000,#ffffff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-shadow:0 0 10px rgba(255,0,0,0.5);
+}
+
+.tagline{
+    font-size:12px;
+    opacity:0.8;
+    margin-bottom:10px;
+}
+
+/* UI */
+.card{
+    background:rgba(255,255,255,0.1);
     margin:15px auto;
     padding:20px;
     border-radius:20px;
     max-width:400px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+    backdrop-filter:blur(10px);
+    box-shadow:0 0 20px rgba(255,0,0,0.3);
 }
 
 input,select,button{
     width:90%;
     padding:10px;
-    margin:5px;
+    margin:6px;
     border-radius:10px;
+    border:none;
 }
 
 button{
-    background:red;
+    background:#ff0000;
     color:white;
     font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    transform:scale(1.05);
+}
+
+/* avatar */
+#avatar{
+    font-size:60px;
+    margin:10px;
+}
+
+/* tip animation */
+#tip{
+    margin-top:10px;
+    opacity:0;
+    transition:opacity 1s;
+}
+.show{
+    opacity:1;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🔥 Ultra Health AI</h1>
+<div class="logo">⚡ BodyXP</div>
+<div class="tagline">Level Up Your Body</div>
+
+<div id="avatar">🙂</div>
 
 <div class="card">
 <input id="age" placeholder="Age">
 <input id="height" placeholder="Height (cm)">
 <input id="weight" placeholder="Weight">
 <input id="target" placeholder="Target Weight">
-<input id="water" placeholder="Water">
+<input id="water" placeholder="Water Intake">
 
 <select id="diet">
-<option value="veg">Veg</option>
-<option value="non-veg">Non-Veg</option>
+<option value="veg">🥦 Veg</option>
+<option value="non-veg">🍗 Non-Veg</option>
 </select>
 
-<button onclick="generate()">Generate</button>
-<button onclick="startVoice()">🎤 Speak</button>
+<button onclick="generate()">🚀 Generate</button>
+<button onclick="startVoice()">🎤 Voice</button>
 </div>
 
 <div id="output" class="card"></div>
+<div id="xpBox" class="card"></div>
+<div id="tip"></div>
 
 <canvas id="chart" width="300" height="200"></canvas>
 
 <script>
 // BMI
 function bmi(w,h){
-    h=h/100;
-    return (w/(h*h)).toFixed(2);
+    return (w/((h/100)**2)).toFixed(2);
 }
 
-// SAVE DATA 💾
-function saveWeight(weight){
-    let data = JSON.parse(localStorage.getItem("weights")) || [];
-    data.push(weight);
+// XP + LEVEL
+function updateXP(){
+    let xp = Number(localStorage.getItem("xp")) || 0;
+    xp += 10;
+    let level = Math.floor(xp/50);
+
+    localStorage.setItem("xp",xp);
+
+    document.getElementById("xpBox").innerHTML =
+        `🏆 XP: ${xp} | Level: ${level}`;
+
+    updateAvatar(xp);
+}
+
+// AVATAR
+function updateAvatar(xp){
+    let a=document.getElementById("avatar");
+
+    if(xp<50) a.innerHTML="🙂";
+    else if(xp<150) a.innerHTML="💪";
+    else a.innerHTML="🔥";
+}
+
+// SAVE WEIGHT
+function saveWeight(w){
+    let data=JSON.parse(localStorage.getItem("weights"))||[];
+    data.push(w);
     localStorage.setItem("weights",JSON.stringify(data));
 }
 
-// GRAPH 📊
+// GRAPH
 function drawChart(){
-    let canvas=document.getElementById("chart");
-    let ctx=canvas.getContext("2d");
+    let c=document.getElementById("chart");
+    let ctx=c.getContext("2d");
 
-    let data = JSON.parse(localStorage.getItem("weights")) || [];
+    let data=JSON.parse(localStorage.getItem("weights"))||[];
 
     ctx.clearRect(0,0,300,200);
 
+    ctx.beginPath();
     data.forEach((w,i)=>{
-        ctx.fillRect(i*30,200-w,10,w);
+        let x=i*30;
+        let y=200-w;
+        if(i==0) ctx.moveTo(x,y);
+        else ctx.lineTo(x,y);
     });
+    ctx.stroke();
 }
 
-// VOICE 🎤
+// VOICE
 function startVoice(){
-    let rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if(!SR){
+        alert("Voice not supported");
+        return;
+    }
+
+    let rec=new SR();
     rec.start();
 
-    rec.onresult = function(e){
-        let text = e.results[0][0].transcript;
-        alert("You said: "+text);
+    rec.onresult=e=>{
+        let t=e.results[0][0].transcript.toLowerCase();
+
+        if(t.includes("age")) age.value=t.replace(/\D/g,'');
+        if(t.includes("weight")) weight.value=t.replace(/\D/g,'');
+
+        alert("Heard: "+t);
     }
+}
+
+// AI MEALS
+function random(arr){
+    return arr[Math.floor(Math.random()*arr.length)];
+}
+
+let foods={
+    veg:["Paneer","Dal","Oats","Fruit","Roti","Soup"],
+    nonveg:["Chicken","Fish","Eggs","Grilled chicken"]
+};
+
+// TIPS ROTATION
+let tips=[
+"💧 Drink water",
+"🏃 Stay active",
+"🥦 Eat healthy",
+"😴 Sleep well",
+"🔥 Stay consistent"
+];
+
+function startTips(extra){
+    if(extra) tips.push(extra);
+
+    let i=0;
+    let box=document.getElementById("tip");
+
+    setInterval(()=>{
+        box.classList.remove("show");
+
+        setTimeout(()=>{
+            box.innerText=tips[i];
+            box.classList.add("show");
+            i=(i+1)%tips.length;
+        },500);
+
+    },3000);
 }
 
 // MAIN
 function generate(){
-    let age = Number(age.value);
-    let height = Number(height.value);
-    let weight = Number(weight.value);
-    let target = Number(target.value);
-    let water = Number(water.value);
-    let diet = document.getElementById("diet").value;
+    let ageVal=Number(age.value);
+    let h=Number(height.value);
+    let w=Number(weight.value);
+    let t=Number(target.value);
+    let waterVal=Number(water.value);
+    let diet=document.getElementById("diet").value;
 
-    let goal="maintain";
-    if(target<weight) goal="lose";
-    else if(target>weight) goal="gain";
-
-    let bmiVal=bmi(weight,height);
-
-    saveWeight(weight);
-    drawChart();
-
-    let output=`
-    BMI: ${bmiVal}<br>
-    Goal: ${goal}<br>
-    Water: ${water}<br>
-    `;
-
-    if(diet==="non-veg"){
-        output+="⚠️ No milk with fish/chicken<br>";
+    if(!ageVal||!h||!w){
+        alert("Fill all fields!");
+        return;
     }
 
+    let goal="maintain";
+    if(t<w) goal="lose";
+    else if(t>w) goal="gain";
+
+    let bmiVal=bmi(w,h);
+
+    saveWeight(w);
+    drawChart();
+    updateXP();
+
+    let type=(diet==="veg")?"veg":"nonveg";
+
+    let output=`
+    <h3>📊 Report</h3>
+    BMI: ${bmiVal}<br>
+    Goal: ${goal}<br>
+    Water: ${waterVal}<br><br>
+
+    <h3>🍽 AI Meals</h3>
+    Breakfast: ${random(foods[type])}<br>
+    Lunch: ${random(foods[type])}<br>
+    Dinner: ${random(foods[type])}<br>
+    `;
+
     document.getElementById("output").innerHTML=output;
+
+    let extra=null;
+    if(diet==="non-veg"){
+        extra="⚠️ No milk with fish/chicken";
+    }
+
+    startTips(extra);
 }
+
+// load
+drawChart();
+updateXP();
 </script>
 
 </body>
