@@ -8,26 +8,23 @@
         body {
             margin: 0;
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: white;
+            background: linear-gradient(135deg, #ff4d4d, #ffffff);
+            color: #111;
             text-align: center;
         }
 
         h1 {
             margin-top: 20px;
-            font-size: 28px;
-            animation: fadeIn 1s ease-in-out;
+            color: #b30000;
         }
 
         .card {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
+            background: white;
             padding: 20px;
             border-radius: 20px;
             margin: 15px auto;
             max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            animation: slideUp 0.8s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
         input, select, button {
@@ -35,47 +32,33 @@
             margin: 8px;
             padding: 12px;
             border-radius: 12px;
-            border: none;
+            border: 1px solid #ddd;
             font-size: 16px;
         }
 
-        input, select {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
         button {
-            background: linear-gradient(45deg, #22c55e, #4ade80);
+            background: linear-gradient(45deg, #ff0000, #ff4d4d);
             color: white;
             font-weight: bold;
             cursor: pointer;
-            transition: 0.3s;
         }
 
-        button:hover {
-            transform: scale(1.05);
+        .tip {
+            margin-top: 10px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 1s;
         }
 
-        .result {
-            text-align: left;
-            animation: fadeIn 1s ease;
-        }
-
-        @keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity: 1;}
-        }
-
-        @keyframes slideUp {
-            from {transform: translateY(40px); opacity: 0;}
-            to {transform: translateY(0); opacity: 1;}
+        .show {
+            opacity: 1;
         }
     </style>
 </head>
 
 <body>
 
-<h1>🤖 Ultra Health AI</h1>
+<h1>🔥 Ultra Health AI</h1>
 
 <div class="card">
     <input id="age" placeholder="Age">
@@ -89,10 +72,11 @@
         <option value="non-veg">🍗 Non-Veg</option>
     </select>
 
-    <button onclick="generatePlan()">✨ Generate AI Plan</button>
+    <button onclick="generatePlan()">🚀 Generate Plan</button>
 </div>
 
-<div id="output" class="card result"></div>
+<div id="output" class="card"></div>
+<div id="tipBox" class="tip"></div>
 
 <script>
 function bmi(weight, height) {
@@ -107,6 +91,33 @@ function bmiCategory(bmi) {
     return "Obese";
 }
 
+// 🔥 Rotating tips
+let tips = [
+    "💧 Drink enough water daily",
+    "🏃 Stay active and exercise",
+    "🥦 Eat fruits and vegetables",
+    "😴 Sleep at least 7-8 hours",
+    "🚫 Avoid junk food regularly"
+];
+
+function startTips(extraTip) {
+    if (extraTip) tips.push(extraTip);
+
+    let index = 0;
+    let tipBox = document.getElementById("tipBox");
+
+    setInterval(() => {
+        tipBox.classList.remove("show");
+
+        setTimeout(() => {
+            tipBox.innerText = tips[index];
+            tipBox.classList.add("show");
+            index = (index + 1) % tips.length;
+        }, 500);
+
+    }, 3000);
+}
+
 function generatePlan() {
     let age = Number(document.getElementById("age").value);
     let height = Number(document.getElementById("height").value);
@@ -115,7 +126,8 @@ function generatePlan() {
     let water = Number(document.getElementById("water").value);
     let diet = document.getElementById("diet").value;
 
-    // Goal detection
+    let type = (diet === "veg") ? "veg" : "nonveg";
+
     let goal = "maintain";
     if (target < weight) goal = "lose";
     else if (target > weight) goal = "gain";
@@ -124,27 +136,24 @@ function generatePlan() {
     let category = bmiCategory(bmiVal);
     let ageGroup = age < 13 ? "child" : "teen";
 
-    // FOOD DATABASE (NO MILK WITH NON-VEG)
     let foodDB = {
         veg: {
-            breakfast: ["Oats", "Poha", "Upma", "Fruit bowl", "Smoothie", "Idli", "Paratha"],
-            lunch: ["Dal + rice", "Roti + sabzi", "Paneer + roti", "Veg pulao", "Khichdi"],
-            dinner: ["Soup", "Light sabzi", "Paneer", "Veg salad", "Roti + veg"]
+            breakfast: ["Oats", "Poha", "Upma", "Smoothie", "Idli"],
+            lunch: ["Dal + rice", "Roti + sabzi", "Paneer + roti"],
+            dinner: ["Soup", "Paneer", "Veg salad"]
         },
         nonveg: {
-            breakfast: ["Eggs", "Omelette", "Boiled eggs", "Toast + eggs"],
-            lunch: ["Chicken + rice", "Grilled chicken", "Fish + roti", "Chicken curry"],
-            dinner: ["Soup", "Chicken salad", "Fish", "Light chicken meal"]
+            breakfast: ["Eggs", "Omelette", "Boiled eggs"],
+            lunch: ["Chicken + rice", "Grilled chicken", "Fish + roti"],
+            dinner: ["Chicken soup", "Fish", "Chicken salad"]
         }
     };
 
-    function adjustMeal(mealList, goal) {
-        if (goal === "gain") return mealList.concat(["Extra protein", "Nuts", "Shake"]);
-        if (goal === "lose") return mealList.filter(m => !m.includes("Paratha"));
-        return mealList;
+    function randomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    let mealsDB = foodDB[diet];
+    let mealsDB = foodDB[type];
     let weekDays = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 
     let output = `
@@ -154,18 +163,13 @@ function generatePlan() {
         Goal: <b>${goal}</b><br>
         Hydration: <b>${water >= 0.5 ? "Good 💧" : "Drink more!"}</b><br><br>
 
-        <h2>🍽 AI Weekly Plan</h2>
+        <h2>🍽 Weekly Plan</h2>
     `;
 
-    // RANDOM AI MEALS 🔥
     weekDays.forEach(day => {
-        let breakfastList = adjustMeal(mealsDB.breakfast, goal);
-        let lunchList = adjustMeal(mealsDB.lunch, goal);
-        let dinnerList = adjustMeal(mealsDB.dinner, goal);
-
-        let breakfast = breakfastList[Math.floor(Math.random() * breakfastList.length)];
-        let lunch = lunchList[Math.floor(Math.random() * lunchList.length)];
-        let dinner = dinnerList[Math.floor(Math.random() * dinnerList.length)];
+        let breakfast = randomItem(mealsDB.breakfast);
+        let lunch = randomItem(mealsDB.lunch);
+        let dinner = randomItem(mealsDB.dinner);
 
         output += `
             <p>
@@ -177,9 +181,15 @@ function generatePlan() {
         `;
     });
 
-    output += `<br>🤖 AI Tip: Avoid milk with fish/chicken. Stay consistent and exercise!`;
-
     document.getElementById("output").innerHTML = output;
+
+    // ✅ ONLY show milk-fish rule for non-veg
+    let extraTip = null;
+    if (diet === "non-veg") {
+        extraTip = "⚠️ Avoid milk with fish/chicken";
+    }
+
+    startTips(extraTip);
 }
 </script>
 
