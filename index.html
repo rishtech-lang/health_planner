@@ -1,195 +1,133 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ultra Health Planner</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ultra Health AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #ff4d4d, #ffffff);
-            color: #111;
-            text-align: center;
-        }
+<style>
+body {
+    margin:0;
+    font-family:sans-serif;
+    background:linear-gradient(135deg,#ff4d4d,#ffffff);
+    text-align:center;
+}
 
-        h1 {
-            margin-top: 20px;
-            color: #b30000;
-        }
+.card {
+    background:white;
+    margin:15px auto;
+    padding:20px;
+    border-radius:20px;
+    max-width:400px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            margin: 15px auto;
-            max-width: 400px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
+input,select,button{
+    width:90%;
+    padding:10px;
+    margin:5px;
+    border-radius:10px;
+}
 
-        input, select, button {
-            width: 90%;
-            margin: 8px;
-            padding: 12px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        button {
-            background: linear-gradient(45deg, #ff0000, #ff4d4d);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .tip {
-            margin-top: 10px;
-            font-weight: bold;
-            opacity: 0;
-            transition: opacity 1s;
-        }
-
-        .show {
-            opacity: 1;
-        }
-    </style>
+button{
+    background:red;
+    color:white;
+    font-weight:bold;
+}
+</style>
 </head>
 
 <body>
 
-<h1>🔥 Ultra Health Planner</h1>
+<h1>🔥 Ultra Health AI</h1>
 
 <div class="card">
-    <input id="age" placeholder="Age">
-    <input id="height" placeholder="Height (cm)">
-    <input id="weight" placeholder="Current Weight (kg)">
-    <input id="target" placeholder="Target Weight (kg)">
-    <input id="water" placeholder="Water Intake (liters)">
+<input id="age" placeholder="Age">
+<input id="height" placeholder="Height (cm)">
+<input id="weight" placeholder="Weight">
+<input id="target" placeholder="Target Weight">
+<input id="water" placeholder="Water">
 
-    <select id="diet">
-        <option value="veg">🥦 Veg</option>
-        <option value="non-veg">🍗 Non-Veg</option>
-    </select>
+<select id="diet">
+<option value="veg">Veg</option>
+<option value="non-veg">Non-Veg</option>
+</select>
 
-    <button onclick="generatePlan()">🚀 Generate Plan</button>
+<button onclick="generate()">Generate</button>
+<button onclick="startVoice()">🎤 Speak</button>
 </div>
 
 <div id="output" class="card"></div>
-<div id="tipBox" class="tip"></div>
+
+<canvas id="chart" width="300" height="200"></canvas>
 
 <script>
-function bmi(weight, height) {
-    let h = height / 100;
-    return (weight / (h*h)).toFixed(2);
+// BMI
+function bmi(w,h){
+    h=h/100;
+    return (w/(h*h)).toFixed(2);
 }
 
-function bmiCategory(bmi) {
-    if (bmi < 18.5) return "Underweight";
-    if (bmi < 25) return "Normal";
-    if (bmi < 30) return "Overweight";
-    return "Obese";
+// SAVE DATA 💾
+function saveWeight(weight){
+    let data = JSON.parse(localStorage.getItem("weights")) || [];
+    data.push(weight);
+    localStorage.setItem("weights",JSON.stringify(data));
 }
 
-// 🔥 Rotating tips
-let tips = [
-    "💧 Drink enough water daily",
-    "🏃 Stay active and exercise",
-    "🥦 Eat fruits and vegetables",
-    "😴 Sleep at least 7-8 hours",
-    "🚫 Avoid junk food regularly"
-];
+// GRAPH 📊
+function drawChart(){
+    let canvas=document.getElementById("chart");
+    let ctx=canvas.getContext("2d");
 
-function startTips(extraTip) {
-    if (extraTip) tips.push(extraTip);
+    let data = JSON.parse(localStorage.getItem("weights")) || [];
 
-    let index = 0;
-    let tipBox = document.getElementById("tipBox");
+    ctx.clearRect(0,0,300,200);
 
-    setInterval(() => {
-        tipBox.classList.remove("show");
-
-        setTimeout(() => {
-            tipBox.innerText = tips[index];
-            tipBox.classList.add("show");
-            index = (index + 1) % tips.length;
-        }, 500);
-
-    }, 3000);
+    data.forEach((w,i)=>{
+        ctx.fillRect(i*30,200-w,10,w);
+    });
 }
 
-function generatePlan() {
-    let age = Number(document.getElementById("age").value);
-    let height = Number(document.getElementById("height").value);
-    let weight = Number(document.getElementById("weight").value);
-    let target = Number(document.getElementById("target").value);
-    let water = Number(document.getElementById("water").value);
+// VOICE 🎤
+function startVoice(){
+    let rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    rec.start();
+
+    rec.onresult = function(e){
+        let text = e.results[0][0].transcript;
+        alert("You said: "+text);
+    }
+}
+
+// MAIN
+function generate(){
+    let age = Number(age.value);
+    let height = Number(height.value);
+    let weight = Number(weight.value);
+    let target = Number(target.value);
+    let water = Number(water.value);
     let diet = document.getElementById("diet").value;
 
-    let type = (diet === "veg") ? "veg" : "nonveg";
+    let goal="maintain";
+    if(target<weight) goal="lose";
+    else if(target>weight) goal="gain";
 
-    let goal = "maintain";
-    if (target < weight) goal = "lose";
-    else if (target > weight) goal = "gain";
+    let bmiVal=bmi(weight,height);
 
-    let bmiVal = bmi(weight, height);
-    let category = bmiCategory(bmiVal);
-    let ageGroup = age < 13 ? "child" : "teen";
+    saveWeight(weight);
+    drawChart();
 
-    let foodDB = {
-        veg: {
-            breakfast: ["Oats", "Poha", "Upma", "Smoothie", "Idli"],
-            lunch: ["Dal + rice", "Roti + sabzi", "Paneer + roti"],
-            dinner: ["Soup", "Paneer", "Veg salad"]
-        },
-        nonveg: {
-            breakfast: ["Eggs", "Omelette", "Boiled eggs"],
-            lunch: ["Chicken + rice", "Grilled chicken", "Fish + roti"],
-            dinner: ["Chicken soup", "Fish", "Chicken salad"]
-        }
-    };
-
-    function randomItem(arr) {
-        return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    let mealsDB = foodDB[type];
-    let weekDays = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
-
-    let output = `
-        <h2>📊 Health Report</h2>
-        BMI: <b>${bmiVal}</b> (${category})<br>
-        Age Group: <b>${ageGroup}</b><br>
-        Goal: <b>${goal}</b><br>
-        Hydration: <b>${water >= 0.5 ? "Good 💧" : "Drink more!"}</b><br><br>
-
-        <h2>🍽 Weekly Plan</h2>
+    let output=`
+    BMI: ${bmiVal}<br>
+    Goal: ${goal}<br>
+    Water: ${water}<br>
     `;
 
-    weekDays.forEach(day => {
-        let breakfast = randomItem(mealsDB.breakfast);
-        let lunch = randomItem(mealsDB.lunch);
-        let dinner = randomItem(mealsDB.dinner);
-
-        output += `
-            <p>
-            <b>📅 ${day}</b><br>
-            🍳 Breakfast: ${breakfast}<br>
-            🍛 Lunch: ${lunch}<br>
-            🌙 Dinner: ${dinner}
-            </p>
-        `;
-    });
-
-    document.getElementById("output").innerHTML = output;
-
-    // ✅ ONLY show milk-fish rule for non-veg
-    let extraTip = null;
-    if (diet === "non-veg") {
-        extraTip = "⚠️ Avoid milk with fish/chicken";
+    if(diet==="non-veg"){
+        output+="⚠️ No milk with fish/chicken<br>";
     }
 
-    startTips(extraTip);
+    document.getElementById("output").innerHTML=output;
 }
 </script>
 
