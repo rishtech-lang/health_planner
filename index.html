@@ -104,55 +104,56 @@ function generatePlan() {
     let ageGroup = age < 13 ? "child" : "teen";
 
     // SIMPLE MEAL DATABASE (WORKING)
-    let meals = {
-        "veg": {
-            "child": {
-                "lose": {
-                    "Monday": ["Fruit bowl", "Dal + rice", "Soup"],
-                    "Tuesday": ["Milk + banana", "Roti + sabzi", "Khichdi"],
-                    "Wednesday": ["Oats", "Dal + salad", "Soup"],
-                    "Thursday": ["Apple + milk", "Paneer + Rice"],
-                    "Friday": ["Poha", "Rice + dal", "Soup"]
-                },
-                "gain": {
-                    "Monday": ["Milkshake", "Rice + paneer", "Roti"],
-                    "Tuesday": ["Banana milk", "Dal + rice", "Paneer"],
-                    "Wednesday": ["Oats + nuts", "Rice", "Curd"],
-                    "Thursday": ["Smoothie", "Paneer", "Veg"],
-                    "Friday": ["Upma", "Dal + rice", "Curd"]
-                },
-                "maintain": {
-                    "Monday": ["Poha", "Dal + roti", "Veg"],
-                    "Tuesday": ["Milk + fruit", "Rice + dal", "Light"],
-                    "Wednesday": ["Upma", "Roti + veg", "Soup"],
-                    "Thursday": ["Oats", "Paneer", "Veg"],
-                    "Friday": ["Idli", "Dal + rice", "Light"]
-                }
+   let meals = {
+    "veg": {
+        "child": {
+            "lose": {
+                "Monday": ["Fruit bowl", "Dal rice", "Veg soup"],
+                "Tuesday": ["Milk + banana", "Soft roti + sabzi", "Khichdi"],
+                "Wednesday": ["Oats", "Dal + rice", "Soup"],
+                "Thursday": ["Apple", "Paneer (small)", "Light meal"],
+                "Friday": ["Poha", "Rice + dal", "Soup"]
             },
-            "teen": {
-                "lose": {
-                    "Monday": ["Oats", "Salad", "Soup"],
-                    "Tuesday": ["Fruit bowl", "Roti", "Light"],
-                    "Wednesday": ["Smoothie", "Dal + rice", "Soup"],
-                    "Thursday": ["Apple", "Paneer", "Light"],
-                    "Friday": ["Poha", "Dal + roti", "Soup"]
-                },
-                "gain": {
-                    "Monday": ["Shake", "Rice + paneer", "Roti"],
-                    "Tuesday": ["Banana shake", "Dal + rice", "Paneer"],
-                    "Wednesday": ["Oats + nuts", "Rice", "Curd"],
-                    "Thursday": ["Smoothie", "Paneer", "Veg"],
-                    "Friday": ["Upma", "Dal + rice", "Curd"]
-                },
-                "maintain": {
-                    "Monday": ["Poha", "Dal + roti", "Veg"],
-                    "Tuesday": ["Milk + fruit", "Rice + dal", "Light"],
-                    "Wednesday": ["Upma", "Roti + veg", "Soup"],
-                    "Thursday": ["Oats", "Paneer", "Veg"],
-                    "Friday": ["Idli", "Dal + rice", "Light"]
-                }
+            "gain": {
+                "Monday": ["Milkshake", "Rice + paneer", "Soft roti"],
+                "Tuesday": ["Banana milk", "Dal rice", "Paneer"],
+                "Wednesday": ["Oats + nuts", "Rice", "Curd"],
+                "Thursday": ["Smoothie", "Paneer", "Veg"],
+                "Friday": ["Upma", "Dal rice", "Curd"]
+            },
+            "maintain": {
+                "Monday": ["Poha", "Dal rice", "Veg"],
+                "Tuesday": ["Milk + fruit", "Rice", "Light"],
+                "Wednesday": ["Upma", "Soft roti", "Soup"],
+                "Thursday": ["Oats", "Paneer", "Veg"],
+                "Friday": ["Idli", "Dal rice", "Light"]
             }
         },
+
+        "teen": {
+            "lose": {
+                "Monday": ["Oats + nuts", "Salad + dal", "Soup"],
+                "Tuesday": ["Fruit bowl + seeds", "Roti + sabzi", "Light dinner"],
+                "Wednesday": ["Protein smoothie", "Dal + rice", "Soup"],
+                "Thursday": ["Apple + peanut butter", "Paneer salad", "Light"],
+                "Friday": ["Poha + peanuts", "Dal + roti", "Soup"]
+            },
+            "gain": {
+                "Monday": ["Shake + nuts", "Rice + paneer", "Full meal"],
+                "Tuesday": ["Banana shake", "Dal + rice", "Paneer + roti"],
+                "Wednesday": ["Oats + nuts", "Rice + dal", "Curd + roti"],
+                "Thursday": ["Smoothie", "Paneer + roti", "Veg + curd"],
+                "Friday": ["Upma", "Dal + rice", "Curd + salad"]
+            },
+            "maintain": {
+                "Monday": ["Poha + nuts", "Dal + roti", "Veg"],
+                "Tuesday": ["Milk + fruit", "Rice + dal", "Balanced meal"],
+                "Wednesday": ["Upma", "Roti + veg", "Soup"],
+                "Thursday": ["Oats", "Paneer + roti", "Veg"],
+                "Friday": ["Idli", "Dal + rice", "Light sabzi"]
+            }
+        }
+    },
         "non-veg": {
             "child": {
                 "lose": {
