@@ -1,59 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ultra Health Planner</title>
+    <title>Ultra Health AI</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <style>
         body {
-            font-family: Arial;
-            background: #0f172a;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             color: white;
             text-align: center;
-            padding: 10px;
         }
 
         h1 {
+            margin-top: 20px;
             font-size: 28px;
+            animation: fadeIn 1s ease-in-out;
         }
 
         .card {
-            background: #1e293b;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
             padding: 20px;
             border-radius: 20px;
             margin: 15px auto;
             max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideUp 0.8s ease;
         }
 
         input, select, button {
             width: 90%;
             margin: 8px;
             padding: 12px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: none;
             font-size: 16px;
         }
 
-        button {
-            background: #22c55e;
+        input, select {
+            background: rgba(255,255,255,0.1);
             color: white;
-            cursor: pointer;
+        }
+
+        button {
+            background: linear-gradient(45deg, #22c55e, #4ade80);
+            color: white;
             font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
         }
 
         button:hover {
-            background: #16a34a;
+            transform: scale(1.05);
         }
 
-        p {
+        .result {
             text-align: left;
+            animation: fadeIn 1s ease;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+
+        @keyframes slideUp {
+            from {transform: translateY(40px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
         }
     </style>
 </head>
 
 <body>
 
-<h1>🚀 Ultra Health Planner</h1>
+<h1>🤖 Ultra Health AI</h1>
 
 <div class="card">
     <input id="age" placeholder="Age">
@@ -63,14 +85,14 @@
     <input id="water" placeholder="Water Intake (liters)">
 
     <select id="diet">
-        <option value="veg">Veg</option>
-        <option value="non-veg">Non-Veg</option>
+        <option value="veg">🥦 Veg</option>
+        <option value="non-veg">🍗 Non-Veg</option>
     </select>
 
-    <button onclick="generatePlan()">Generate Plan</button>
+    <button onclick="generatePlan()">✨ Generate AI Plan</button>
 </div>
 
-<div id="output" class="card"></div>
+<div id="output" class="card result"></div>
 
 <script>
 function bmi(weight, height) {
@@ -100,130 +122,62 @@ function generatePlan() {
 
     let bmiVal = bmi(weight, height);
     let category = bmiCategory(bmiVal);
-
     let ageGroup = age < 13 ? "child" : "teen";
 
-    // SIMPLE MEAL DATABASE (WORKING)
-   let meals = {
-    "veg": {
-        "child": {
-            "lose": {
-                "Monday": ["Fruit bowl", "Dal rice", "Veg soup"],
-                "Tuesday": ["Milk + banana", "Soft roti + sabzi", "Khichdi"],
-                "Wednesday": ["Oats", "Dal + rice", "Soup"],
-                "Thursday": ["Apple", "Paneer (small)", "Light meal"],
-                "Friday": ["Poha", "Rice + dal", "Soup"]
-            },
-            "gain": {
-                "Monday": ["Milkshake", "Rice + paneer", "Soft roti"],
-                "Tuesday": ["Banana milk", "Dal rice", "Paneer"],
-                "Wednesday": ["Oats + nuts", "Rice", "Curd"],
-                "Thursday": ["Smoothie", "Paneer", "Veg"],
-                "Friday": ["Upma", "Dal rice", "Curd"]
-            },
-            "maintain": {
-                "Monday": ["Poha", "Dal rice", "Veg"],
-                "Tuesday": ["Milk + fruit", "Rice", "Light"],
-                "Wednesday": ["Upma", "Soft roti", "Soup"],
-                "Thursday": ["Oats", "Paneer", "Veg"],
-                "Friday": ["Idli", "Dal rice", "Light"]
-            }
+    // FOOD DATABASE (NO MILK WITH NON-VEG)
+    let foodDB = {
+        veg: {
+            breakfast: ["Oats", "Poha", "Upma", "Fruit bowl", "Smoothie", "Idli", "Paratha"],
+            lunch: ["Dal + rice", "Roti + sabzi", "Paneer + roti", "Veg pulao", "Khichdi"],
+            dinner: ["Soup", "Light sabzi", "Paneer", "Veg salad", "Roti + veg"]
         },
-
-        "teen": {
-            "lose": {
-                "Monday": ["Oats + nuts", "Salad + dal", "Soup"],
-                "Tuesday": ["Fruit bowl + seeds", "Roti + sabzi", "Light dinner"],
-                "Wednesday": ["Protein smoothie", "Dal + rice", "Soup"],
-                "Thursday": ["Apple + peanut butter", "Paneer salad", "Light"],
-                "Friday": ["Poha + peanuts", "Dal + roti", "Soup"]
-            },
-            "gain": {
-                "Monday": ["Shake + nuts", "Rice + paneer", "Full meal"],
-                "Tuesday": ["Banana shake", "Dal + rice", "Paneer + roti"],
-                "Wednesday": ["Oats + nuts", "Rice + dal", "Curd + roti"],
-                "Thursday": ["Smoothie", "Paneer + roti", "Veg + curd"],
-                "Friday": ["Upma", "Dal + rice", "Curd + salad"]
-            },
-            "maintain": {
-                "Monday": ["Poha + nuts", "Dal + roti", "Veg"],
-                "Tuesday": ["Milk + fruit", "Rice + dal", "Balanced meal"],
-                "Wednesday": ["Upma", "Roti + veg", "Soup"],
-                "Thursday": ["Oats", "Paneer + roti", "Veg"],
-                "Friday": ["Idli", "Dal + rice", "Light sabzi"]
-            }
-        }
-    },
-        "non-veg": {
-            "child": {
-                "lose": {
-                    "Monday": ["Eggs", "Chicken salad", "Soup"],
-                    "Tuesday": ["Egg + milk", "Chicken", "Light"],
-                    "Wednesday": ["Eggs", "Chicken + rice", "Soup"],
-                    "Thursday": ["Milk", "Fish", "Light"],
-                    "Friday": ["Eggs", "Chicken", "Soup"]
-                },
-                "gain": {
-                    "Monday": ["Egg + milk", "Chicken + rice", "Fish"],
-                    "Tuesday": ["Omelette", "Chicken", "Egg meal"],
-                    "Wednesday": ["Eggs", "Chicken + rice", "Fish"],
-                    "Thursday": ["Milk", "Chicken", "Egg"],
-                    "Friday": ["Omelette", "Chicken + rice", "Fish"]
-                },
-                "maintain": {
-                    "Monday": ["Eggs", "Chicken", "Light"],
-                    "Tuesday": ["Omelette", "Chicken + rice", "Soup"],
-                    "Wednesday": ["Eggs", "Fish", "Light"],
-                    "Thursday": ["Milk", "Chicken", "Soup"],
-                    "Friday": ["Eggs", "Chicken + rice", "Light"]
-                }
-            },
-            "teen": {
-                "lose": {
-                    "Monday": ["Eggs", "Chicken", "Soup"],
-                    "Tuesday": ["Egg whites", "Chicken salad", "Light"],
-                    "Wednesday": ["Eggs", "Chicken + rice", "Soup"],
-                    "Thursday": ["Milk", "Fish", "Light"],
-                    "Friday": ["Eggs", "Chicken", "Soup"]
-                },
-                "gain": {
-                    "Monday": ["Eggs + milk", "Chicken + rice", "Fish"],
-                    "Tuesday": ["Omelette", "Chicken", "Eggs"],
-                    "Wednesday": ["Eggs", "Chicken + rice", "Fish"],
-                    "Thursday": ["Milk", "Chicken", "Egg"],
-                    "Friday": ["Omelette", "Chicken + rice", "Fish"]
-                },
-                "maintain": {
-                    "Monday": ["Eggs", "Chicken", "Light"],
-                    "Tuesday": ["Omelette", "Chicken + rice", "Soup"],
-                    "Wednesday": ["Eggs", "Fish", "Light"],
-                    "Thursday": ["Milk", "Chicken", "Soup"],
-                    "Friday": ["Eggs", "Chicken + rice", "Light"]
-                }
-            }
+        nonveg: {
+            breakfast: ["Eggs", "Omelette", "Boiled eggs", "Toast + eggs"],
+            lunch: ["Chicken + rice", "Grilled chicken", "Fish + roti", "Chicken curry"],
+            dinner: ["Soup", "Chicken salad", "Fish", "Light chicken meal"]
         }
     };
 
-    let week = meals[diet][ageGroup][goal];
+    function adjustMeal(mealList, goal) {
+        if (goal === "gain") return mealList.concat(["Extra protein", "Nuts", "Shake"]);
+        if (goal === "lose") return mealList.filter(m => !m.includes("Paratha"));
+        return mealList;
+    }
+
+    let mealsDB = foodDB[diet];
     let weekDays = ["Monday","Tuesday","Wednesday","Thursday","Friday"];
 
     let output = `
         <h2>📊 Health Report</h2>
-        BMI: ${bmiVal} (${category})<br>
-        Goal: ${goal}<br>
-        Hydration: ${water >= 0.5 ? "Good 💧" : "Drink more!"}<br><br>
-        <h2>🍽 Weekly Meal Plan</h2>
+        BMI: <b>${bmiVal}</b> (${category})<br>
+        Age Group: <b>${ageGroup}</b><br>
+        Goal: <b>${goal}</b><br>
+        Hydration: <b>${water >= 0.5 ? "Good 💧" : "Drink more!"}</b><br><br>
+
+        <h2>🍽 AI Weekly Plan</h2>
     `;
 
+    // RANDOM AI MEALS 🔥
     weekDays.forEach(day => {
-        let dayMeals = week[day];
+        let breakfastList = adjustMeal(mealsDB.breakfast, goal);
+        let lunchList = adjustMeal(mealsDB.lunch, goal);
+        let dinnerList = adjustMeal(mealsDB.dinner, goal);
+
+        let breakfast = breakfastList[Math.floor(Math.random() * breakfastList.length)];
+        let lunch = lunchList[Math.floor(Math.random() * lunchList.length)];
+        let dinner = dinnerList[Math.floor(Math.random() * dinnerList.length)];
+
         output += `
-            <p><b>${day}</b><br>
-            Breakfast: ${dayMeals[0]}<br>
-            Lunch: ${dayMeals[1]}<br>
-            Dinner: ${dayMeals[2]}</p>
+            <p>
+            <b>📅 ${day}</b><br>
+            🍳 Breakfast: ${breakfast}<br>
+            🍛 Lunch: ${lunch}<br>
+            🌙 Dinner: ${dinner}
+            </p>
         `;
     });
+
+    output += `<br>🤖 AI Tip: Avoid milk with fish/chicken. Stay consistent and exercise!`;
 
     document.getElementById("output").innerHTML = output;
 }
