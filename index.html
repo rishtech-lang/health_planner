@@ -8,19 +8,35 @@
 body{
     margin:0;
     font-family:'Segoe UI',sans-serif;
-    background:#0f172a;
+    background:linear-gradient(180deg,#0f172a,#020617);
     color:white;
 }
 
 /* HEADER */
 .header{
     text-align:center;
-    padding:20px;
+    padding:25px 10px;
 }
 
-/* 🔥 SVG LOGO CONTAINER */
+/* ⚡ LIGHTNING LOGO */
+.logo{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+}
+
+.logo-text{
+    font-size:32px;
+    font-weight:900;
+    letter-spacing:2px;
+    background:linear-gradient(90deg,#60a5fa,#38bdf8,#ffffff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
 .logo svg{
-    width:120px;
+    width:35px;
 }
 
 /* APP */
@@ -35,8 +51,8 @@ body{
     background:#1e293b;
     border-radius:20px;
     padding:15px;
-    margin-bottom:12px;
-    animation:fadeIn 0.5s;
+    margin-bottom:14px;
+    animation:fadeIn 0.5s ease;
 }
 
 /* INPUTS */
@@ -46,32 +62,46 @@ input,select,button{
     margin:6px 0;
     border-radius:12px;
     border:none;
+    font-size:14px;
 }
 
 /* BUTTON */
 button{
-    background:linear-gradient(90deg,#38bdf8,#0ea5e9);
+    background:linear-gradient(90deg,#3b82f6,#0ea5e9);
     color:white;
     font-weight:bold;
     cursor:pointer;
+    transition:0.2s;
 }
 
-button:active{transform:scale(0.95);}
+button:hover{
+    box-shadow:0 0 15px rgba(56,189,248,0.5);
+}
 
-/* TIP */
-#tip{text-align:center;opacity:0;transition:1s;}
-.show{opacity:1;}
+button:active{
+    transform:scale(0.96);
+}
 
-/* GRAPH */
-canvas{
-    background:white;
-    border-radius:12px;
+/* OUTPUT */
+#output p{
+    margin:8px 0;
+}
+
+/* TIPS */
+#tip{
+    text-align:center;
+    opacity:0;
+    transition:opacity 1s;
+    font-size:14px;
+}
+.show{
+    opacity:1;
 }
 
 /* ANIMATION */
 @keyframes fadeIn{
-from{opacity:0;transform:translateY(10px);}
-to{opacity:1;}
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
 }
 </style>
 </head>
@@ -80,20 +110,15 @@ to{opacity:1;}
 
 <div class="header">
 
-<!-- 🔥 REAL SVG LOGO -->
 <div class="logo">
-<svg viewBox="0 0 200 60">
-<defs>
-<linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-<stop offset="0%" style="stop-color:#38bdf8"/>
-<stop offset="100%" style="stop-color:#0ea5e9"/>
-</linearGradient>
-</defs>
 
-<text x="10" y="40" font-size="32" font-weight="900" fill="url(#grad)">
-BODYXP
-</text>
+<!-- ⚡ LIGHTNING ICON -->
+<svg viewBox="0 0 24 24">
+<path fill="#38bdf8" d="M13 2L3 14h7l-1 8 10-12h-7z"/>
 </svg>
+
+<div class="logo-text">BODYXP</div>
+
 </div>
 
 <div style="font-size:12px;opacity:0.7;">Level Up Your Body</div>
@@ -119,34 +144,29 @@ BODYXP
 
 <div id="output" class="card"></div>
 
-<div class="card">
-<h3>Progress</h3>
-<canvas id="chart" width="350" height="200"></canvas>
-</div>
-
 <div id="tip"></div>
 
 </div>
 
 <script>
 
-// MEALS (AGE + GOAL)
+// MEALS SYSTEM
 let meals={
 veg:{
 child:{
 lose:["Fruit bowl","Dal + rice","Soup"],
-gain:["Milkshake","Paneer + rice","Roti"],
+gain:["Milkshake","Paneer + rice","Roti + veg"],
 maintain:["Poha","Dal + roti","Veg"]
 },
 teen:{
 lose:["Oats","Salad + dal","Soup"],
-gain:["Shake","Rice + paneer","Veg"],
-maintain:["Upma","Dal","Veg"]
+gain:["Shake + nuts","Rice + paneer","Veg"],
+maintain:["Upma","Dal + roti","Veg"]
 },
 adult:{
 lose:["Oats","Grilled veg","Soup"],
-gain:["Protein shake","Paneer","Full meal"],
-maintain:["Idli","Balanced meal","Light"]
+gain:["Protein shake","Paneer + rice","Full meal"],
+maintain:["Idli","Balanced meal","Light dinner"]
 }
 },
 "non-veg":{
@@ -156,13 +176,13 @@ gain:["Eggs","Chicken + rice","Fish"],
 maintain:["Eggs","Chicken","Light"]
 },
 teen:{
-lose:["Boiled eggs","Chicken","Soup"],
+lose:["Boiled eggs","Grilled chicken","Soup"],
 gain:["Eggs","Chicken + rice","Fish"],
 maintain:["Eggs","Chicken","Light"]
 },
 adult:{
 lose:["Egg whites","Chicken salad","Soup"],
-gain:["Eggs","Chicken","Fish"],
+gain:["Eggs","Chicken + rice","Fish"],
 maintain:["Eggs","Chicken","Balanced"]
 }
 }
@@ -173,39 +193,33 @@ function bmi(w,h){
 return (w/((h/100)**2)).toFixed(2);
 }
 
-// GRAPH
-function drawChart(){
-let ctx=chart.getContext("2d");
-let data=JSON.parse(localStorage.getItem("weights"))||[];
-
-ctx.clearRect(0,0,350,200);
-
-ctx.beginPath();
-data.forEach((w,i)=>{
-let x=i*40;
-let y=200-w;
-if(i===0) ctx.moveTo(x,y);
-else ctx.lineTo(x,y);
-});
-ctx.stroke();
-}
-
 // TIPS
 let tipInterval;
-function tips(extra){
+
+function startTips(extra){
 clearInterval(tipInterval);
 
-let list=["Stay hydrated","Exercise","Eat healthy","Sleep well"];
-if(extra) list.push(extra);
+let tips=[
+"💧 Stay hydrated",
+"🏃 Stay active",
+"🥦 Eat healthy",
+"😴 Sleep well",
+"🔥 Stay consistent"
+];
+
+if(extra) tips.push(extra);
 
 let i=0;
+
 tipInterval=setInterval(()=>{
 tip.classList.remove("show");
+
 setTimeout(()=>{
-tip.innerText=list[i];
+tip.innerText=tips[i];
 tip.classList.add("show");
-i=(i+1)%list.length;
+i=(i+1)%tips.length;
 },500);
+
 },3000);
 }
 
@@ -216,9 +230,12 @@ let h=Number(height.value);
 let w=Number(weight.value);
 let t=Number(target.value);
 let waterVal=Number(water.value);
-let diet=dietSelect.value;
+let diet=document.getElementById("diet").value;
 
-if(!a||!h||!w){alert("Fill all fields");return;}
+if(!a||!h||!w){
+alert("Fill all fields!");
+return;
+}
 
 // AGE GROUP
 let group="adult";
@@ -233,29 +250,27 @@ else if(t>w) goal="gain";
 // BMI
 let b=bmi(w,h);
 
-// SAVE
+// SAVE DATA
 localStorage.setItem("age",a);
 localStorage.setItem("height",h);
 localStorage.setItem("weight",w);
 
-// GRAPH
-let arr=JSON.parse(localStorage.getItem("weights"))||[];
-arr.push(w);
-localStorage.setItem("weights",JSON.stringify(arr));
-drawChart();
-
-// MEAL
+// GET MEAL
 let meal=meals[diet][group][goal];
 
 // OUTPUT
-let out=`<h3>Health Report</h3>
+let out=`
+<h3>📊 Health Report</h3>
 BMI: ${b}<br>
-Goal: ${goal}<br><br>
+Goal: ${goal}<br>
+Water: ${waterVal}<br><br>
 
-<h3>Meal Plan</h3>`;
+<h3>📅 Weekly Plan</h3>
+`;
 
-["Mon","Tue","Wed","Thu","Fri"].forEach(d=>{
-out+=`<p><b>${d}</b><br>
+["Monday","Tuesday","Wednesday","Thursday","Friday"].forEach(day=>{
+out+=`
+<p><b>${day}</b><br>
 🍳 ${meal[0]}<br>
 🍛 ${meal[1]}<br>
 🌙 ${meal[2]}</p>`;
@@ -265,9 +280,11 @@ output.innerHTML=out;
 
 // RULE
 let extra=null;
-if(diet==="non-veg") extra="Avoid milk with fish/chicken";
+if(diet==="non-veg"){
+extra="⚠️ Avoid milk with fish/chicken";
+}
 
-tips(extra);
+startTips(extra);
 }
 
 // LOAD
@@ -275,7 +292,6 @@ window.onload=function(){
 age.value=localStorage.getItem("age")||"";
 height.value=localStorage.getItem("height")||"";
 weight.value=localStorage.getItem("weight")||"";
-drawChart();
 };
 
 </script>
