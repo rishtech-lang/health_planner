@@ -7,57 +7,78 @@
 <style>
 body{
     margin:0;
-    font-family:sans-serif;
-    background:linear-gradient(135deg,#0ea5e9,#1e3a8a);
+    font-family:'Segoe UI',sans-serif;
+    background:#0f172a;
     color:white;
+}
+
+.header{
     text-align:center;
+    padding:20px;
 }
 
 .logo{
-    font-size:32px;
-    font-weight:bold;
-    margin:15px;
-    color:#38bdf8;
+    font-size:34px;
+    font-weight:900;
+    letter-spacing:3px;
+    background:linear-gradient(90deg,#38bdf8,#0ea5e9,#ffffff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.app{
+    max-width:420px;
+    margin:auto;
+    padding:10px;
 }
 
 .card{
-    background:rgba(255,255,255,0.1);
-    margin:10px auto;
-    padding:15px;
+    background:#1e293b;
     border-radius:20px;
-    max-width:350px;
-    backdrop-filter:blur(10px);
+    padding:15px;
+    margin-bottom:12px;
+    animation:fadeIn 0.5s;
 }
 
 input,select,button{
-    width:90%;
-    padding:10px;
-    margin:6px;
-    border-radius:10px;
+    width:100%;
+    padding:12px;
+    margin:6px 0;
+    border-radius:12px;
     border:none;
 }
 
 button{
-    background:#38bdf8;
+    background:linear-gradient(90deg,#38bdf8,#0ea5e9);
     color:white;
     font-weight:bold;
     cursor:pointer;
 }
 
-#tip{
-    margin-top:10px;
-    opacity:0;
-    transition:opacity 1s;
+button:active{transform:scale(0.95);}
+
+#tip{text-align:center;opacity:0;transition:1s;}
+.show{opacity:1;}
+
+canvas{
+    background:white;
+    border-radius:12px;
 }
-.show{
-    opacity:1;
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="logo">⚡ BodyXP</div>
+<div class="header">
+<div class="logo">BODYXP</div>
+</div>
+
+<div class="app">
 
 <div class="card">
 <input id="age" placeholder="Age">
@@ -71,144 +92,187 @@ button{
 <option value="non-veg">Non-Veg</option>
 </select>
 
-<button onclick="generate()">🚀 Generate</button>
-<button onclick="startVoice()">🎤 Voice</button>
+<button onclick="generate()">Generate Plan</button>
 </div>
 
 <div id="output" class="card"></div>
+
+<div class="card">
+<h3>Progress</h3>
+<canvas id="chart" width="350" height="200"></canvas>
+</div>
+
 <div id="tip"></div>
+
+</div>
 
 <script>
 
-// BMI
-function bmi(w,h){
-    return (w/((h/100)**2)).toFixed(2);
+// MEAL SYSTEM
+let meals={
+veg:{
+child:{
+lose:["Fruit bowl","Dal + rice","Soup"],
+gain:["Milkshake","Paneer + rice","Roti + veg"],
+maintain:["Poha","Dal + roti","Veg"]
+},
+teen:{
+lose:["Oats","Salad + dal","Soup"],
+gain:["Shake + nuts","Rice + paneer","Veg"],
+maintain:["Upma","Dal + roti","Veg"]
+},
+adult:{
+lose:["Oats","Grilled veg","Soup"],
+gain:["Protein shake","Paneer + rice","Full meal"],
+maintain:["Idli","Balanced meal","Light dinner"]
 }
-
-// VOICE 🎤
-function startVoice(){
-    let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if(!SR){
-        alert("Voice not supported");
-        return;
-    }
-
-    let rec = new SR();
-    rec.start();
-
-    rec.onresult = e=>{
-        let text = e.results[0][0].transcript.toLowerCase();
-        let num = text.match(/\d+/);
-        num = num ? num[0] : "";
-
-        if(text.includes("age")) age.value = num;
-        if(text.includes("weight")) weight.value = num;
-        if(text.includes("height")) height.value = num;
-
-        alert("Heard: " + text);
-    };
+},
+"non-veg":{
+child:{
+lose:["Eggs","Chicken salad","Soup"],
+gain:["Egg + milk","Chicken + rice","Fish"],
+maintain:["Eggs","Chicken + roti","Light"]
+},
+teen:{
+lose:["Boiled eggs","Grilled chicken","Soup"],
+gain:["Eggs + milk","Chicken + rice","Fish"],
+maintain:["Eggs","Chicken","Light"]
+},
+adult:{
+lose:["Egg whites","Chicken salad","Soup"],
+gain:["Eggs","Chicken + rice","Fish"],
+maintain:["Eggs","Chicken","Balanced"]
 }
-
-// MEALS 📅 (MON-FRI DIFFERENT)
-let meals = {
-    veg:{
-        Monday:["Oats","Dal + Rice","Soup"],
-        Tuesday:["Poha","Roti + Sabzi","Salad"],
-        Wednesday:["Upma","Paneer","Soup"],
-        Thursday:["Idli","Dal","Veg meal"],
-        Friday:["Paratha","Rice","Light meal"]
-    },
-    "non-veg":{
-        Monday:["Eggs","Chicken + Rice","Soup"],
-        Tuesday:["Omelette","Fish","Light meal"],
-        Wednesday:["Eggs","Chicken","Soup"],
-        Thursday:["Toast + Eggs","Fish","Meal"],
-        Friday:["Eggs","Chicken","Soup"]
-    }
+}
 };
 
-// TIPS 💡
+// BMI
+function bmi(w,h){
+return (w/((h/100)**2)).toFixed(2);
+}
+
+// GRAPH
+function drawChart(){
+let ctx=document.getElementById("chart").getContext("2d");
+let data=JSON.parse(localStorage.getItem("weights"))||[];
+
+ctx.clearRect(0,0,350,200);
+
+if(data.length===0) return;
+
+ctx.beginPath();
+
+data.forEach((w,i)=>{
+let x=i*40;
+let y=200-w;
+
+if(i===0) ctx.moveTo(x,y);
+else ctx.lineTo(x,y);
+});
+
+ctx.stroke();
+}
+
+// TIPS
 let tipInterval;
 
 function startTips(extra){
-    clearInterval(tipInterval);
+clearInterval(tipInterval);
 
-    let tips=[
-        "💧 Drink enough water",
-        "🏃 Stay active",
-        "🥦 Eat healthy",
-        "😴 Sleep well",
-        "🔥 Stay consistent"
-    ];
+let tips=["Stay hydrated","Exercise daily","Eat healthy","Sleep well"];
 
-    if(extra) tips.push(extra);
+if(extra) tips.push(extra);
 
-    let i=0;
-    let box=document.getElementById("tip");
+let i=0;
 
-    tipInterval = setInterval(()=>{
-        box.classList.remove("show");
+tipInterval=setInterval(()=>{
+tip.classList.remove("show");
 
-        setTimeout(()=>{
-            box.innerText=tips[i];
-            box.classList.add("show");
-            i=(i+1)%tips.length;
-        },500);
+setTimeout(()=>{
+tip.innerText=tips[i];
+tip.classList.add("show");
+i=(i+1)%tips.length;
+},500);
 
-    },3000);
+},3000);
 }
 
-// MAIN 🚀
+// MAIN
 function generate(){
-    let ageVal=Number(age.value);
-    let h=Number(height.value);
-    let w=Number(weight.value);
-    let t=Number(target.value);
-    let waterVal=Number(water.value);
-    let diet=document.getElementById("diet").value;
+let a=Number(document.getElementById("age").value);
+let h=Number(document.getElementById("height").value);
+let w=Number(document.getElementById("weight").value);
+let t=Number(document.getElementById("target").value);
+let waterVal=Number(document.getElementById("water").value);
+let diet=document.getElementById("diet").value;
 
-    if(!ageVal||!h||!w){
-        alert("Fill all fields!");
-        return;
-    }
-
-    let goal="maintain";
-    if(t<w) goal="lose";
-    else if(t>w) goal="gain";
-
-    let bmiVal=bmi(w,h);
-
-    let week = meals[diet];
-
-    let output=`
-    <h3>📊 Health Report</h3>
-    BMI: ${bmiVal}<br>
-    Goal: ${goal}<br>
-    Water: ${waterVal}<br><br>
-
-    <h3>📅 Weekly Meal Plan</h3>
-    `;
-
-    for(let day in week){
-        let m = week[day];
-
-        output += `
-        <p><b>${day}</b><br>
-        🍳 ${m[0]}<br>
-        🍛 ${m[1]}<br>
-        🌙 ${m[2]}</p>`;
-    }
-
-    document.getElementById("output").innerHTML = output;
-
-    let extra=null;
-    if(diet==="non-veg"){
-        extra="⚠️ Avoid milk with fish/chicken";
-    }
-
-    startTips(extra);
+if(!a||!h||!w){
+alert("Fill all fields");
+return;
 }
+
+// AGE GROUP
+let group="adult";
+if(a<13) group="child";
+else if(a<18) group="teen";
+
+// GOAL
+let goal="maintain";
+if(t<w) goal="lose";
+else if(t>w) goal="gain";
+
+// BMI
+let b=bmi(w,h);
+
+// SAVE DATA
+localStorage.setItem("age",a);
+localStorage.setItem("height",h);
+localStorage.setItem("weight",w);
+
+// GRAPH SAVE
+let weights=JSON.parse(localStorage.getItem("weights"))||[];
+weights.push(w);
+localStorage.setItem("weights",JSON.stringify(weights));
+
+drawChart();
+
+// GET MEAL
+let meal=meals[diet][group][goal];
+
+// OUTPUT
+let out=`
+<h3>Health Report</h3>
+BMI: ${b}<br>
+Goal: ${goal}<br>
+Water: ${waterVal}<br><br>
+
+<h3>Meal Plan (Mon-Fri)</h3>
+`;
+
+["Monday","Tuesday","Wednesday","Thursday","Friday"].forEach(day=>{
+out+=`
+<p><b>${day}</b><br>
+🍳 ${meal[0]}<br>
+🍛 ${meal[1]}<br>
+🌙 ${meal[2]}</p>`;
+});
+
+document.getElementById("output").innerHTML=out;
+
+// RULE
+let extra=null;
+if(diet==="non-veg") extra="Avoid milk with fish/chicken";
+
+startTips(extra);
+}
+
+// LOAD
+window.onload=function(){
+document.getElementById("age").value=localStorage.getItem("age")||"";
+document.getElementById("height").value=localStorage.getItem("height")||"";
+document.getElementById("weight").value=localStorage.getItem("weight")||"";
+drawChart();
+};
 
 </script>
 
