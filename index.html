@@ -1,359 +1,721 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>BodyXP</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
-body{
-    margin:0;
-    font-family:'Segoe UI',sans-serif;
-    background:#0f172a;
-    color:white;
+:root {
+  --bg: #0f172a;
+  --card: #1e293b;
+  --muted: #94a3b8;
+  --primary: #38bdf8;
+  --text: #e2e8f0;
+  --ok: #22c55e;
+  --warn: #f59e0b;
+  --bad: #ef4444;
 }
 
-.header{
-    text-align:center;
-    padding:20px;
+* {
+  box-sizing: border-box;
 }
 
-.logo{
-    font-size:32px;
-    font-weight:900;
-    color:#38bdf8;
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-.app{
-    max-width:420px;
-    margin:auto;
-    padding:10px;
+.header {
+  text-align: center;
+  padding: 20px;
 }
 
-.card{
-    background:#1e293b;
-    border-radius:20px;
-    padding:15px;
-    margin-bottom:12px;
+.logo {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--primary);
 }
 
-input,select,button{
-    width:100%;
-    padding:12px;
-    margin:6px 0;
-    border-radius:12px;
-    border:none;
+.subtext {
+  color: var(--muted);
+  margin-top: 4px;
 }
 
-button{
-    background:#38bdf8;
-    color:white;
-    font-weight:bold;
+.app {
+  max-width: 520px;
+  margin: auto;
+  padding: 10px;
 }
 
-#tip{
-    text-align:center;
-    opacity:0;
-    transition:1s;
+.card {
+  background: var(--card);
+  border-radius: 20px;
+  padding: 15px;
+  margin-bottom: 12px;
 }
-.show{opacity:1;}
+
+h3 {
+  margin: 8px 0 10px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+input,
+select,
+button {
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  border-radius: 12px;
+  border: none;
+  font-size: 15px;
+}
+
+input,
+select {
+  background: #0b1220;
+  color: var(--text);
+}
+
+button {
+  background: var(--primary);
+  color: #062333;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.07);
+}
+
+.inline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+#output {
+  line-height: 1.45;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.metric {
+  background: #0b1220;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.metric .label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.metric .value {
+  font-size: 19px;
+  font-weight: 800;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 5px;
+}
+
+.badge.ok {
+  background: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.badge.warn {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+}
+
+.badge.bad {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fecaca;
+}
+
+.plan-day {
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  background: #0b1220;
+}
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #0b1220;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: 8px;
+}
+
+.list-item small {
+  color: var(--muted);
+}
+
+.workout-done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.list-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.icon-btn {
+  width: auto;
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.icon-btn.remove {
+  background: #ef4444;
+  color: white;
+}
+
+#tip {
+  text-align: center;
+  opacity: 0;
+  transition: 1s;
+  color: var(--muted);
+  margin-bottom: 15px;
+}
+
+.show {
+  opacity: 1;
+}
 </style>
 </head>
-
 <body>
+  <div class="header">
+    <div class="logo">⚡ BODYXP</div>
+    <div class="subtext">Meal Planner + Workout Tracker + BMI + Reminders</div>
+  </div>
 
-<div class="header">
-<div class="logo">⚡ BODYXP</div>
-</div>
+  <div class="app">
+    <div class="card">
+      <h3>Generate Your Plan</h3>
 
-<div class="app">
+      <div class="inline">
+        <div>
+          <label for="age">Age</label>
+          <input id="age" type="number" min="1" max="120" placeholder="Enter age" />
+        </div>
+        <div>
+          <label for="diet">Diet Type</label>
+          <select id="diet">
+            <option value="veg">Veg</option>
+            <option value="non-veg">Non-Veg</option>
+          </select>
+        </div>
+      </div>
 
-<div class="card">
-<input id="age" placeholder="Age">
-<input id="height" placeholder="Height (cm)">
-<input id="weight" placeholder="Weight">
-<input id="target" placeholder="Target Weight">
-<input id="water" placeholder="Water Intake">
+      <div class="inline">
+        <div>
+          <label for="height">Height (cm)</label>
+          <input id="height" type="number" min="40" max="260" placeholder="e.g. 170" />
+        </div>
+        <div>
+          <label for="weight">Weight (kg)</label>
+          <input id="weight" type="number" min="15" max="350" placeholder="e.g. 72" />
+        </div>
+      </div>
 
-<select id="diet">
-<option value="veg">Veg</option>
-<option value="non-veg">Non-Veg</option>
-</select>
+      <div class="inline">
+        <div>
+          <label for="target">Target Weight (kg)</label>
+          <input id="target" type="number" min="15" max="350" placeholder="e.g. 68" />
+        </div>
+        <div>
+          <label for="water">Water Intake Goal (L/day)</label>
+          <input id="water" type="number" min="0" max="10" step="0.1" placeholder="e.g. 2.5" />
+        </div>
+      </div>
 
-<button onclick="generate()">Generate Plan</button>
-</div>
+      <button type="button" onclick="generate()">Generate Plan</button>
+      <div id="formError" class="subtext"></div>
+    </div>
 
-<div id="output" class="card"></div>
-<div id="tip"></div>
+    <div id="output" class="card">Fill your details and click <b>Generate Plan</b>.</div>
 
-</div>
+    <div class="card">
+      <h3>Workout Tracker</h3>
+      <input id="workoutInput" type="text" placeholder="Add workout (e.g. 30 min walk)" />
+      <button type="button" onclick="addWorkout()">Add Workout</button>
+      <div id="workoutList"></div>
+    </div>
+
+    <div class="card">
+      <h3>Reminders</h3>
+      <input id="reminderText" type="text" placeholder="Reminder text" />
+      <div class="inline">
+        <input id="reminderTime" type="datetime-local" />
+        <button type="button" onclick="addReminder()">Add Reminder</button>
+      </div>
+      <div id="reminderList"></div>
+    </div>
+
+    <div id="tip"></div>
+  </div>
 
 <script>
-
-// FULL MEAL SYSTEM
-let meals={
-veg:{
-child:{
-lose:{
-Monday:["Fruit","Dal","Soup"],
-Tuesday:["Milk","Roti","Khichdi"],
-Wednesday:["Oats","Dal","Soup"],
-Thursday:["Apple","Paneer","Veg"],
-Friday:["Poha","Rice","Soup"]
-},
-gain:{
-Monday:["Milkshake","Paneer","Roti"],
-Tuesday:["Banana milk","Dal","Paneer"],
-Wednesday:["Oats nuts","Rice","Curd"],
-Thursday:["Smoothie","Paneer","Veg"],
-Friday:["Upma","Dal","Curd"]
-},
-maintain:{
-Monday:["Poha","Dal","Veg"],
-Tuesday:["Milk fruit","Rice","Light"],
-Wednesday:["Upma","Roti","Soup"],
-Thursday:["Oats","Paneer","Veg"],
-Friday:["Idli","Dal","Sabzi"]
-}
-},
-
-teen:{
-lose:{
-Monday:["Oats","Salad","Soup"],
-Tuesday:["Fruit","Roti","Light"],
-Wednesday:["Smoothie","Dal","Soup"],
-Thursday:["Apple","Paneer","Light"],
-Friday:["Poha","Dal","Soup"]
-},
-gain:{
-Monday:["Shake","Rice","Paneer"],
-Tuesday:["Banana shake","Dal","Paneer"],
-Wednesday:["Oats nuts","Rice","Curd"],
-Thursday:["Smoothie","Paneer","Veg"],
-Friday:["Upma","Dal","Curd"]
-},
-maintain:{
-Monday:["Poha","Dal","Veg"],
-Tuesday:["Milk","Rice","Light"],
-Wednesday:["Upma","Roti","Soup"],
-Thursday:["Oats","Paneer","Veg"],
-Friday:["Idli","Dal","Sabzi"]
-}
-},
-
-adult:{
-lose:{
-Monday:["Oats","Veg","Soup"],
-Tuesday:["Fruit","Salad","Light"],
-Wednesday:["Smoothie","Dal","Soup"],
-Thursday:["Apple","Paneer","Light"],
-Friday:["Poha","Dal","Soup"]
-},
-gain:{
-Monday:["Protein shake","Paneer","Meal"],
-Tuesday:["Banana shake","Dal","Paneer"],
-Wednesday:["Oats","Rice","Curd"],
-Thursday:["Smoothie","Paneer","Veg"],
-Friday:["Upma","Dal","Curd"]
-},
-maintain:{
-Monday:["Idli","Meal","Light"],
-Tuesday:["Poha","Dal","Veg"],
-Wednesday:["Upma","Rice","Sabzi"],
-Thursday:["Oats","Paneer","Veg"],
-Friday:["Roti","Dal","Light"]
-}
-},
-
-senior:{
-lose:{
-Monday:["Porridge","Dal","Soup"],
-Tuesday:["Fruit","Khichdi","Light"],
-Wednesday:["Oats","Dal","Soup"],
-Thursday:["Apple","Paneer","Light"],
-Friday:["Poha","Dal","Soup"]
-},
-gain:{
-Monday:["Milk","Rice","Paneer"],
-Tuesday:["Banana","Dal","Curd"],
-Wednesday:["Oats","Rice","Curd"],
-Thursday:["Smoothie","Paneer","Veg"],
-Friday:["Upma","Dal","Curd"]
-},
-maintain:{
-Monday:["Soft idli","Dal","Light"],
-Tuesday:["Poha","Dal","Veg"],
-Wednesday:["Upma","Rice","Sabzi"],
-Thursday:["Oats","Paneer","Veg"],
-Friday:["Roti","Dal","Light"]
-}
-}
-},
-
-"non-veg":{
-child:{
-lose:{
-Monday:["Eggs","Chicken","Soup"],
-Tuesday:["Egg","Chicken","Light"],
-Wednesday:["Eggs","Chicken","Soup"],
-Thursday:["Fish","Roti","Light"],
-Friday:["Eggs","Chicken","Soup"]
-},
-gain:{
-Monday:["Egg","Chicken","Fish"],
-Tuesday:["Omelette","Chicken","Egg"],
-Wednesday:["Egg","Chicken","Fish"],
-Thursday:["Chicken","Rice","Egg"],
-Friday:["Omelette","Chicken","Fish"]
-},
-maintain:{
-Monday:["Egg","Chicken","Light"],
-Tuesday:["Omelette","Chicken","Soup"],
-Wednesday:["Egg","Fish","Light"],
-Thursday:["Chicken","Soup","Light"],
-Friday:["Egg","Chicken","Light"]
-}
-},
-
-teen:{
-lose:{
-Monday:["Eggs","Chicken","Soup"],
-Tuesday:["Egg whites","Chicken","Light"],
-Wednesday:["Eggs","Chicken","Soup"],
-Thursday:["Fish","Light","Meal"],
-Friday:["Eggs","Chicken","Soup"]
-},
-gain:{
-Monday:["Eggs","Chicken","Fish"],
-Tuesday:["Omelette","Chicken","Egg"],
-Wednesday:["Eggs","Chicken","Fish"],
-Thursday:["Chicken","Rice","Egg"],
-Friday:["Omelette","Chicken","Fish"]
-},
-maintain:{
-Monday:["Egg","Chicken","Light"],
-Tuesday:["Omelette","Chicken","Soup"],
-Wednesday:["Egg","Fish","Light"],
-Thursday:["Chicken","Soup","Light"],
-Friday:["Egg","Chicken","Light"]
-}
-},
-
-adult:{
-lose:{
-Monday:["Egg whites","Chicken","Soup"],
-Tuesday:["Eggs","Chicken","Light"],
-Wednesday:["Eggs","Chicken","Soup"],
-Thursday:["Fish","Meal","Light"],
-Friday:["Eggs","Chicken","Soup"]
-},
-gain:{
-Monday:["Egg","Chicken","Fish"],
-Tuesday:["Omelette","Chicken","Egg"],
-Wednesday:["Egg","Chicken","Fish"],
-Thursday:["Chicken","Rice","Egg"],
-Friday:["Omelette","Chicken","Fish"]
-},
-maintain:{
-Monday:["Egg","Chicken","Light"],
-Tuesday:["Omelette","Chicken","Soup"],
-Wednesday:["Egg","Fish","Light"],
-Thursday:["Chicken","Soup","Light"],
-Friday:["Egg","Chicken","Light"]
-}
-},
-
-senior:{
-lose:{
-Monday:["Egg","Chicken","Soup"],
-Tuesday:["Egg","Fish","Light"],
-Wednesday:["Egg","Soup","Light"],
-Thursday:["Fish","Soft","Light"],
-Friday:["Egg","Chicken","Soup"]
-},
-gain:{
-Monday:["Egg","Chicken","Fish"],
-Tuesday:["Egg","Rice","Chicken"],
-Wednesday:["Egg","Chicken","Fish"],
-Thursday:["Fish","Rice","Egg"],
-Friday:["Egg","Chicken","Fish"]
-},
-maintain:{
-Monday:["Egg","Chicken","Light"],
-Tuesday:["Egg","Rice","Soup"],
-Wednesday:["Egg","Fish","Light"],
-Thursday:["Chicken","Soup","Light"],
-Friday:["Egg","Rice","Light"]
-}
-}
-}
+const meals = {
+  veg: {
+    child: {
+      lose: {
+        Monday: ['Fruit', 'Dal', 'Soup'],
+        Tuesday: ['Milk', 'Roti', 'Khichdi'],
+        Wednesday: ['Oats', 'Dal', 'Soup'],
+        Thursday: ['Apple', 'Paneer', 'Veg'],
+        Friday: ['Poha', 'Rice', 'Soup']
+      },
+      gain: {
+        Monday: ['Milkshake', 'Paneer', 'Roti'],
+        Tuesday: ['Banana milk', 'Dal', 'Paneer'],
+        Wednesday: ['Oats nuts', 'Rice', 'Curd'],
+        Thursday: ['Smoothie', 'Paneer', 'Veg'],
+        Friday: ['Upma', 'Dal', 'Curd']
+      },
+      maintain: {
+        Monday: ['Poha', 'Dal', 'Veg'],
+        Tuesday: ['Milk fruit', 'Rice', 'Light'],
+        Wednesday: ['Upma', 'Roti', 'Soup'],
+        Thursday: ['Oats', 'Paneer', 'Veg'],
+        Friday: ['Idli', 'Dal', 'Sabzi']
+      }
+    },
+    teen: {
+      lose: {
+        Monday: ['Oats', 'Salad', 'Soup'],
+        Tuesday: ['Fruit', 'Roti', 'Light'],
+        Wednesday: ['Smoothie', 'Dal', 'Soup'],
+        Thursday: ['Apple', 'Paneer', 'Light'],
+        Friday: ['Poha', 'Dal', 'Soup']
+      },
+      gain: {
+        Monday: ['Shake', 'Rice', 'Paneer'],
+        Tuesday: ['Banana shake', 'Dal', 'Paneer'],
+        Wednesday: ['Oats nuts', 'Rice', 'Curd'],
+        Thursday: ['Smoothie', 'Paneer', 'Veg'],
+        Friday: ['Upma', 'Dal', 'Curd']
+      },
+      maintain: {
+        Monday: ['Poha', 'Dal', 'Veg'],
+        Tuesday: ['Milk', 'Rice', 'Light'],
+        Wednesday: ['Upma', 'Roti', 'Soup'],
+        Thursday: ['Oats', 'Paneer', 'Veg'],
+        Friday: ['Idli', 'Dal', 'Sabzi']
+      }
+    },
+    adult: {
+      lose: {
+        Monday: ['Oats', 'Veg', 'Soup'],
+        Tuesday: ['Fruit', 'Salad', 'Light'],
+        Wednesday: ['Smoothie', 'Dal', 'Soup'],
+        Thursday: ['Apple', 'Paneer', 'Light'],
+        Friday: ['Poha', 'Dal', 'Soup']
+      },
+      gain: {
+        Monday: ['Protein shake', 'Paneer', 'Meal'],
+        Tuesday: ['Banana shake', 'Dal', 'Paneer'],
+        Wednesday: ['Oats', 'Rice', 'Curd'],
+        Thursday: ['Smoothie', 'Paneer', 'Veg'],
+        Friday: ['Upma', 'Dal', 'Curd']
+      },
+      maintain: {
+        Monday: ['Idli', 'Meal', 'Light'],
+        Tuesday: ['Poha', 'Dal', 'Veg'],
+        Wednesday: ['Upma', 'Rice', 'Sabzi'],
+        Thursday: ['Oats', 'Paneer', 'Veg'],
+        Friday: ['Roti', 'Dal', 'Light']
+      }
+    },
+    senior: {
+      lose: {
+        Monday: ['Porridge', 'Dal', 'Soup'],
+        Tuesday: ['Fruit', 'Khichdi', 'Light'],
+        Wednesday: ['Oats', 'Dal', 'Soup'],
+        Thursday: ['Apple', 'Paneer', 'Light'],
+        Friday: ['Poha', 'Dal', 'Soup']
+      },
+      gain: {
+        Monday: ['Milk', 'Rice', 'Paneer'],
+        Tuesday: ['Banana', 'Dal', 'Curd'],
+        Wednesday: ['Oats', 'Rice', 'Curd'],
+        Thursday: ['Smoothie', 'Paneer', 'Veg'],
+        Friday: ['Upma', 'Dal', 'Curd']
+      },
+      maintain: {
+        Monday: ['Soft idli', 'Dal', 'Light'],
+        Tuesday: ['Poha', 'Dal', 'Veg'],
+        Wednesday: ['Upma', 'Rice', 'Sabzi'],
+        Thursday: ['Oats', 'Paneer', 'Veg'],
+        Friday: ['Roti', 'Dal', 'Light']
+      }
+    }
+  },
+  'non-veg': {
+    child: {
+      lose: {
+        Monday: ['Eggs', 'Chicken', 'Soup'],
+        Tuesday: ['Egg', 'Chicken', 'Light'],
+        Wednesday: ['Eggs', 'Chicken', 'Soup'],
+        Thursday: ['Fish', 'Roti', 'Light'],
+        Friday: ['Eggs', 'Chicken', 'Soup']
+      },
+      gain: {
+        Monday: ['Egg', 'Chicken', 'Fish'],
+        Tuesday: ['Omelette', 'Chicken', 'Egg'],
+        Wednesday: ['Egg', 'Chicken', 'Fish'],
+        Thursday: ['Chicken', 'Rice', 'Egg'],
+        Friday: ['Omelette', 'Chicken', 'Fish']
+      },
+      maintain: {
+        Monday: ['Egg', 'Chicken', 'Light'],
+        Tuesday: ['Omelette', 'Chicken', 'Soup'],
+        Wednesday: ['Egg', 'Fish', 'Light'],
+        Thursday: ['Chicken', 'Soup', 'Light'],
+        Friday: ['Egg', 'Chicken', 'Light']
+      }
+    },
+    teen: {
+      lose: {
+        Monday: ['Eggs', 'Chicken', 'Soup'],
+        Tuesday: ['Egg whites', 'Chicken', 'Light'],
+        Wednesday: ['Eggs', 'Chicken', 'Soup'],
+        Thursday: ['Fish', 'Light', 'Meal'],
+        Friday: ['Eggs', 'Chicken', 'Soup']
+      },
+      gain: {
+        Monday: ['Eggs', 'Chicken', 'Fish'],
+        Tuesday: ['Omelette', 'Chicken', 'Egg'],
+        Wednesday: ['Eggs', 'Chicken', 'Fish'],
+        Thursday: ['Chicken', 'Rice', 'Egg'],
+        Friday: ['Omelette', 'Chicken', 'Fish']
+      },
+      maintain: {
+        Monday: ['Egg', 'Chicken', 'Light'],
+        Tuesday: ['Omelette', 'Chicken', 'Soup'],
+        Wednesday: ['Egg', 'Fish', 'Light'],
+        Thursday: ['Chicken', 'Soup', 'Light'],
+        Friday: ['Egg', 'Chicken', 'Light']
+      }
+    },
+    adult: {
+      lose: {
+        Monday: ['Egg whites', 'Chicken', 'Soup'],
+        Tuesday: ['Eggs', 'Chicken', 'Light'],
+        Wednesday: ['Eggs', 'Chicken', 'Soup'],
+        Thursday: ['Fish', 'Meal', 'Light'],
+        Friday: ['Eggs', 'Chicken', 'Soup']
+      },
+      gain: {
+        Monday: ['Egg', 'Chicken', 'Fish'],
+        Tuesday: ['Omelette', 'Chicken', 'Egg'],
+        Wednesday: ['Egg', 'Chicken', 'Fish'],
+        Thursday: ['Chicken', 'Rice', 'Egg'],
+        Friday: ['Omelette', 'Chicken', 'Fish']
+      },
+      maintain: {
+        Monday: ['Egg', 'Chicken', 'Light'],
+        Tuesday: ['Omelette', 'Chicken', 'Soup'],
+        Wednesday: ['Egg', 'Fish', 'Light'],
+        Thursday: ['Chicken', 'Soup', 'Light'],
+        Friday: ['Egg', 'Chicken', 'Light']
+      }
+    },
+    senior: {
+      lose: {
+        Monday: ['Egg', 'Chicken', 'Soup'],
+        Tuesday: ['Egg', 'Fish', 'Light'],
+        Wednesday: ['Egg', 'Soup', 'Light'],
+        Thursday: ['Fish', 'Soft', 'Light'],
+        Friday: ['Egg', 'Chicken', 'Soup']
+      },
+      gain: {
+        Monday: ['Egg', 'Chicken', 'Fish'],
+        Tuesday: ['Egg', 'Rice', 'Chicken'],
+        Wednesday: ['Egg', 'Chicken', 'Fish'],
+        Thursday: ['Fish', 'Rice', 'Egg'],
+        Friday: ['Egg', 'Chicken', 'Fish']
+      },
+      maintain: {
+        Monday: ['Egg', 'Chicken', 'Light'],
+        Tuesday: ['Egg', 'Rice', 'Soup'],
+        Wednesday: ['Egg', 'Fish', 'Light'],
+        Thursday: ['Chicken', 'Soup', 'Light'],
+        Friday: ['Egg', 'Rice', 'Light']
+      }
+    }
+  }
 };
 
-// BMI
-function bmi(w,h){
-return (w/((h/100)**2)).toFixed(2);
+const workoutStorageKey = 'bodyxp_workouts';
+const reminderStorageKey = 'bodyxp_reminders';
+let tipsIntervalId = null;
+
+function bmi(weightKg, heightCm) {
+  return weightKg / ((heightCm / 100) ** 2);
 }
 
-// TIPS
-function tips(extra){
-let list=["Stay hydrated","Exercise","Eat healthy","Sleep well"];
-if(extra) list.push(extra);
-
-let i=0;
-setInterval(()=>{
-tip.classList.remove("show");
-setTimeout(()=>{
-tip.innerText=list[i];
-tip.classList.add("show");
-i=(i+1)%list.length;
-},500);
-},3000);
+function getBmiStatus(value) {
+  if (value < 18.5) return { label: 'Underweight', cls: 'warn' };
+  if (value < 25) return { label: 'Healthy', cls: 'ok' };
+  if (value < 30) return { label: 'Overweight', cls: 'warn' };
+  return { label: 'Obese', cls: 'bad' };
 }
 
-// MAIN
-function generate(){
-let a=Number(age.value);
-let h=Number(height.value);
-let w=Number(weight.value);
-let t=Number(target.value);
-let diet=document.getElementById("diet").value;
-
-// AGE GROUP
-let group="adult";
-if(a<13) group="child";
-else if(a<18) group="teen";
-else if(a<80) group="adult";
-else group="senior";
-
-// GOAL
-let goal="maintain";
-if(t<w) goal="lose";
-else if(t>w) goal="gain";
-
-// GET WEEK
-let week=meals[diet][group][goal];
-
-// OUTPUT
-let out="<h3>Meal Plan</h3>";
-
-["Monday","Tuesday","Wednesday","Thursday","Friday"].forEach(day=>{
-let m=week[day];
-
-out+=`<p><b>${day}</b><br>
-🍳 ${m[0]}<br>
-🍛 ${m[1]}<br>
-🌙 ${m[2]}</p>`;
-});
-
-output.innerHTML=out;
-
-// RULE
-let extra=null;
-if(diet==="non-veg") extra="Avoid milk with fish";
-
-tips(extra);
+function getHeightStatus(heightCm) {
+  if (heightCm < 150) return { label: 'Short Height Range', cls: 'warn' };
+  if (heightCm <= 185) return { label: 'Average Height Range', cls: 'ok' };
+  return { label: 'Tall Height Range', cls: 'ok' };
 }
 
+function validateInputs(age, height, weight, target) {
+  if (!Number.isFinite(age) || age < 1 || age > 120) return 'Please enter a valid age (1-120).';
+  if (!Number.isFinite(height) || height < 40 || height > 260) return 'Please enter a valid height in cm (40-260).';
+  if (!Number.isFinite(weight) || weight < 15 || weight > 350) return 'Please enter a valid weight in kg (15-350).';
+  if (!Number.isFinite(target) || target < 15 || target > 350) return 'Please enter a valid target weight in kg (15-350).';
+  return '';
+}
+
+function renderHealthSummary(height, weight) {
+  const bmiValue = bmi(weight, height);
+  const bmiInfo = getBmiStatus(bmiValue);
+  const heightInfo = getHeightStatus(height);
+
+  return `
+    <h3>Health Summary</h3>
+    <div class="metric-grid">
+      <div class="metric">
+        <div class="label">BMI</div>
+        <div class="value">${bmiValue.toFixed(2)}</div>
+        <span class="badge ${bmiInfo.cls}">${bmiInfo.label}</span>
+      </div>
+      <div class="metric">
+        <div class="label">Height Status</div>
+        <div class="value">${height} cm</div>
+        <span class="badge ${heightInfo.cls}">${heightInfo.label}</span>
+      </div>
+    </div>
+  `;
+}
+
+function tips(extra) {
+  const tipEl = document.getElementById('tip');
+  const list = ['Stay hydrated', 'Exercise daily', 'Eat balanced meals', 'Sleep 7-8 hours'];
+  if (extra) list.push(extra);
+
+  let i = 0;
+  tipEl.textContent = list[0];
+  tipEl.classList.add('show');
+
+  if (tipsIntervalId) {
+    clearInterval(tipsIntervalId);
+  }
+
+  tipsIntervalId = setInterval(() => {
+    tipEl.classList.remove('show');
+    setTimeout(() => {
+      i = (i + 1) % list.length;
+      tipEl.textContent = list[i];
+      tipEl.classList.add('show');
+    }, 300);
+  }, 3000);
+}
+
+function generate() {
+  const age = Number(document.getElementById('age').value);
+  const height = Number(document.getElementById('height').value);
+  const weight = Number(document.getElementById('weight').value);
+  const target = Number(document.getElementById('target').value);
+  const water = Number(document.getElementById('water').value || 0);
+  const diet = document.getElementById('diet').value;
+  const formError = document.getElementById('formError');
+  const output = document.getElementById('output');
+
+  const errorMsg = validateInputs(age, height, weight, target);
+  if (errorMsg) {
+    formError.textContent = errorMsg;
+    return;
+  }
+  formError.textContent = '';
+
+  let group = 'adult';
+  if (age < 13) group = 'child';
+  else if (age < 18) group = 'teen';
+  else if (age >= 80) group = 'senior';
+
+  let goal = 'maintain';
+  if (target < weight) goal = 'lose';
+  else if (target > weight) goal = 'gain';
+
+  const week = meals[diet][group][goal];
+
+  let out = renderHealthSummary(height, weight);
+  out += `<h3>Meal Plan (${goal.toUpperCase()})</h3>`;
+
+  ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].forEach(day => {
+    const m = week[day];
+    out += `
+      <div class="plan-day">
+        <b>${day}</b><br>
+        🍳 ${m[0]}<br>
+        🍛 ${m[1]}<br>
+        🌙 ${m[2]}
+      </div>
+    `;
+  });
+
+  if (water > 0) {
+    out += `<p><b>Daily Water Goal:</b> ${water.toFixed(1)} L/day</p>`;
+  }
+
+  output.innerHTML = out;
+
+  let extra = null;
+  if (diet === 'non-veg') extra = 'Tip: Avoid milk with fish in the same meal.';
+  tips(extra);
+}
+
+function getStoredArray(key) {
+  const raw = localStorage.getItem(key);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function setStoredArray(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function renderWorkouts() {
+  const workouts = getStoredArray(workoutStorageKey);
+  const listEl = document.getElementById('workoutList');
+
+  if (!workouts.length) {
+    listEl.innerHTML = '<small class="subtext">No workouts yet.</small>';
+    return;
+  }
+
+  listEl.innerHTML = workouts.map((item, i) => `
+    <div class="list-item">
+      <div class="${item.done ? 'workout-done' : ''}">${item.text}</div>
+      <div class="list-actions">
+        <button class="icon-btn" type="button" onclick="toggleWorkout(${i})">${item.done ? 'Undo' : 'Done'}</button>
+        <button class="icon-btn remove" type="button" onclick="removeWorkout(${i})">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addWorkout() {
+  const input = document.getElementById('workoutInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  const workouts = getStoredArray(workoutStorageKey);
+  workouts.push({ text, done: false, createdAt: new Date().toISOString() });
+  setStoredArray(workoutStorageKey, workouts);
+  input.value = '';
+  renderWorkouts();
+}
+
+function toggleWorkout(index) {
+  const workouts = getStoredArray(workoutStorageKey);
+  if (!workouts[index]) return;
+  workouts[index].done = !workouts[index].done;
+  setStoredArray(workoutStorageKey, workouts);
+  renderWorkouts();
+}
+
+function removeWorkout(index) {
+  const workouts = getStoredArray(workoutStorageKey);
+  workouts.splice(index, 1);
+  setStoredArray(workoutStorageKey, workouts);
+  renderWorkouts();
+}
+
+function renderReminders() {
+  const reminders = getStoredArray(reminderStorageKey)
+    .sort((a, b) => new Date(a.time) - new Date(b.time));
+
+  const listEl = document.getElementById('reminderList');
+  if (!reminders.length) {
+    listEl.innerHTML = '<small class="subtext">No reminders yet.</small>';
+    return;
+  }
+
+  listEl.innerHTML = reminders.map((r, i) => {
+    const dateText = new Date(r.time).toLocaleString();
+    return `
+      <div class="list-item">
+        <div>
+          <div>${r.text}</div>
+          <small>${dateText}</small>
+        </div>
+        <button class="icon-btn remove" type="button" onclick="removeReminder(${i})">Delete</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function addReminder() {
+  const textEl = document.getElementById('reminderText');
+  const timeEl = document.getElementById('reminderTime');
+  const text = textEl.value.trim();
+  const time = timeEl.value;
+
+  if (!text || !time) return;
+
+  const reminders = getStoredArray(reminderStorageKey);
+  reminders.push({ text, time, createdAt: new Date().toISOString() });
+  setStoredArray(reminderStorageKey, reminders);
+
+  textEl.value = '';
+  timeEl.value = '';
+  renderReminders();
+}
+
+function removeReminder(index) {
+  const reminders = getStoredArray(reminderStorageKey)
+    .sort((a, b) => new Date(a.time) - new Date(b.time));
+  reminders.splice(index, 1);
+  setStoredArray(reminderStorageKey, reminders);
+  renderReminders();
+}
+
+renderWorkouts();
+renderReminders();
+tips();
 </script>
-
 </body>
 </html>
