@@ -477,6 +477,32 @@ const meals = {
 const workoutStorageKey = 'bodyxp_workouts';
 const reminderStorageKey = 'bodyxp_reminders';
 let tipsIntervalId = null;
+const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const mealAlternatives = {
+  Fruit: ['Fruit Bowl', 'Papaya + Apple'],
+  Dal: ['Moong Dal', 'Mixed Lentil Dal'],
+  Soup: ['Vegetable Soup', 'Tomato Soup'],
+  Milk: ['Warm Milk', 'Almond Milk'],
+  Roti: ['Multi-grain Roti', 'Phulka'],
+  Khichdi: ['Moong Khichdi', 'Vegetable Khichdi'],
+  Oats: ['Oats Porridge', 'Overnight Oats'],
+  Apple: ['Apple Slices', 'Apple + Nuts'],
+  Paneer: ['Grilled Paneer', 'Paneer Bhurji'],
+  Veg: ['Sauteed Veggies', 'Mixed Veg Curry'],
+  Poha: ['Veg Poha', 'Peanut Poha'],
+  Rice: ['Brown Rice', 'Jeera Rice'],
+  Curd: ['Plain Curd', 'Greek Yogurt'],
+  Upma: ['Vegetable Upma', 'Rava Upma'],
+  Idli: ['Idli + Sambar', 'Ragi Idli'],
+  Sabzi: ['Seasonal Sabzi', 'Dry Veg Sabzi'],
+  Eggs: ['Boiled Eggs', 'Scrambled Eggs'],
+  Egg: ['Boiled Egg', 'Masala Egg'],
+  Chicken: ['Grilled Chicken', 'Chicken Stew'],
+  Fish: ['Grilled Fish', 'Steamed Fish'],
+  Omelette: ['Veg Omelette', 'Cheese Omelette'],
+  'Protein shake': ['Protein Smoothie', 'Milk + Whey Shake'],
+  Smoothie: ['Banana Smoothie', 'Berry Smoothie']
+};
 
 function bmi(weightKg, heightCm) {
   return weightKg / ((heightCm / 100) ** 2);
@@ -501,6 +527,21 @@ function validateInputs(age, height, weight, target) {
   if (!Number.isFinite(weight) || weight < 15 || weight > 350) return 'Please enter a valid weight in kg (15-350).';
   if (!Number.isFinite(target) || target < 15 || target > 350) return 'Please enter a valid target weight in kg (15-350).';
   return '';
+}
+
+function pickMealVariant(mealName) {
+  const options = [mealName, ...(mealAlternatives[mealName] || [])];
+  const randomIndex = Math.floor(Math.random() * options.length);
+  return options[randomIndex];
+}
+
+function buildDynamicWeek(week) {
+  const dynamicWeek = {};
+  weekdays.forEach(day => {
+    const dayMeals = week[day] || [];
+    dynamicWeek[day] = dayMeals.map(meal => pickMealVariant(meal));
+  });
+  return dynamicWeek;
 }
 
 function renderHealthSummary(height, weight) {
@@ -575,12 +616,15 @@ function generate() {
   else if (target > weight) goal = 'gain';
 
   const week = meals[diet][group][goal];
+  const dynamicWeek = buildDynamicWeek(week);
+  const groupLabel = group.charAt(0).toUpperCase() + group.slice(1);
 
   let out = renderHealthSummary(height, weight);
-  out += `<h3>Meal Plan (${goal.toUpperCase()})</h3>`;
+  out += `<h3>Meal Plan for - ${groupLabel}</h3>`;
+  out += `<p><b>Goal:</b> ${goal.toUpperCase()}</p>`;
 
-  ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].forEach(day => {
-    const m = week[day];
+  weekdays.forEach(day => {
+    const m = dynamicWeek[day];
     out += `
       <div class="plan-day">
         <b>${day}</b><br>
