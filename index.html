@@ -33,9 +33,58 @@ body {
 }
 
 .logo {
-  font-size: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 34px;
   font-weight: 900;
-  color: var(--primary);
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #38bdf8, #22d3ee, #a78bfa, #38bdf8);
+  background-size: 220% 220%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: logoFlow 6s ease infinite;
+}
+
+.logo .pulse {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #67e8f9, #0284c7);
+  box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+  animation: pulseRing 2s infinite;
+  color: white;
+  font-size: 22px;
+}
+
+.logo .brand-main {
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+@keyframes logoFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.65);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 14px rgba(56, 189, 248, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+  }
 }
 
 .subtext {
@@ -212,7 +261,10 @@ button:hover {
 </head>
 <body>
   <div class="header">
-    <div class="logo">⚡ BODYXP</div>
+    <div class="logo">
+      <span class="pulse">⚡</span>
+      <span class="brand-main">BODYXP FITLAB</span>
+    </div>
     <div class="subtext">Meal Planner + Workout Tracker + BMI + Reminders</div>
   </div>
 
