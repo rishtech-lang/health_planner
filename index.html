@@ -68,15 +68,18 @@ body::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #7dd3fc, #0284c7);
-  box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
+  width: auto;
+  height: auto;
+  padding: 2px 4px;
+  box-shadow: none;
   animation: pulseRing 2s infinite;
   position: relative;
-  font-size: 22px;
-  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
+  font-size: 30px;
+  filter: drop-shadow(0 0 8px rgba(76, 201, 240, 0.95));
+  text-shadow:
+    0 0 6px rgba(125, 211, 252, 0.95),
+    0 0 14px rgba(56, 189, 248, 0.8),
+    0 0 22px rgba(6, 182, 212, 0.5);
 }
 
 .logo .brand-main {
@@ -92,15 +95,15 @@ body::before {
 @keyframes pulseRing {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.65);
+    filter: drop-shadow(0 0 6px rgba(76, 201, 240, 0.8));
   }
   70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 14px rgba(56, 189, 248, 0);
+    transform: scale(1.13);
+    filter: drop-shadow(0 0 14px rgba(76, 201, 240, 1));
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+    filter: drop-shadow(0 0 6px rgba(76, 201, 240, 0.8));
   }
 }
 
