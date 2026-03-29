@@ -71,19 +71,12 @@ body::before {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: conic-gradient(from 0deg, #7dd3fc, #4cc9f0, #38bdf8, #7dd3fc);
+  background: radial-gradient(circle at 30% 30%, #7dd3fc, #0284c7);
   box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.7);
   animation: pulseRing 2s infinite;
   position: relative;
-}
-
-.logo .pulse::before {
-  content: '';
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #082f49;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+  font-size: 22px;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35));
 }
 
 .logo .brand-main {
@@ -333,7 +326,7 @@ button:hover {
   </div>
   <div class="header">
     <div class="logo">
-      <span class="pulse" aria-hidden="true"></span>
+      <span class="pulse" aria-hidden="true">💪</span>
       <span class="brand-main">BODYXP</span>
     </div>
     <div class="subtext">🥣 Meal Planner + 🏋🏻‍♀️Workout Tracker + 📊BMI + ⏰Reminders</div>
