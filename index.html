@@ -6,15 +6,15 @@
 <title>BodyXP</title>
 <style>
 :root {
-  --bg: #021024;
-  --card: #0b2a4a;
-  --muted: #9ec5dd;
-  --primary: #4cc9f0;
-  --text: #e8f6ff;
-  --ok: #34d399;
-  --warn: #fbbf24;
-  --bad: #fb7185;
-  --outline: rgba(105, 216, 255, 0.3);
+  --bg: #03132a;
+  --card: #0a2646;
+  --muted: #a8c8e6;
+  --primary: #5cc8ff;
+  --text: #ebf7ff;
+  --ok: #60a5fa;
+  --warn: #3b82f6;
+  --bad: #1d4ed8;
+  --outline: rgba(125, 187, 255, 0.34);
 }
 
 * {
@@ -25,9 +25,9 @@ body {
   margin: 0;
   font-family: 'Segoe UI', sans-serif;
   background:
-    radial-gradient(circle at 15% 20%, rgba(33, 131, 220, 0.28), transparent 45%),
-    radial-gradient(circle at 85% 10%, rgba(76, 201, 240, 0.22), transparent 40%),
-    radial-gradient(circle at 50% 80%, rgba(4, 86, 153, 0.26), transparent 45%),
+    radial-gradient(circle at 15% 20%, rgba(45, 117, 199, 0.33), transparent 45%),
+    radial-gradient(circle at 85% 10%, rgba(96, 165, 250, 0.24), transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(29, 78, 216, 0.27), transparent 45%),
     var(--bg);
   color: var(--text);
   min-height: 100vh;
@@ -56,7 +56,7 @@ body::before {
   font-size: 34px;
   font-weight: 900;
   letter-spacing: 1px;
-  background: linear-gradient(90deg, #6ee7ff, #4cc9f0, #67e8f9, #6ee7ff);
+  background: linear-gradient(90deg, #93c5fd, #60a5fa, #3b82f6, #93c5fd);
   background-size: 220% 220%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -82,7 +82,7 @@ body::before {
 }
 
 .logo .brand-main {
-  text-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+  text-shadow: 0 0 12px rgba(96, 165, 250, 0.45);
 }
 
 @keyframes logoFlow {
@@ -156,7 +156,7 @@ button {
 
 input,
 select {
-  background: #061b36;
+  background: #08203f;
   color: var(--text);
   border: 1px solid rgba(158, 197, 221, 0.38);
 }
@@ -215,18 +215,18 @@ button:hover {
 }
 
 .badge.ok {
-  background: rgba(34, 197, 94, 0.2);
-  color: #86efac;
+  background: rgba(96, 165, 250, 0.2);
+  color: #bfdbfe;
 }
 
 .badge.warn {
-  background: rgba(245, 158, 11, 0.2);
-  color: #fde68a;
+  background: rgba(59, 130, 246, 0.22);
+  color: #bfdbfe;
 }
 
 .badge.bad {
-  background: rgba(239, 68, 68, 0.2);
-  color: #fecaca;
+  background: rgba(29, 78, 216, 0.26);
+  color: #dbeafe;
 }
 
 .plan-day {
@@ -270,7 +270,7 @@ button:hover {
 }
 
 .icon-btn.remove {
-  background: #f43f5e;
+  background: #2563eb;
   color: white;
 }
 
