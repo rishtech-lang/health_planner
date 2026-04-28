@@ -145,7 +145,8 @@ label {
 
 input,
 select,
-button {
+button,
+textarea {
   width: 100%;
   padding: 12px;
   margin: 6px 0;
@@ -159,6 +160,18 @@ select {
   background: #08203f;
   color: var(--text);
   border: 1px solid rgba(158, 197, 221, 0.38);
+}
+
+textarea {
+  width: 100%;
+  min-height: 90px;
+  resize: vertical;
+  background: #08203f;
+  color: var(--text);
+  border: 1px solid rgba(158, 197, 221, 0.38);
+  border-radius: 12px;
+  padding: 12px;
+  margin: 6px 0;
 }
 
 button {
@@ -402,6 +415,23 @@ button:hover {
       <div id="reminderList"></div>
     </div>
 
+    <div class="card">
+      <h3>Feedbacks</h3>
+      <input id="feedbackName" type="text" placeholder="Your name" />
+      <textarea id="feedbackMessage" placeholder="Tell us how the app feels and what to improve"></textarea>
+      <div class="inline">
+        <select id="feedbackRating">
+          <option value="5">⭐ 5 - Excellent</option>
+          <option value="4">⭐ 4 - Good</option>
+          <option value="3">⭐ 3 - Okay</option>
+          <option value="2">⭐ 2 - Needs work</option>
+          <option value="1">⭐ 1 - Poor</option>
+        </select>
+        <button type="button" onclick="addFeedback()">Submit Feedback</button>
+      </div>
+      <div id="feedbackList"></div>
+    </div>
+
     <div id="tip"></div>
   </div>
 
@@ -599,6 +629,10 @@ const meals = {
 
 const workoutStorageKey = 'bodyxp_workouts';
 const reminderStorageKey = 'bodyxp_reminders';
+const feedbackStorageKey = 'bodyxp_feedbacks';
+const usageCountKey = 'bodyxp_user_count';
+const userRegisteredKey = 'bodyxp_user_registered';
+const totalVisitsKey = 'bodyxp_total_visits';
 let tipsIntervalId = null;
 const weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const mealAlternatives = {
@@ -784,6 +818,18 @@ function setStoredArray(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+function registerUsage() {
+  const totalVisits = Number(localStorage.getItem(totalVisitsKey) || 0) + 1;
+  localStorage.setItem(totalVisitsKey, String(totalVisits));
+
+  const isRegistered = localStorage.getItem(userRegisteredKey) === 'true';
+  if (!isRegistered) {
+    const currentCount = Number(localStorage.getItem(usageCountKey) || 0) + 1;
+    localStorage.setItem(usageCountKey, String(currentCount));
+    localStorage.setItem(userRegisteredKey, 'true');
+  }
+}
+
 function renderWorkouts() {
   const workouts = getStoredArray(workoutStorageKey);
   const listEl = document.getElementById('workoutList');
@@ -880,8 +926,56 @@ function removeReminder(index) {
   renderReminders();
 }
 
+function renderFeedbacks() {
+  const feedbacks = getStoredArray(feedbackStorageKey)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  const listEl = document.getElementById('feedbackList');
+
+  if (!feedbacks.length) {
+    listEl.innerHTML = '<small class="subtext">No feedback yet.</small>';
+    return;
+  }
+
+  listEl.innerHTML = feedbacks.map((entry) => `
+    <div class="list-item">
+      <div>
+        <div><b>${entry.name}</b> • ${'⭐'.repeat(Number(entry.rating || 5))}</div>
+        <small>${entry.message}</small>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addFeedback() {
+  const nameEl = document.getElementById('feedbackName');
+  const messageEl = document.getElementById('feedbackMessage');
+  const ratingEl = document.getElementById('feedbackRating');
+
+  const name = (nameEl.value || '').trim() || 'Anonymous';
+  const message = (messageEl.value || '').trim();
+  const rating = Number(ratingEl.value || 5);
+
+  if (!message) return;
+
+  const feedbacks = getStoredArray(feedbackStorageKey);
+  feedbacks.push({
+    name,
+    message,
+    rating,
+    createdAt: new Date().toISOString()
+  });
+  setStoredArray(feedbackStorageKey, feedbacks);
+
+  nameEl.value = '';
+  messageEl.value = '';
+  ratingEl.value = '5';
+  renderFeedbacks();
+}
+
+registerUsage();
 renderWorkouts();
 renderReminders();
+renderFeedbacks();
 tips();
 </script>
 </body>
