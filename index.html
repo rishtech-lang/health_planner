@@ -1,361 +1,721 @@
+
 <!DOCTYPE html>
+<!DOCTYPE html>
+<html>
 <html lang="en">
 <head>
+<head>
+<title>BodyXP</title>
 <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>BodyXP</title>
 <style>
+<style>
+body{
 :root {
+    margin:0;
   --bg: #03132a;
+    font-family:'Segoe UI',sans-serif;
   --card: #0a2646;
+    background:#0f172a;
   --muted: #a8c8e6;
+    color:white;
   --primary: #5cc8ff;
+}
   --text: #ebf7ff;
+
   --ok: #60a5fa;
+.header{
   --warn: #3b82f6;
+    text-align:center;
   --bad: #1d4ed8;
+    padding:20px;
   --outline: rgba(125, 187, 255, 0.34);
 }
+}
 
+
+.logo{
 * {
+    font-size:32px;
   box-sizing: border-box;
+    font-weight:900;
 }
+    color:#38bdf8;
 
+}
 body {
+
   margin: 0;
+.app{
   font-family: 'Segoe UI', sans-serif;
+    max-width:420px;
   background:
+    margin:auto;
     radial-gradient(circle at 15% 20%, rgba(45, 117, 199, 0.33), transparent 45%),
+    padding:10px;
     radial-gradient(circle at 85% 10%, rgba(96, 165, 250, 0.24), transparent 40%),
+}
     radial-gradient(circle at 50% 80%, rgba(29, 78, 216, 0.27), transparent 45%),
+
     var(--bg);
+.card{
   color: var(--text);
+    background:#1e293b;
   min-height: 100vh;
+    border-radius:20px;
   overflow-x: hidden;
+    padding:15px;
+}
+    margin-bottom:12px;
+
+}
+body::before {
+
+  content: '';
+input,select,button{
+  position: fixed;
+    width:100%;
+  inset: 0;
+    padding:12px;
+  pointer-events: none;
+    margin:6px 0;
+  background: linear-gradient(135deg, rgba(76, 201, 240, 0.05), rgba(13, 71, 161, 0.05));
+    border-radius:12px;
+  z-index: -2;
+    border:none;
+}
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(135deg, rgba(76, 201, 240, 0.05), rgba(13, 71, 161, 0.05));
-  z-index: -2;
-}
 
 .header {
+button{
   text-align: center;
+    background:#38bdf8;
   padding: 28px 20px 16px;
+    color:white;
 }
+    font-weight:bold;
 
-.logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  font-size: 34px;
-  font-weight: 900;
-  letter-spacing: 1px;
-  background: linear-gradient(90deg, #93c5fd, #60a5fa, #3b82f6, #93c5fd);
-  background-size: 220% 220%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: logoFlow 6s ease infinite;
 }
+.logo {
+
+  display: inline-flex;
+#tip{
+  align-items: center;
+    text-align:center;
+  justify-content: center;
+    opacity:0;
+  gap: 10px;
+    transition:1s;
+  font-size: 34px;
+}
+  font-weight: 900;
+.show{opacity:1;}
+  letter-spacing: 1px;
+</style>
+  background: linear-gradient(90deg, #93c5fd, #60a5fa, #3b82f6, #93c5fd);
+</head>
+  background-size: 220% 220%;
+
+  -webkit-background-clip: text;
+<body>
+  background-clip: text;
+
+  color: transparent;
+<div class="header">
+  animation: logoFlow 6s ease infinite;
+<div class="logo">⚡ BODYXP</div>
+}
+</div>
+
 
 .logo .pulse {
+<div class="app">
   display: inline-flex;
+
   align-items: center;
+<div class="card">
   justify-content: center;
+<input id="age" placeholder="Age">
   width: auto;
+<input id="height" placeholder="Height (cm)">
   height: auto;
+<input id="weight" placeholder="Weight">
   padding: 2px 4px;
+<input id="target" placeholder="Target Weight">
   box-shadow: none;
+<input id="water" placeholder="Water Intake">
   animation: pulseRing 2s infinite;
+
   position: relative;
+<select id="diet">
   font-size: 28px;
+<option value="veg">Veg</option>
   color: #e6f7ff;
+<option value="non-veg">Non-Veg</option>
   text-shadow:
+</select>
     0 0 2px rgba(255, 255, 255, 0.95),
+
     0 0 8px rgba(56, 189, 248, 0.55);
+<button onclick="generate()">Generate Plan</button>
 }
+</div>
+
 
 .logo .brand-main {
+<div id="output" class="card"></div>
   text-shadow: 0 0 12px rgba(96, 165, 250, 0.45);
+<div id="tip"></div>
 }
 
+
+</div>
 @keyframes logoFlow {
+
   0% { background-position: 0% 50%; }
+<script>
   50% { background-position: 100% 50%; }
+
   100% { background-position: 0% 50%; }
+// FULL MEAL SYSTEM
 }
+let meals={
 
+veg:{
 @keyframes pulseRing {
+child:{
   0% {
+lose:{
     transform: scale(1);
+Monday:["Fruit","Dal","Soup"],
     text-shadow:
+Tuesday:["Milk","Roti","Khichdi"],
       0 0 2px rgba(255, 255, 255, 0.95),
+Wednesday:["Oats","Dal","Soup"],
       0 0 8px rgba(56, 189, 248, 0.45);
+Thursday:["Apple","Paneer","Veg"],
   }
+Friday:["Poha","Rice","Soup"]
   70% {
+},
     transform: scale(1.08);
+gain:{
     text-shadow:
+Monday:["Milkshake","Paneer","Roti"],
       0 0 3px rgba(255, 255, 255, 1),
+Tuesday:["Banana milk","Dal","Paneer"],
       0 0 12px rgba(56, 189, 248, 0.7);
+Wednesday:["Oats nuts","Rice","Curd"],
   }
+Thursday:["Smoothie","Paneer","Veg"],
   100% {
+Friday:["Upma","Dal","Curd"]
     transform: scale(1);
+},
     text-shadow:
+maintain:{
       0 0 2px rgba(255, 255, 255, 0.95),
+Monday:["Poha","Dal","Veg"],
       0 0 8px rgba(56, 189, 248, 0.45);
+Tuesday:["Milk fruit","Rice","Light"],
   }
+Wednesday:["Upma","Roti","Soup"],
 }
+Thursday:["Oats","Paneer","Veg"],
 
+Friday:["Idli","Dal","Sabzi"]
 .subtext {
+}
   color: var(--muted);
+},
   margin-top: 4px;
-}
 
+}
+teen:{
+
+lose:{
 .app {
+Monday:["Oats","Salad","Soup"],
   max-width: 520px;
+Tuesday:["Fruit","Roti","Light"],
   margin: auto;
+Wednesday:["Smoothie","Dal","Soup"],
   padding: 8px 10px 22px;
+Thursday:["Apple","Paneer","Light"],
 }
+Friday:["Poha","Dal","Soup"]
 
+},
 .card {
+gain:{
   background: var(--card);
+Monday:["Shake","Rice","Paneer"],
   border: 1px solid var(--outline);
+Tuesday:["Banana shake","Dal","Paneer"],
   border-radius: 20px;
+Wednesday:["Oats nuts","Rice","Curd"],
   padding: 15px;
+Thursday:["Smoothie","Paneer","Veg"],
   margin-bottom: 12px;
+Friday:["Upma","Dal","Curd"]
   box-shadow: 0 12px 30px rgba(2, 16, 36, 0.35);
+},
 }
+maintain:{
 
+Monday:["Poha","Dal","Veg"],
 h3 {
+Tuesday:["Milk","Rice","Light"],
   margin: 8px 0 10px;
+Wednesday:["Upma","Roti","Soup"],
 }
+Thursday:["Oats","Paneer","Veg"],
 
+Friday:["Idli","Dal","Sabzi"]
 label {
+}
   display: block;
+},
   font-size: 13px;
+
   color: var(--muted);
+adult:{
   margin-top: 6px;
+lose:{
 }
+Monday:["Oats","Veg","Soup"],
 
+Tuesday:["Fruit","Salad","Light"],
 input,
+Wednesday:["Smoothie","Dal","Soup"],
 select,
+Thursday:["Apple","Paneer","Light"],
 button,
+Friday:["Poha","Dal","Soup"]
 textarea {
+},
   width: 100%;
+gain:{
   padding: 12px;
+Monday:["Protein shake","Paneer","Meal"],
   margin: 6px 0;
+Tuesday:["Banana shake","Dal","Paneer"],
   border-radius: 12px;
+Wednesday:["Oats","Rice","Curd"],
   border: none;
+Thursday:["Smoothie","Paneer","Veg"],
   font-size: 15px;
+Friday:["Upma","Dal","Curd"]
 }
+},
 
+maintain:{
 input,
+Monday:["Idli","Meal","Light"],
 select {
+Tuesday:["Poha","Dal","Veg"],
   background: #08203f;
+Wednesday:["Upma","Rice","Sabzi"],
   color: var(--text);
+Thursday:["Oats","Paneer","Veg"],
   border: 1px solid rgba(158, 197, 221, 0.38);
+Friday:["Roti","Dal","Light"]
+}
 }
 
+},
 textarea {
+
   width: 100%;
+senior:{
   min-height: 90px;
+lose:{
   resize: vertical;
+Monday:["Porridge","Dal","Soup"],
   background: #08203f;
+Tuesday:["Fruit","Khichdi","Light"],
   color: var(--text);
+Wednesday:["Oats","Dal","Soup"],
   border: 1px solid rgba(158, 197, 221, 0.38);
+Thursday:["Apple","Paneer","Light"],
   border-radius: 12px;
+Friday:["Poha","Dal","Soup"]
   padding: 12px;
+},
   margin: 6px 0;
+gain:{
 }
+Monday:["Milk","Rice","Paneer"],
 
+Tuesday:["Banana","Dal","Curd"],
 button {
+Wednesday:["Oats","Rice","Curd"],
   background: var(--primary);
+Thursday:["Smoothie","Paneer","Veg"],
   color: #003049;
+Friday:["Upma","Dal","Curd"]
   font-weight: 700;
+},
   cursor: pointer;
+maintain:{
 }
+Monday:["Soft idli","Dal","Light"],
 
+Tuesday:["Poha","Dal","Veg"],
 button:hover {
+Wednesday:["Upma","Rice","Sabzi"],
   filter: brightness(1.07);
+Thursday:["Oats","Paneer","Veg"],
 }
+Friday:["Roti","Dal","Light"]
 
+}
 .inline {
+}
   display: grid;
+},
   grid-template-columns: 1fr 1fr;
+
   gap: 8px;
+"non-veg":{
 }
+child:{
 
+lose:{
 #output {
+Monday:["Eggs","Chicken","Soup"],
   line-height: 1.45;
+Tuesday:["Egg","Chicken","Light"],
 }
+Wednesday:["Eggs","Chicken","Soup"],
 
+Thursday:["Fish","Roti","Light"],
 .metric-grid {
+Friday:["Eggs","Chicken","Soup"]
   display: grid;
+},
   grid-template-columns: 1fr 1fr;
+gain:{
   gap: 10px;
+Monday:["Egg","Chicken","Fish"],
   margin-bottom: 12px;
+Tuesday:["Omelette","Chicken","Egg"],
 }
+Wednesday:["Egg","Chicken","Fish"],
 
+Thursday:["Chicken","Rice","Egg"],
 .metric {
+Friday:["Omelette","Chicken","Fish"]
   background: #07223f;
+},
   border-radius: 12px;
+maintain:{
   padding: 10px;
+Monday:["Egg","Chicken","Light"],
 }
+Tuesday:["Omelette","Chicken","Soup"],
 
+Wednesday:["Egg","Fish","Light"],
 .metric .label {
+Thursday:["Chicken","Soup","Light"],
   color: var(--muted);
+Friday:["Egg","Chicken","Light"]
   font-size: 12px;
 }
+}
+},
+
 
 .metric .value {
+teen:{
   font-size: 19px;
+lose:{
   font-weight: 800;
+Monday:["Eggs","Chicken","Soup"],
 }
+Tuesday:["Egg whites","Chicken","Light"],
 
+Wednesday:["Eggs","Chicken","Soup"],
 .badge {
+Thursday:["Fish","Light","Meal"],
   display: inline-block;
+Friday:["Eggs","Chicken","Soup"]
   padding: 3px 8px;
+},
   border-radius: 999px;
+gain:{
   font-size: 12px;
+Monday:["Eggs","Chicken","Fish"],
   font-weight: 700;
+Tuesday:["Omelette","Chicken","Egg"],
   margin-top: 5px;
+Wednesday:["Eggs","Chicken","Fish"],
 }
+Thursday:["Chicken","Rice","Egg"],
 
+Friday:["Omelette","Chicken","Fish"]
 .badge.ok {
+},
   background: rgba(96, 165, 250, 0.2);
+maintain:{
   color: #bfdbfe;
+Monday:["Egg","Chicken","Light"],
 }
+Tuesday:["Omelette","Chicken","Soup"],
 
+Wednesday:["Egg","Fish","Light"],
 .badge.warn {
+Thursday:["Chicken","Soup","Light"],
   background: rgba(59, 130, 246, 0.22);
+Friday:["Egg","Chicken","Light"]
   color: #bfdbfe;
 }
+}
+},
+
 
 .badge.bad {
+adult:{
   background: rgba(29, 78, 216, 0.26);
+lose:{
   color: #dbeafe;
+Monday:["Egg whites","Chicken","Soup"],
 }
+Tuesday:["Eggs","Chicken","Light"],
 
+Wednesday:["Eggs","Chicken","Soup"],
 .plan-day {
+Thursday:["Fish","Meal","Light"],
   margin: 10px 0;
+Friday:["Eggs","Chicken","Soup"]
   padding: 10px;
+},
   border-radius: 10px;
+gain:{
   background: #07223f;
+Monday:["Egg","Chicken","Fish"],
 }
+Tuesday:["Omelette","Chicken","Egg"],
 
+Wednesday:["Egg","Chicken","Fish"],
 .list-item {
+Thursday:["Chicken","Rice","Egg"],
   display: flex;
+Friday:["Omelette","Chicken","Fish"]
   align-items: center;
+},
   justify-content: space-between;
+maintain:{
   gap: 8px;
+Monday:["Egg","Chicken","Light"],
   background: #07223f;
+Tuesday:["Omelette","Chicken","Soup"],
   border-radius: 10px;
+Wednesday:["Egg","Fish","Light"],
   padding: 10px;
+Thursday:["Chicken","Soup","Light"],
   margin-top: 8px;
+Friday:["Egg","Chicken","Light"]
+}
 }
 
+},
 .list-item small {
-  color: var(--muted);
-}
 
+  color: var(--muted);
+senior:{
+}
+lose:{
+
+Monday:["Egg","Chicken","Soup"],
 .workout-done {
+Tuesday:["Egg","Fish","Light"],
   text-decoration: line-through;
+Wednesday:["Egg","Soup","Light"],
   color: var(--muted);
+Thursday:["Fish","Soft","Light"],
 }
+Friday:["Egg","Chicken","Soup"]
 
+},
 .list-actions {
+gain:{
   display: flex;
+Monday:["Egg","Chicken","Fish"],
   gap: 6px;
+Tuesday:["Egg","Rice","Chicken"],
 }
+Wednesday:["Egg","Chicken","Fish"],
 
+Thursday:["Fish","Rice","Egg"],
 .icon-btn {
+Friday:["Egg","Chicken","Fish"]
   width: auto;
+},
   margin: 0;
+maintain:{
   padding: 6px 10px;
+Monday:["Egg","Chicken","Light"],
   font-size: 13px;
+Tuesday:["Egg","Rice","Soup"],
   border-radius: 8px;
+Wednesday:["Egg","Fish","Light"],
 }
+Thursday:["Chicken","Soup","Light"],
 
+Friday:["Egg","Rice","Light"]
 .icon-btn.remove {
+}
   background: #2563eb;
+}
   color: white;
 }
+}
+};
+
 
 .ocean-decor {
+// BMI
   position: fixed;
+function bmi(w,h){
   inset: 0;
+return (w/((h/100)**2)).toFixed(2);
   z-index: -1;
+}
   pointer-events: none;
+
   overflow: hidden;
+// TIPS
 }
+function tips(extra){
 
+let list=["Stay hydrated","Exercise","Eat healthy","Sleep well"];
 .bubble {
+if(extra) list.push(extra);
   position: absolute;
+
   bottom: -40px;
+let i=0;
   border-radius: 50%;
+setInterval(()=>{
   background: radial-gradient(circle at 30% 30%, rgba(216, 241, 255, 0.5), rgba(124, 210, 255, 0.08));
+tip.classList.remove("show");
   animation: rise linear infinite;
+setTimeout(()=>{
 }
+tip.innerText=list[i];
 
+tip.classList.add("show");
 .bubble.b1 { left: 8%; width: 20px; height: 20px; animation-duration: 16s; }
+i=(i+1)%list.length;
 .bubble.b2 { left: 24%; width: 12px; height: 12px; animation-duration: 11s; }
+},500);
 .bubble.b3 { left: 42%; width: 28px; height: 28px; animation-duration: 18s; }
+},3000);
 .bubble.b4 { left: 61%; width: 16px; height: 16px; animation-duration: 13s; }
+}
 .bubble.b5 { left: 78%; width: 24px; height: 24px; animation-duration: 20s; }
+
 .bubble.b6 { left: 91%; width: 10px; height: 10px; animation-duration: 10s; }
+// MAIN
 
+function generate(){
 @keyframes rise {
+let a=Number(age.value);
   from {
+let h=Number(height.value);
     transform: translateY(0) translateX(0);
+let w=Number(weight.value);
     opacity: 0;
+let t=Number(target.value);
   }
+let diet=document.getElementById("diet").value;
   20% { opacity: 0.7; }
+
   to {
+// AGE GROUP
     transform: translateY(-115vh) translateX(18px);
+let group="adult";
     opacity: 0;
+if(a<13) group="child";
   }
+else if(a<18) group="teen";
 }
+else if(a<80) group="adult";
 
+else group="senior";
 #tip {
+
   text-align: center;
+// GOAL
   opacity: 0;
+let goal="maintain";
   transition: 1s;
+if(t<w) goal="lose";
   color: var(--muted);
+else if(t>w) goal="gain";
   margin-bottom: 15px;
+
+}
+// GET WEEK
+
+let week=meals[diet][group][goal];
+.show {
+
+  opacity: 1;
+// OUTPUT
+}
+let out="<h3>Meal Plan</h3>";
+</style>
+
+</head>
+["Monday","Tuesday","Wednesday","Thursday","Friday"].forEach(day=>{
+<body>
+let m=week[day];
+  <div class="ocean-decor" aria-hidden="true">
+
+    <span class="bubble b1"></span>
+out+=`<p><b>${day}</b><br>
+    <span class="bubble b2"></span>
+🍳 ${m[0]}<br>
+    <span class="bubble b3"></span>
+🍛 ${m[1]}<br>
+    <span class="bubble b4"></span>
+🌙 ${m[2]}</p>`;
+    <span class="bubble b5"></span>
+});
+    <span class="bubble b6"></span>
+
+  </div>
+output.innerHTML=out;
+  <div class="header">
+
+    <div class="logo">
+// RULE
+      <span class="pulse" aria-hidden="true">💪</span>
+let extra=null;
+      <span class="brand-main">BODYXP</span>
+if(diet==="non-veg") extra="Avoid milk with fish";
+    </div>
+
+    <div class="subtext">🥣 Meal Planner + 🏋🏻‍♀️Workout Tracker + 📊BMI + ⏰Reminders</div>
+tips(extra);
+  </div>
 }
 
-.show {
-  opacity: 1;
-}
-</style>
-</head>
-<body>
-  <div class="ocean-decor" aria-hidden="true">
-    <span class="bubble b1"></span>
-    <span class="bubble b2"></span>
-    <span class="bubble b3"></span>
-    <span class="bubble b4"></span>
-    <span class="bubble b5"></span>
-    <span class="bubble b6"></span>
-  </div>
-  <div class="header">
-    <div class="logo">
-      <span class="pulse" aria-hidden="true">💪</span>
-      <span class="brand-main">BODYXP</span>
-    </div>
-    <div class="subtext">🥣 Meal Planner + 🏋🏻‍♀️Workout Tracker + 📊BMI + ⏰Reminders</div>
-  </div>
 
   <div class="app">
+</script>
     <div class="card">
-      <h3>Generate Your Plan</h3>
 
+      <h3>Generate Your Plan</h3>
+</body>
+
+</html>
       <div class="inline">
         <div>
           <label for="age">Age</label>
@@ -942,6 +1302,9 @@ function renderFeedbacks() {
         <div><b>${entry.name}</b> • ${'⭐'.repeat(Number(entry.rating || 5))}</div>
         <small>${entry.message}</small>
       </div>
+      <div class="list-actions">
+        <button class="icon-btn remove" type="button" onclick="removeFeedback('${entry.createdAt}')">Delete</button>
+      </div>
     </div>
   `).join('');
 }
@@ -969,6 +1332,13 @@ function addFeedback() {
   nameEl.value = '';
   messageEl.value = '';
   ratingEl.value = '5';
+  renderFeedbacks();
+}
+
+function removeFeedback(createdAt) {
+  const feedbacks = getStoredArray(feedbackStorageKey)
+    .filter((entry) => entry.createdAt !== createdAt);
+  setStoredArray(feedbackStorageKey, feedbacks);
   renderFeedbacks();
 }
 
