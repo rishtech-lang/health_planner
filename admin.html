@@ -69,7 +69,7 @@ a { color: #bfdbfe; }
 
   <div class="header">
     <div class="logo">BODYXP ADMIN</div>
-    <div class="subtext">Feedback monitoring & usage insights</div>
+    <div class="subtext">testimonial monitoring & usage insights</div>
   </div>
 
   <div class="app">
@@ -89,9 +89,9 @@ a { color: #bfdbfe; }
     </div>
 
     <div class="card">
-      <h3>Feedbacks List</h3>
+      <h3>testimonials List</h3>
       <button type="button" onclick="refreshAdmin()">Refresh Data</button>
-      <div id="feedbackList"></div>
+      <div id="testimonialList"></div>
     </div>
 
     <div class="card">
@@ -100,7 +100,7 @@ a { color: #bfdbfe; }
   </div>
 
 <script>
-const feedbackStorageKey = 'bodyxp_feedbacks';
+const testimonialStorageKey = 'bodyxp_testimonials';
 const usageCountKey = 'bodyxp_user_count';
 const totalVisitsKey = 'bodyxp_total_visits';
 
@@ -120,17 +120,17 @@ function renderUsage() {
   document.getElementById('visitCount').textContent = localStorage.getItem(totalVisitsKey) || '0';
 }
 
-function renderFeedbacks() {
-  const feedbacks = getStoredArray(feedbackStorageKey)
+function rendertestimonials() {
+  const testimonials = getStoredArray(testimonialStorageKey)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  const listEl = document.getElementById('feedbackList');
+  const listEl = document.getElementById('testimonialList');
 
-  if (!feedbacks.length) {
-    listEl.innerHTML = '<p class="subtext">No feedback submitted yet.</p>';
+  if (!testimonials.length) {
+    listEl.innerHTML = '<p class="subtext">No testimonial submitted yet.</p>';
     return;
   }
 
-  listEl.innerHTML = feedbacks.map((entry) => `
+  listEl.innerHTML = testimonials.map((entry) => `
     <div class="list-item">
       <div><b>${entry.name || 'Anonymous'}</b> • ${'⭐'.repeat(Number(entry.rating || 5))}</div>
       <div class="subtext">${entry.message || ''}</div>
@@ -141,7 +141,7 @@ function renderFeedbacks() {
 
 function refreshAdmin() {
   renderUsage();
-  renderFeedbacks();
+  rendertestimonials();
 }
 
 refreshAdmin();
