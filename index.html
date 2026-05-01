@@ -416,20 +416,20 @@ button:hover {
     </div>
 
     <div class="card">
-      <h3>testimonials</h3>
-      <input id="testimonialName" type="text" placeholder="Your name" />
-      <textarea id="testimonialMessage" placeholder="Tell us how the app feels and what to improve"></textarea>
+      <h3>Testimonials</h3>
+      <input id="TestimonialName" type="text" placeholder="Your name" />
+      <textarea id="TestimonialMessage" placeholder="Tell us how the app feels and what to improve"></textarea>
       <div class="inline">
-        <select id="testimonialRating">
+        <select id="TestimonialRating">
           <option value="5">⭐ 5 - Excellent</option>
           <option value="4">⭐ 4 - Good</option>
           <option value="3">⭐ 3 - Okay</option>
           <option value="2">⭐ 2 - Needs work</option>
           <option value="1">⭐ 1 - Poor</option>
         </select>
-        <button type="button" onclick="addtestimonial()">Submit testimonial</button>
+        <button type="button" onclick="addTestimonial()">Submit Testimonial</button>
       </div>
-      <div id="testimonialList"></div>
+      <div id="TestimonialList"></div>
     </div>
 
     <div id="tip"></div>
@@ -629,7 +629,7 @@ const meals = {
 
 const workoutStorageKey = 'bodyxp_workouts';
 const reminderStorageKey = 'bodyxp_reminders';
-const testimonialStorageKey = 'bodyxp_testimonials';
+const TestimonialStorageKey = 'bodyxp_Testimonials';
 const usageCountKey = 'bodyxp_user_count';
 const userRegisteredKey = 'bodyxp_user_registered';
 const totalVisitsKey = 'bodyxp_total_visits';
@@ -927,16 +927,16 @@ function removeReminder(index) {
 }
 
 function renderTestimonials() {
-  const testimonials = getStoredArray(testimonialStorageKey)
+  const Testimonials = getStoredArray(TestimonialStorageKey)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  const listEl = document.getElementById('testimonialList');
+  const listEl = document.getElementById('TestimonialList');
 
-  if (!testimonials.length) {
-    listEl.innerHTML = '<small class="subtext">No testimonial yet.</small>';
+  if (!Testimonials.length) {
+    listEl.innerHTML = '<small class="subtext">No Testimonial yet.</small>';
     return;
   }
 
-  listEl.innerHTML = testimonials.map((entry) => `
+  listEl.innerHTML = Testimonials.map((entry) => `
     <div class="list-item">
       <div>
         <div><b>${entry.name}</b> • ${'⭐'.repeat(Number(entry.rating || 5))}</div>
@@ -950,9 +950,9 @@ function renderTestimonials() {
 }
 
 function addTestimonial() {
-  const nameEl = document.getElementById('testimonialName');
-  const messageEl = document.getElementById('testimonialMessage');
-  const ratingEl = document.getElementById('testimonialRating');
+  const nameEl = document.getElementById('TestimonialName');
+  const messageEl = document.getElementById('TestimonialMessage');
+  const ratingEl = document.getElementById('TestimonialRating');
 
   const name = (nameEl.value || '').trim() || 'Anonymous';
   const message = (messageEl.value || '').trim();
@@ -960,32 +960,32 @@ function addTestimonial() {
 
   if (!message) return;
 
-  const testimonials = getStoredArray(testimonialStorageKey);
-  testimonial.push({
+  const Testimonials = getStoredArray(TestimonialStorageKey);
+  Testimonial.push({
     name,
     message,
     rating,
     createdAt: new Date().toISOString()
   });
-  setStoredArray(testimonialStorageKey, testimonials);
+  setStoredArray(TestimonialStorageKey, Testimonials);
 
   nameEl.value = '';
   messageEl.value = '';
   ratingEl.value = '5';
-  rendertestimonials();
+  renderTestimonials();
 }
 
-function removetestimonial(createdAt) {
-  const testimonials = getStoredArray(testimonialStorageKey)
+function removeTestimonial(createdAt) {
+  const Testimonials = getStoredArray(TestimonialStorageKey)
     .filter((entry) => entry.createdAt !== createdAt);
-  setStoredArray(testimonialStorageKey, testimonials);
-  rendertestimonials();
+  setStoredArray(TestimonialStorageKey, Testimonials);
+  renderTestimonials();
 }
 
 registerUsage();
 renderWorkouts();
 renderReminders();
-rendertestimonials();
+renderTestimonials();
 tips();
 </script>
 </body>
