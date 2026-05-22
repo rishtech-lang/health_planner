@@ -96,8 +96,7 @@
       <div class="toolbar">
         <button class="btn ghost" onclick="toggleTheme()" id="themeBtn">Switch Theme</button>
         <button class="btn ghost" onclick="requestRotate()">Auto Rotate</button>
-        <a href="admin.html" class="btn ghost" style="text-decoration:none;display:inline-flex;align-items:center;">Open Admin</a>
-      </div>
+              </div>
     </section>
 
     <section class="card">
@@ -105,7 +104,7 @@
       <div class="grid-3">
         <div><label>Age</label><input id="age" type="number" min="1" max="120" placeholder="Age" /></div>
         <div><label>Diet</label><select id="diet"><option value="veg">Veg</option><option value="non-veg">Non-Veg</option></select></div>
-        <div><label>Cuisine</label><select id="cuisine"><option value="indian">Indian</option><option value="english">English</option></select></div>
+        <div><label>Cuisine</label><select id="cuisine"><option value="indian">Indian</option><option value="english">English</option><option value="indian-english">Indian+English</option></select></div>
       </div>
       <div class="grid-3" style="margin-top:8px;">
         <div><label>Height (cm)</label><input id="height" type="number" min="40" max="260" /></div>
@@ -182,7 +181,9 @@ function bmiStatus(b){ return b<18.5?'Underweight': b<25?'Healthy': b<30?'Overwe
 function goalStatus(weight,target){ return target<weight?'Fat Loss': target>weight?'Muscle Gain':'Maintenance'; }
 
 function buildComplexWeeklyPlan(cuisine,diet,goal){
-  const base = mealCore[cuisine][diet];
+  const base = cuisine === "indian-english"
+    ? [...mealCore.indian[diet], ...mealCore.english[diet]]
+    : mealCore[cuisine][diet];
   const goalBias = goal === 'Fat Loss' ? ['Salad','Soup','Steamed Veggies'] : goal === 'Muscle Gain' ? ['Protein Shake','Nuts','Egg Whites'] : ['Fruit Bowl','Yogurt','Mixed Seeds'];
   const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
   return days.map(day => {
@@ -225,7 +226,7 @@ function generatePlan(){
       <div class='kpi'><div class='small'>Age Group</div><div class='v'>${group}</div><div class='small'>Auto detected</div></div>
       <div class='kpi'><div class='small'>Goal</div><div class='v'>${goal}</div><div class='small'>From current vs target</div></div>
     </div>
-    <p><b>Meal Plan for - ${group}</b> | Cuisine: <b>${payload.cuisine.toUpperCase()}</b> | Diet: <b>${payload.diet.toUpperCase()}</b></p>
+    <p><b>Meal Plan for - ${group}</b> | Cuisine: <b>${payload.cuisine === "indian-english" ? "INDIAN+ENGLISH" : payload.cuisine.toUpperCase()}</b> | Diet: <b>${payload.diet.toUpperCase()}</b></p>
     <ul class='plan-list'>${weeklyHtml}</ul>
     <p class='small'>Tip Cycle: ${pickRandom(tipPool)} • ${pickRandom(tipPool)}</p>
   `;
