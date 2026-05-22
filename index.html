@@ -3,179 +3,300 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BodyXP</title>
+  <title>BodyXP Ultra</title>
   <style>
     :root {
-      --bg: #f3f8ff;
+      --bg: #e9f2ff;
+      --bg-alt: #c7dcff;
       --card: #ffffff;
       --text: #0f1f3a;
       --muted: #4c6390;
       --primary: #2463eb;
+      --primary-2: #4a8cff;
       --danger: #dc3545;
+      --success: #198754;
       --border: #d8e4ff;
+      --shadow: rgba(36, 99, 235, 0.12);
     }
     body.dark {
-      --bg: #081631;
+      --bg: #060f22;
+      --bg-alt: #102855;
       --card: #112349;
       --text: #eaf1ff;
       --muted: #aac0e8;
-      --primary: #63a4ff;
+      --primary: #6aa8ff;
+      --primary-2: #8bc0ff;
       --danger: #ff6b81;
+      --success: #36c486;
       --border: #23417f;
+      --shadow: rgba(106, 168, 255, 0.2);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(145deg, var(--bg), #cbe0ff);
+      font-family: Inter, Segoe UI, Arial, sans-serif;
       color: var(--text);
+      background:
+        radial-gradient(circle at 12% 15%, rgba(66,137,255,.22), transparent 40%),
+        radial-gradient(circle at 87% 12%, rgba(86,154,255,.20), transparent 35%),
+        linear-gradient(145deg, var(--bg), var(--bg-alt));
+      min-height: 100vh;
+      transition: background .25s ease, color .25s ease;
     }
-    body.dark { background: linear-gradient(145deg, #071226, #14336f); }
-    .wrap { max-width: 860px; margin: 0 auto; padding: 16px; }
-    .header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-    .logo { font-size: 28px; font-weight: 900; color: var(--primary); text-shadow: 0 0 10px rgba(63,145,255,.5); }
-    .controls { display: flex; gap: 8px; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-      margin-top: 12px;
+    .shell { max-width: 980px; margin: 0 auto; padding: 16px; }
+    .header { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .brand { font-size: 30px; font-weight: 900; color: var(--primary); text-shadow: 0 0 16px color-mix(in oklab, var(--primary) 55%, transparent); }
+    .subtitle { color: var(--muted); font-size: 13px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn, select, input, textarea {
+      border-radius: 12px; border: 1px solid var(--border);
+      background: var(--card); color: var(--text); font-size: 14px;
     }
-    h3 { margin: 0 0 10px; }
-    label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 4px; }
-    input, select, button, textarea {
-      width: 100%; border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-size: 14px;
-      background: var(--card); color: var(--text);
-    }
-    textarea { min-height: 80px; resize: vertical; }
-    button { background: var(--primary); color: #fff; border: none; cursor: pointer; font-weight: 700; }
-    .btn-secondary { background: #5d7bb8; }
-    .btn-danger { background: var(--danger); }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .list-item { display:flex; justify-content:space-between; align-items:center; gap:10px; border:1px solid var(--border); border-radius:10px; padding:8px; margin-top:8px; }
+    .btn { padding: 10px 12px; border: none; color: #fff; background: linear-gradient(90deg,var(--primary),var(--primary-2)); font-weight: 700; cursor: pointer; }
+    .btn.ghost { color: var(--text); border:1px solid var(--border); background: var(--card); }
+    .btn.danger { background: var(--danger); }
+    .btn.success { background: var(--success); }
+
+    .card { background: color-mix(in oklab, var(--card) 92%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-top: 12px; box-shadow: 0 8px 26px var(--shadow); }
+    .grid-2, .grid-3 { display: grid; gap: 10px; }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+    label { display:block; margin-bottom: 5px; color: var(--muted); font-size: 12px; font-weight: 600; }
+    input, select, textarea { width: 100%; padding: 10px; }
+    textarea { min-height: 90px; resize: vertical; }
+    .kpis { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px; }
+    .kpi { border:1px solid var(--border); border-radius: 12px; padding:10px; background:var(--card); }
+    .kpi .v { font-size: 22px; font-weight: 800; }
     .small { color: var(--muted); font-size: 12px; }
-    .done { text-decoration: line-through; color: var(--muted); }
-    @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } .header { flex-direction: column; align-items: flex-start; } }
+
+    .plan-list li { margin: 8px 0; }
+    .list-item { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; border:1px solid var(--border); border-radius: 12px; padding: 8px; margin-top: 8px; background: var(--card); }
+    .done { text-decoration: line-through; opacity: .75; }
+    .chip { font-size:11px; border-radius: 999px; background: color-mix(in oklab, var(--primary) 17%, transparent); color: var(--primary); padding: 2px 8px; font-weight: 700; }
+    .orientation-tip { margin-top:8px; }
+
+    @media (max-width: 760px) {
+      .grid-2, .grid-3, .kpis { grid-template-columns: 1fr; }
+      .brand { font-size: 24px; }
+    }
+
+    @media (orientation: landscape) and (max-width: 900px) {
+      .shell { max-width: 100%; padding: 10px; }
+      .card { padding: 10px; }
+    }
   </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="header">
-    <div>
-      <div class="logo">💪 BODYXP</div>
-      <div class="small">Simple Planner • Workout • BMI • Reminders • Testimonials</div>
-    </div>
-    <div class="controls">
-      <button class="btn-secondary" onclick="toggleTheme()">Light / Dark</button>
-    </div>
-  </div>
+  <main class="shell">
+    <section class="header">
+      <div>
+        <div class="brand">💪 BODYXP PRO</div>
+        <div class="subtitle">Complex Mode: Meal Engine + Workouts + Reminders + Testimonials + Theme + Orientation support</div>
+      </div>
+      <div class="toolbar">
+        <button class="btn ghost" onclick="toggleTheme()" id="themeBtn">Switch Theme</button>
+        <button class="btn ghost" onclick="requestRotate()">Auto Rotate</button>
+        <a href="admin.html" class="btn ghost" style="text-decoration:none;display:inline-flex;align-items:center;">Open Admin</a>
+      </div>
+    </section>
 
-  <div class="card">
-    <h3>Generate Meal Plan</h3>
-    <div class="grid-2">
-      <div><label>Age</label><input id="age" type="number" min="1" max="120" /></div>
-      <div><label>Diet Type</label><select id="diet"><option value="veg">Veg</option><option value="non-veg">Non-Veg</option></select></div>
-      <div><label>Height (cm)</label><input id="height" type="number" min="40" max="260" /></div>
-      <div><label>Weight (kg)</label><input id="weight" type="number" min="15" max="350" /></div>
-      <div><label>Target Weight (kg)</label><input id="target" type="number" min="15" max="350" /></div>
-      <div><label>Meal Style</label><select id="cuisine"><option value="indian">Indian</option><option value="english">English</option></select></div>
-    </div>
-    <button style="margin-top:10px" onclick="generatePlan()">Generate</button>
-    <div id="error" class="small"></div>
-  </div>
+    <section class="card">
+      <h3>Advanced Meal Planner</h3>
+      <div class="grid-3">
+        <div><label>Age</label><input id="age" type="number" min="1" max="120" placeholder="Age" /></div>
+        <div><label>Diet</label><select id="diet"><option value="veg">Veg</option><option value="non-veg">Non-Veg</option></select></div>
+        <div><label>Cuisine</label><select id="cuisine"><option value="indian">Indian</option><option value="english">English</option></select></div>
+      </div>
+      <div class="grid-3" style="margin-top:8px;">
+        <div><label>Height (cm)</label><input id="height" type="number" min="40" max="260" /></div>
+        <div><label>Weight (kg)</label><input id="weight" type="number" min="15" max="350" /></div>
+        <div><label>Target (kg)</label><input id="target" type="number" min="15" max="350" /></div>
+      </div>
+      <div style="margin-top:10px"><button class="btn" onclick="generatePlan()">Generate Complex Plan</button></div>
+      <div id="error" class="small" style="margin-top:6px"></div>
+    </section>
 
-  <div class="card" id="output">Fill details and click Generate.</div>
+    <section class="card" id="output">Fill details and click Generate.</section>
 
-  <div class="card">
-    <h3>Workout Tracker</h3>
-    <div class="grid-2">
-      <input id="workoutInput" placeholder="e.g. 30 min walk" />
-      <button onclick="addWorkout()">Add Workout</button>
-    </div>
-    <div id="workoutList"></div>
-  </div>
+    <section class="card">
+      <h3>Workout Tracker</h3>
+      <div class="grid-2">
+        <input id="workoutInput" placeholder="Add workout" />
+        <button class="btn success" onclick="addWorkout()">Add Workout</button>
+      </div>
+      <div id="workoutList"></div>
+    </section>
 
-  <div class="card">
-    <h3>Reminders</h3>
-    <div class="grid-2">
-      <input id="reminderText" placeholder="Reminder" />
-      <input id="reminderTime" type="datetime-local" />
-    </div>
-    <button style="margin-top:8px" onclick="addReminder()">Add Reminder</button>
-    <div id="reminderList"></div>
-  </div>
+    <section class="card">
+      <h3>Reminders</h3>
+      <div class="grid-2">
+        <input id="reminderText" placeholder="Reminder text" />
+        <input id="reminderTime" type="datetime-local" />
+      </div>
+      <div style="margin-top:8px"><button class="btn success" onclick="addReminder()">Add Reminder</button></div>
+      <div id="reminderList"></div>
+    </section>
 
-  <div class="card">
-    <h3>Testimonials</h3>
-    <div class="grid-2">
-      <input id="tName" placeholder="Name" />
-      <select id="tRating"><option>⭐ 1</option><option>⭐ 2</option><option>⭐ 3</option><option>⭐ 4</option><option selected>⭐ 5</option></select>
-    </div>
-    <textarea id="tMsg" placeholder="Write your testimonial..."></textarea>
-    <button onclick="addTestimonial()">Submit Testimonial</button>
-    <div id="testimonialList"></div>
-  </div>
-</div>
+    <section class="card">
+      <h3>Testimonials</h3>
+      <div class="grid-2">
+        <input id="tName" placeholder="Name" />
+        <select id="tRating"><option>⭐ 1</option><option>⭐ 2</option><option>⭐ 3</option><option>⭐ 4</option><option selected>⭐ 5</option></select>
+      </div>
+      <textarea id="tMsg" placeholder="Write your testimonial"></textarea>
+      <div style="margin-top:8px"><button class="btn" onclick="addTestimonial()">Submit Testimonial</button></div>
+      <div id="testimonialList"></div>
+    </section>
+
+    <section class="card">
+      <h3>Device / Orientation</h3>
+      <div id="orientationInfo" class="small"></div>
+      <div class="orientation-tip small">Auto Rotate tries Screen Orientation API (works on supported mobile browsers only).</div>
+    </section>
+  </main>
+
 <script>
-const K = { workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials', theme: 'bodyxp_theme' };
-const plans = {
+const K = {
+  workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials',
+  theme: 'bodyxp_theme', visits: 'bodyxp_visits', lastVisit: 'bodyxp_last_visit'
+};
+const mealCore = {
   indian: {
-    veg: ['Poha','Roti + Dal','Khichdi','Idli + Sambar','Paneer + Rice'],
-    'non-veg': ['Egg Bhurji','Chicken Curry + Rice','Fish Curry','Omelette + Roti','Chicken Soup']
+    veg: ['Poha','Idli-Sambar','Roti+Dal','Paneer Bhurji','Khichdi','Upma','Rajma Rice','Dosa','Veg Pulao'],
+    'non-veg': ['Egg Bhurji','Chicken Curry','Fish Curry','Keema','Omelette+Roti','Chicken Soup','Tandoori Chicken']
   },
   english: {
-    veg: ['Oatmeal','Veg Sandwich','Salad Bowl','Greek Yogurt + Fruit','Pasta Primavera'],
-    'non-veg': ['Scrambled Eggs','Grilled Chicken','Baked Fish','Turkey Sandwich','Chicken Salad']
+    veg: ['Oatmeal','Veg Sandwich','Quinoa Bowl','Greek Yogurt','Pasta Primavera','Avocado Toast','Veg Wrap'],
+    'non-veg': ['Scrambled Eggs','Grilled Chicken','Baked Fish','Turkey Wrap','Chicken Salad','Roast Chicken']
   }
 };
-const tips = ['Drink water regularly.','Sleep 7-8 hours.','Walk daily 20+ minutes.','Keep portions balanced.'];
-function read(key){ try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } }
-function write(key,val){ localStorage.setItem(key, JSON.stringify(val)); }
-function ageGroup(age){ if(age<13) return 'Child'; if(age<18) return 'Teen'; if(age>=80) return 'Senior'; return 'Adult'; }
-function bmi(weight,height){ return weight / ((height/100) ** 2); }
-function bmiStatus(v){ if(v<18.5) return 'Underweight'; if(v<25) return 'Healthy'; if(v<30) return 'Overweight'; return 'Obese'; }
-function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+const tipPool = ['Hydrate every 2 hours','Train smart, not just hard','Sleep is anabolic','Track consistency daily','Fiber keeps you full'];
+
+function read(key, fallback = []) { try { const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; } catch { return fallback; } }
+function write(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function clamp(n,min,max){ return Math.min(max, Math.max(min,n)); }
+function ageGroup(age){ return age < 13 ? 'Child' : age < 18 ? 'Teen' : age >= 80 ? 'Senior' : 'Adult'; }
+function bmi(weight,height){ return weight / ((height / 100) ** 2); }
+function bmiStatus(b){ return b<18.5?'Underweight': b<25?'Healthy': b<30?'Overweight':'Obese'; }
+function goalStatus(weight,target){ return target<weight?'Fat Loss': target>weight?'Muscle Gain':'Maintenance'; }
+
+function buildComplexWeeklyPlan(cuisine,diet,goal){
+  const base = mealCore[cuisine][diet];
+  const goalBias = goal === 'Fat Loss' ? ['Salad','Soup','Steamed Veggies'] : goal === 'Muscle Gain' ? ['Protein Shake','Nuts','Egg Whites'] : ['Fruit Bowl','Yogurt','Mixed Seeds'];
+  const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  return days.map(day => {
+    const breakfast = pickRandom(base);
+    const lunch = pickRandom(base);
+    const dinner = pickRandom(base);
+    const booster = pickRandom(goalBias);
+    return { day, breakfast, lunch, dinner, booster };
+  });
+}
+
+function validateForm(v){
+  if (![v.age,v.height,v.weight,v.target].every(Number.isFinite)) return 'Please fill all numeric fields.';
+  if (v.age<1||v.age>120) return 'Age out of range.';
+  if (v.height<40||v.height>260) return 'Height out of range.';
+  if (v.weight<15||v.weight>350) return 'Weight out of range.';
+  if (v.target<15||v.target>350) return 'Target out of range.';
+  return '';
+}
+
 function generatePlan(){
-  const age=Number(ageEl.value), height=Number(heightEl.value), weight=Number(weightEl.value), target=Number(targetEl.value);
-  const diet=dietEl.value, cuisine=cuisineEl.value;
-  if(!age||!height||!weight||!target){ error.textContent='Please fill all fields.'; return; }
-  error.textContent='';
-  const group=ageGroup(age);
-  const goal = target<weight?'Lose': target>weight?'Gain':'Maintain';
-  const options = plans[cuisine][diet];
-  const days=['Monday','Tuesday','Wednesday','Thursday','Friday'];
-  const items = days.map(d=>`<li><b>${d}:</b> ${pick(options)} • ${pick(options)} • ${pick(options)}</li>`).join('');
-  const b = bmi(weight,height);
+  const payload = {
+    age: Number(age.value), height: Number(height.value), weight: Number(weight.value), target: Number(target.value),
+    diet: diet.value, cuisine: cuisine.value
+  };
+  const err = validateForm(payload);
+  if (err) { error.textContent = err; return; }
+  error.textContent = '';
+
+  const group = ageGroup(payload.age);
+  const b = bmi(payload.weight, payload.height);
+  const goal = goalStatus(payload.weight, payload.target);
+  const weekly = buildComplexWeeklyPlan(payload.cuisine, payload.diet, goal);
+  const weeklyHtml = weekly.map(d => `<li><b>${d.day}:</b> 🍳 ${d.breakfast} | 🍛 ${d.lunch} | 🌙 ${d.dinner} <span class='chip'>Booster: ${d.booster}</span></li>`).join('');
+
   output.innerHTML = `
-    <h3>Health Summary</h3>
-    <p><b>BMI:</b> ${b.toFixed(1)} (${bmiStatus(b)})</p>
-    <p><b>Meal Plan for:</b> ${group}</p>
-    <p><b>Goal:</b> ${goal} | <b>Style:</b> ${cuisine[0].toUpperCase()+cuisine.slice(1)} | <b>Diet:</b> ${diet}</p>
-    <ul>${items}</ul>
-    <p class="small">Tip: ${pick(tips)}</p>`;
+    <h3>Health & Plan Analytics</h3>
+    <div class='kpis'>
+      <div class='kpi'><div class='small'>BMI</div><div class='v'>${b.toFixed(1)}</div><div class='small'>${bmiStatus(b)}</div></div>
+      <div class='kpi'><div class='small'>Age Group</div><div class='v'>${group}</div><div class='small'>Auto detected</div></div>
+      <div class='kpi'><div class='small'>Goal</div><div class='v'>${goal}</div><div class='small'>From current vs target</div></div>
+    </div>
+    <p><b>Meal Plan for - ${group}</b> | Cuisine: <b>${payload.cuisine.toUpperCase()}</b> | Diet: <b>${payload.diet.toUpperCase()}</b></p>
+    <ul class='plan-list'>${weeklyHtml}</ul>
+    <p class='small'>Tip Cycle: ${pickRandom(tipPool)} • ${pickRandom(tipPool)}</p>
+  `;
 }
+
 function renderWorkouts(){
-  const arr=read(K.workouts);
-  workoutList.innerHTML = arr.length ? arr.map((w,i)=>`<div class='list-item'><span class='${w.done?'done':''}'>${w.text}</span><div><button onclick='toggleWorkout(${i})'>${w.done?'Undo':'Done'}</button> <button class='btn-danger' onclick='removeWorkout(${i})'>Delete</button></div></div>`).join('') : '<div class="small">No workouts yet.</div>';
+  const list = read(K.workouts, []);
+  workoutList.innerHTML = list.length ? list.map((w,i)=>`<div class='list-item'><div class='${w.done?'done':''}'><b>${w.text}</b><div class='small'>${w.createdAt}</div></div><div><button class='btn ghost' onclick='toggleWorkout(${i})'>${w.done?'Undo':'Done'}</button> <button class='btn danger' onclick='removeWorkout(${i})'>Delete</button></div></div>`).join('') : '<div class="small">No workouts yet.</div>';
 }
-function addWorkout(){ const t=workoutInput.value.trim(); if(!t) return; const a=read(K.workouts); a.push({text:t,done:false}); write(K.workouts,a); workoutInput.value=''; renderWorkouts(); }
-function toggleWorkout(i){ const a=read(K.workouts); if(!a[i]) return; a[i].done=!a[i].done; write(K.workouts,a); renderWorkouts(); }
-function removeWorkout(i){ const a=read(K.workouts); a.splice(i,1); write(K.workouts,a); renderWorkouts(); }
+function addWorkout(){ const text = workoutInput.value.trim(); if (!text) return; const list = read(K.workouts, []); list.push({ text, done:false, createdAt:new Date().toLocaleString() }); write(K.workouts, list); workoutInput.value=''; renderWorkouts(); }
+function toggleWorkout(i){ const list = read(K.workouts, []); if (!list[i]) return; list[i].done = !list[i].done; write(K.workouts, list); renderWorkouts(); }
+function removeWorkout(i){ const list = read(K.workouts, []); list.splice(i,1); write(K.workouts, list); renderWorkouts(); }
+
 function renderReminders(){
-  const arr=read(K.reminders).sort((a,b)=>new Date(a.time)-new Date(b.time));
-  reminderList.innerHTML = arr.length ? arr.map((r,i)=>`<div class='list-item'><div>${r.text}<div class='small'>${new Date(r.time).toLocaleString()}</div></div><button class='btn-danger' onclick='removeReminder(${i})'>Delete</button></div>`).join('') : '<div class="small">No reminders yet.</div>';
+  const list = read(K.reminders, []).sort((a,b)=>new Date(a.time)-new Date(b.time));
+  reminderList.innerHTML = list.length ? list.map((r,i)=>`<div class='list-item'><div><b>${r.text}</b><div class='small'>${new Date(r.time).toLocaleString()}</div></div><button class='btn danger' onclick='removeReminder(${i})'>Delete</button></div>`).join('') : '<div class="small">No reminders yet.</div>';
 }
-function addReminder(){ const text=reminderText.value.trim(), time=reminderTime.value; if(!text||!time) return; const a=read(K.reminders); a.push({text,time}); write(K.reminders,a); reminderText.value=''; reminderTime.value=''; renderReminders(); }
-function removeReminder(i){ const a=read(K.reminders).sort((x,y)=>new Date(x.time)-new Date(y.time)); a.splice(i,1); write(K.reminders,a); renderReminders(); }
+function addReminder(){ const text=reminderText.value.trim(), time=reminderTime.value; if(!text||!time) return; const list=read(K.reminders, []); list.push({text,time,createdAt:Date.now()}); write(K.reminders,list); reminderText.value=''; reminderTime.value=''; renderReminders(); }
+function removeReminder(i){ const list=read(K.reminders, []).sort((a,b)=>new Date(a.time)-new Date(b.time)); list.splice(i,1); write(K.reminders,list); renderReminders(); }
+
 function renderTestimonials(){
-  const arr=read(K.testimonials);
-  testimonialList.innerHTML = arr.length ? arr.map(t=>`<div class='list-item'><div><b>${t.name}</b> ${t.rating}<div>${t.msg}</div></div><button class='btn-danger' onclick='removeTestimonial("${t.id}")'>Delete</button></div>`).join('') : '<div class="small">No testimonials yet.</div>';
+  const list = read(K.testimonials, []);
+  testimonialList.innerHTML = list.length ? list.map(t=>`<div class='list-item'><div><b>${t.name}</b> ${t.rating}<div>${t.msg}</div><div class='small'>${t.createdAt}</div></div><button class='btn danger' onclick='removeTestimonial("${t.id}")'>Delete</button></div>`).join('') : '<div class="small">No testimonials yet. Add one above.</div>';
 }
-function addTestimonial(){ const name=tName.value.trim(), msg=tMsg.value.trim(), rating=tRating.value; if(!name||!msg) return; const a=read(K.testimonials); a.push({id:Date.now().toString(),name,msg,rating}); write(K.testimonials,a); tName.value=''; tMsg.value=''; renderTestimonials(); }
-function removeTestimonial(id){ const a=read(K.testimonials).filter(t=>t.id!==id); write(K.testimonials,a); renderTestimonials(); }
-function toggleTheme(){ const dark=document.body.classList.toggle('dark'); localStorage.setItem(K.theme, dark?'dark':'light'); }
-(function init(){ if(localStorage.getItem(K.theme)==='dark') document.body.classList.add('dark'); renderWorkouts(); renderReminders(); renderTestimonials(); })();
+function addTestimonial(){ const name=tName.value.trim(), msg=tMsg.value.trim(), rating=tRating.value; if(!name||!msg) return; const list=read(K.testimonials, []); list.unshift({ id:`t_${Date.now()}_${Math.random().toString(16).slice(2,8)}`, name, msg, rating, createdAt:new Date().toLocaleString() }); write(K.testimonials, list); tName.value=''; tMsg.value=''; renderTestimonials(); }
+function removeTestimonial(id){ const list=read(K.testimonials, []).filter(t=>t.id!==id); write(K.testimonials,list); renderTestimonials(); }
+
+function toggleTheme(){
+  const makeDark = !document.body.classList.contains('dark');
+  document.body.classList.toggle('dark', makeDark);
+  localStorage.setItem(K.theme, makeDark ? 'dark':'light');
+  themeBtn.textContent = makeDark ? 'Switch to Light' : 'Switch to Dark';
+}
+
+async function requestRotate(){
+  try {
+    if (screen.orientation && screen.orientation.lock) {
+      const current = screen.orientation.type || 'portrait-primary';
+      const target = current.startsWith('portrait') ? 'landscape-primary' : 'portrait-primary';
+      await screen.orientation.lock(target);
+      refreshOrientationInfo('Orientation lock success: ' + target);
+    } else {
+      refreshOrientationInfo('Orientation lock not supported on this browser. Rotate device manually.');
+    }
+  } catch (e) {
+    refreshOrientationInfo('Orientation lock blocked by browser. Try full-screen/PWA mode.');
+  }
+}
+function refreshOrientationInfo(extra=''){
+  const o = screen.orientation?.type || (window.innerWidth > window.innerHeight ? 'landscape' : 'portrait');
+  orientationInfo.textContent = `Current Orientation: ${o}. Viewport: ${window.innerWidth}x${window.innerHeight}. ${extra}`;
+}
+
+function trackVisit(){
+  const visits = clamp(Number(localStorage.getItem(K.visits) || '0') + 1, 0, 999999);
+  localStorage.setItem(K.visits, String(visits));
+  localStorage.setItem(K.lastVisit, new Date().toISOString());
+}
+
+(function init(){
+  const theme = localStorage.getItem(K.theme) || 'light';
+  document.body.classList.toggle('dark', theme === 'dark');
+  themeBtn.textContent = theme === 'dark' ? 'Switch to Light' : 'Switch to Dark';
+  renderWorkouts();
+  renderReminders();
+  renderTestimonials();
+  refreshOrientationInfo();
+  window.addEventListener('resize', () => refreshOrientationInfo());
+  if (screen.orientation) screen.orientation.addEventListener?.('change', () => refreshOrientationInfo());
+  trackVisit();
+})();
 </script>
 </body>
 </html>
