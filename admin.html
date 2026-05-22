@@ -3,51 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BodyXP Admin</title>
+  <title>BodyXP Admin Live</title>
   <style>
-    body{font-family:Arial,sans-serif;margin:0;background:#0b1d3a;color:#eaf1ff}
-    .wrap{max-width:820px;margin:0 auto;padding:16px}
-    .card{background:#122a52;border:1px solid #2d4d85;border-radius:12px;padding:12px;margin-top:12px}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .metric{background:#0f2345;border:1px solid #2d4d85;border-radius:10px;padding:10px}
-    .small{color:#aac0e8;font-size:12px}
-    .list-item{border:1px solid #2d4d85;border-radius:10px;padding:8px;margin-top:8px}
-    button{background:#63a4ff;color:#06224e;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700}
+    :root{--bg:#07142c;--card:#10274d;--text:#ecf3ff;--muted:#a8bee7;--border:#2b4e88;--accent:#70abff;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(140deg,#07142c,#123770);color:var(--text)}
+    .wrap{max-width:980px;margin:0 auto;padding:16px}
+    .row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .card{background:color-mix(in oklab,var(--card) 94%, transparent);border:1px solid var(--border);border-radius:14px;padding:12px;margin-top:12px}
+    .metric{border:1px solid var(--border);border-radius:10px;padding:10px;background:#0c1f40}
+    .metric .v{font-size:20px;font-weight:800}
+    .small{color:var(--muted);font-size:12px}
+    .list-item{border:1px solid var(--border);border-radius:12px;padding:8px;margin-top:8px;background:#0d2144}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    button,a{border:none;background:linear-gradient(90deg,#5293ff,#79b1ff);color:#08214c;padding:8px 12px;border-radius:9px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}
+    @media (max-width: 820px){.row{grid-template-columns:1fr 1fr}}
+    @media (max-width: 520px){.row{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-<div class="wrap">
-  <h2>BodyXP Admin Panel</h2>
-  <div class="small">Simple usage + testimonials view</div>
-  <div class="card">
-    <h3>Usage Overview</h3>
-    <div class="grid">
-      <div class="metric"><div class="small">Saved Workouts</div><div id="mWorkouts">0</div></div>
-      <div class="metric"><div class="small">Saved Reminders</div><div id="mReminders">0</div></div>
-      <div class="metric"><div class="small">Testimonials</div><div id="mTestimonials">0</div></div>
+<main class="wrap">
+  <h2>BodyXP Admin — Live Monitor</h2>
+  <div class="small">Auto-refreshing analytics and testimonials</div>
+  <div class="toolbar" style="margin-top:8px">
+    <button onclick="refreshAdmin()">Refresh Now</button>
+    <button onclick="toggleAutoRefresh()" id="autoBtn">Pause Auto-Refresh</button>
+    <a href="index.html">Back to App</a>
+  </div>
+
+  <section class="card">
+    <h3>Fresh Usage Panel</h3>
+    <div class="row">
+      <div class="metric"><div class="small">Visits</div><div class="v" id="mVisits">0</div></div>
+      <div class="metric"><div class="small">Workouts</div><div class="v" id="mWorkouts">0</div></div>
+      <div class="metric"><div class="small">Reminders</div><div class="v" id="mReminders">0</div></div>
+      <div class="metric"><div class="small">Testimonials</div><div class="v" id="mTestimonials">0</div></div>
     </div>
-    <button onclick="refreshAdmin()">Refresh</button>
-  </div>
-  <div class="card">
-    <h3>Testimonials List</h3>
-    <div id="testimonialList"></div>
-  </div>
-</div>
+    <div class="small" id="lastSynced" style="margin-top:8px">Last synced: --</div>
+  </section>
+
+  <section class="card">
+    <h3>Testimonials Feed</h3>
+    <div id="testimonialFeed"></div>
+  </section>
+</main>
 <script>
-const K = { workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials' };
-function read(key){ try { return JSON.parse(localStorage.getItem(key)||'[]'); } catch { return []; } }
+const K = { workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials', visits: 'bodyxp_visits', lastVisit: 'bodyxp_last_visit' };
+let refreshTimer = null;
+let autoRefreshEnabled = true;
+function read(key, fallback = []) { try { const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; } catch { return fallback; } }
 function refreshAdmin(){
-  const workouts = read(K.workouts);
-  const reminders = read(K.reminders);
-  const testimonials = read(K.testimonials);
+  const workouts = read(K.workouts, []);
+  const reminders = read(K.reminders, []);
+  const testimonials = read(K.testimonials, []);
+  const visits = Number(localStorage.getItem(K.visits) || '0');
+  const lastVisit = localStorage.getItem(K.lastVisit) || '--';
+
+  mVisits.textContent = visits;
   mWorkouts.textContent = workouts.length;
   mReminders.textContent = reminders.length;
   mTestimonials.textContent = testimonials.length;
-  testimonialList.innerHTML = testimonials.length
-    ? testimonials.map(t => `<div class='list-item'><b>${t.name}</b> ${t.rating}<div>${t.msg}</div></div>`).join('')
+  lastSynced.textContent = `Last synced: ${new Date().toLocaleString()} | Last app visit: ${lastVisit}`;
+
+  testimonialFeed.innerHTML = testimonials.length
+    ? testimonials.map(t => `<div class='list-item'><b>${t.name}</b> ${t.rating}<div>${t.msg}</div><div class='small'>${t.createdAt || '--'}</div></div>`).join('')
     : '<div class="small">No testimonials yet.</div>';
 }
+function toggleAutoRefresh(){
+  autoRefreshEnabled = !autoRefreshEnabled;
+  autoBtn.textContent = autoRefreshEnabled ? 'Pause Auto-Refresh' : 'Resume Auto-Refresh';
+  if (autoRefreshEnabled) startAutoRefresh();
+  else stopAutoRefresh();
+}
+function startAutoRefresh(){ stopAutoRefresh(); refreshTimer = setInterval(refreshAdmin, 2000); }
+function stopAutoRefresh(){ if (refreshTimer) clearInterval(refreshTimer); refreshTimer = null; }
+window.addEventListener('storage', refreshAdmin);
 refreshAdmin();
+startAutoRefresh();
 </script>
 </body>
 </html>
