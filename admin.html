@@ -1,148 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>BodyXP Admin</title>
-<style>
-:root {
-  --bg: #03132a;
-  --card: #0a2646;
-  --muted: #a8c8e6;
-  --primary: #5cc8ff;
-  --text: #ebf7ff;
-  --outline: rgba(125, 187, 255, 0.34);
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background:
-    radial-gradient(circle at 15% 20%, rgba(45, 117, 199, 0.33), transparent 45%),
-    radial-gradient(circle at 85% 10%, rgba(96, 165, 250, 0.24), transparent 40%),
-    radial-gradient(circle at 50% 80%, rgba(29, 78, 216, 0.27), transparent 45%),
-    var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-}
-.header { text-align: center; padding: 24px 14px 8px; }
-.logo {
-  font-size: 34px; font-weight: 900; letter-spacing: 1px;
-  background: linear-gradient(90deg, #93c5fd, #60a5fa, #3b82f6, #93c5fd);
-  background-size: 220% 220%; -webkit-background-clip: text; background-clip: text;
-  color: transparent; animation: logoFlow 6s ease infinite;
-}
-.subtext { color: var(--muted); }
-.app { max-width: 720px; margin: auto; padding: 10px; }
-.card {
-  background: var(--card); border: 1px solid var(--outline); border-radius: 16px;
-  padding: 14px; margin-bottom: 12px;
-}
-.metric-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.metric { background: #07223f; border-radius: 12px; padding: 12px; }
-.metric .label { color: var(--muted); font-size: 13px; }
-.metric .value { font-size: 28px; font-weight: 800; }
-.list-item { background: #07223f; border-radius: 10px; padding: 10px; margin-top: 8px; }
-button {
-  background: var(--primary); color: #003049; border: none; border-radius: 10px;
-  padding: 10px 12px; font-weight: 700; cursor: pointer;
-}
-a { color: #bfdbfe; }
-.ocean-decor { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
-.bubble { position: absolute; bottom: -40px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(216,241,255,.5), rgba(124,210,255,.08)); animation: rise linear infinite; }
-.bubble.b1 { left: 8%; width: 20px; height: 20px; animation-duration: 16s; }
-.bubble.b2 { left: 24%; width: 12px; height: 12px; animation-duration: 11s; }
-.bubble.b3 { left: 42%; width: 28px; height: 28px; animation-duration: 18s; }
-.bubble.b4 { left: 61%; width: 16px; height: 16px; animation-duration: 13s; }
-.bubble.b5 { left: 78%; width: 24px; height: 24px; animation-duration: 20s; }
-.bubble.b6 { left: 91%; width: 10px; height: 10px; animation-duration: 10s; }
-@keyframes logoFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-@keyframes rise { from { transform: translateY(0) translateX(0); opacity: 0; } 20% { opacity: 0.7; } to { transform: translateY(-115vh) translateX(18px); opacity: 0; } }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BodyXP Admin</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;background:#0b1d3a;color:#eaf1ff}
+    .wrap{max-width:820px;margin:0 auto;padding:16px}
+    .card{background:#122a52;border:1px solid #2d4d85;border-radius:12px;padding:12px;margin-top:12px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .metric{background:#0f2345;border:1px solid #2d4d85;border-radius:10px;padding:10px}
+    .small{color:#aac0e8;font-size:12px}
+    .list-item{border:1px solid #2d4d85;border-radius:10px;padding:8px;margin-top:8px}
+    button{background:#63a4ff;color:#06224e;border:none;border-radius:8px;padding:8px 12px;cursor:pointer;font-weight:700}
+  </style>
 </head>
 <body>
-  <div class="ocean-decor" aria-hidden="true">
-    <span class="bubble b1"></span><span class="bubble b2"></span><span class="bubble b3"></span>
-    <span class="bubble b4"></span><span class="bubble b5"></span><span class="bubble b6"></span>
-  </div>
-
-  <div class="header">
-    <div class="logo">BODYXP ADMIN</div>
-    <div class="subtext">Testimonial monitoring & usage insights</div>
-  </div>
-
-  <div class="app">
-    <div class="card">
-      <h3>Usage Overview</h3>
-      <div class="metric-grid">
-        <div class="metric">
-          <div class="label">People using app</div>
-          <div class="value" id="userCount">0</div>
-        </div>
-        <div class="metric">
-          <div class="label">Total visits</div>
-          <div class="value" id="visitCount">0</div>
-        </div>
-      </div>
-      <p class="subtext">Counts are based on browser local storage for this deployed instance.</p>
+<div class="wrap">
+  <h2>BodyXP Admin Panel</h2>
+  <div class="small">Simple usage + testimonials view</div>
+  <div class="card">
+    <h3>Usage Overview</h3>
+    <div class="grid">
+      <div class="metric"><div class="small">Saved Workouts</div><div id="mWorkouts">0</div></div>
+      <div class="metric"><div class="small">Saved Reminders</div><div id="mReminders">0</div></div>
+      <div class="metric"><div class="small">Testimonials</div><div id="mTestimonials">0</div></div>
     </div>
-
-    <div class="card">
-      <h3>Testimonials List</h3>
-      <button type="button" onclick="refreshAdmin()">Refresh Data</button>
-      <div id="TestimonialList"></div>
-    </div>
-
-    <div class="card">
-      <a href="index.html">← Back to User Dashboard</a>
-    </div>
+    <button onclick="refreshAdmin()">Refresh</button>
   </div>
-
+  <div class="card">
+    <h3>Testimonials List</h3>
+    <div id="testimonialList"></div>
+  </div>
+</div>
 <script>
-const TestimonialStorageKey = 'bodyxp_Testimonials';
-const usageCountKey = 'bodyxp_user_count';
-const totalVisitsKey = 'bodyxp_total_visits';
-
-function getStoredArray(key) {
-  const raw = localStorage.getItem(key);
-  if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+const K = { workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials' };
+function read(key){ try { return JSON.parse(localStorage.getItem(key)||'[]'); } catch { return []; } }
+function refreshAdmin(){
+  const workouts = read(K.workouts);
+  const reminders = read(K.reminders);
+  const testimonials = read(K.testimonials);
+  mWorkouts.textContent = workouts.length;
+  mReminders.textContent = reminders.length;
+  mTestimonials.textContent = testimonials.length;
+  testimonialList.innerHTML = testimonials.length
+    ? testimonials.map(t => `<div class='list-item'><b>${t.name}</b> ${t.rating}<div>${t.msg}</div></div>`).join('')
+    : '<div class="small">No testimonials yet.</div>';
 }
-
-function renderUsage() {
-  document.getElementById('userCount').textContent = localStorage.getItem(usageCountKey) || '0';
-  document.getElementById('visitCount').textContent = localStorage.getItem(totalVisitsKey) || '0';
-}
-
-function renderTestimonials() {
-  const Testimonials = getStoredArray(TestimonialStorageKey)
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  const listEl = document.getElementById('TestimonialList');
-
-  if (!Testimonials.length) {
-    listEl.innerHTML = '<p class="subtext">No Testimonial submitted yet.</p>';
-    return;
-  }
-
-  listEl.innerHTML = Testimonials.map((entry) => `
-    <div class="list-item">
-      <div><b>${entry.name || 'Anonymous'}</b> • ${'⭐'.repeat(Number(entry.rating || 5))}</div>
-      <div class="subtext">${entry.message || ''}</div>
-      <div class="subtext">${new Date(entry.createdAt).toLocaleString()}</div>
-    </div>
-  `).join('');
-}
-
-function refreshAdmin() {
-  renderUsage();
-  renderTestimonials();
-}
-
 refreshAdmin();
 </script>
 </body>
