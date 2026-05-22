@@ -1,275 +1,721 @@
+
 <!DOCTYPE html>
+<!DOCTYPE html>
+<html>
 <html lang="en">
 <head>
+<head>
+<title>BodyXP</title>
   <meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BodyXP Ultra</title>
+
+  <title>BodyXP</title>
+<style>
   <style>
+body{
     :root {
+    margin:0;
       --bg: #e9f2ff;
+    font-family:'Segoe UI',sans-serif;
       --bg-alt: #c7dcff;
+    background:#0f172a;
       --card: #ffffff;
+    color:white;
       --text: #0f1f3a;
+}
       --muted: #4c6390;
+
       --primary: #2463eb;
+.header{
       --primary-2: #4a8cff;
+    text-align:center;
       --danger: #dc3545;
+    padding:20px;
       --success: #198754;
+}
       --border: #d8e4ff;
+
       --shadow: rgba(36, 99, 235, 0.12);
+.logo{
     }
+    font-size:32px;
     body.dark {
+    font-weight:900;
       --bg: #060f22;
+    color:#38bdf8;
       --bg-alt: #102855;
+}
       --card: #112349;
+
       --text: #eaf1ff;
+.app{
       --muted: #aac0e8;
+    max-width:420px;
       --primary: #6aa8ff;
+    margin:auto;
       --primary-2: #8bc0ff;
+    padding:10px;
       --danger: #ff6b81;
+}
       --success: #36c486;
+
       --border: #23417f;
+.card{
       --shadow: rgba(106, 168, 255, 0.2);
+    background:#1e293b;
     }
+    border-radius:20px;
     * { box-sizing: border-box; }
+    padding:15px;
     body {
+    margin-bottom:12px;
       margin: 0;
+}
       font-family: Inter, Segoe UI, Arial, sans-serif;
+
       color: var(--text);
+input,select,button{
       background:
+    width:100%;
         radial-gradient(circle at 12% 15%, rgba(66,137,255,.22), transparent 40%),
+    padding:12px;
         radial-gradient(circle at 87% 12%, rgba(86,154,255,.20), transparent 35%),
+    margin:6px 0;
         linear-gradient(145deg, var(--bg), var(--bg-alt));
+    border-radius:12px;
       min-height: 100vh;
+    border:none;
       transition: background .25s ease, color .25s ease;
+}
     }
+
     .shell { max-width: 980px; margin: 0 auto; padding: 16px; }
+button{
     .header { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    background:#38bdf8;
     .brand { font-size: 30px; font-weight: 900; color: var(--primary); text-shadow: 0 0 16px color-mix(in oklab, var(--primary) 55%, transparent); }
+    color:white;
     .subtitle { color: var(--muted); font-size: 13px; }
+    font-weight:bold;
     .toolbar { display: flex; gap: 8px; flex-wrap: wrap; }
+}
     .btn, select, input, textarea {
+
       border-radius: 12px; border: 1px solid var(--border);
+#tip{
       background: var(--card); color: var(--text); font-size: 14px;
+    text-align:center;
     }
+    opacity:0;
     .btn { padding: 10px 12px; border: none; color: #fff; background: linear-gradient(90deg,var(--primary),var(--primary-2)); font-weight: 700; cursor: pointer; }
+    transition:1s;
     .btn.ghost { color: var(--text); border:1px solid var(--border); background: var(--card); }
+}
     .btn.danger { background: var(--danger); }
+.show{opacity:1;}
     .btn.success { background: var(--success); }
+</style>
 
-    .card { background: color-mix(in oklab, var(--card) 92%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-top: 12px; box-shadow: 0 8px 26px var(--shadow); }
-    .grid-2, .grid-3 { display: grid; gap: 10px; }
-    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
-    label { display:block; margin-bottom: 5px; color: var(--muted); font-size: 12px; font-weight: 600; }
-    input, select, textarea { width: 100%; padding: 10px; }
-    textarea { min-height: 90px; resize: vertical; }
-    .kpis { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px; }
-    .kpi { border:1px solid var(--border); border-radius: 12px; padding:10px; background:var(--card); }
-    .kpi .v { font-size: 22px; font-weight: 800; }
-    .small { color: var(--muted); font-size: 12px; }
-
-    .plan-list li { margin: 8px 0; }
-    .list-item { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; border:1px solid var(--border); border-radius: 12px; padding: 8px; margin-top: 8px; background: var(--card); }
-    .done { text-decoration: line-through; opacity: .75; }
-    .chip { font-size:11px; border-radius: 999px; background: color-mix(in oklab, var(--primary) 17%, transparent); color: var(--primary); padding: 2px 8px; font-weight: 700; }
-    .orientation-tip { margin-top:8px; }
-
-    @media (max-width: 760px) {
-      .grid-2, .grid-3, .kpis { grid-template-columns: 1fr; }
-      .brand { font-size: 24px; }
-    }
-
-    @media (orientation: landscape) and (max-width: 900px) {
-      .shell { max-width: 100%; padding: 10px; }
-      .card { padding: 10px; }
-    }
-  </style>
 </head>
+    .card { background: color-mix(in oklab, var(--card) 92%, transparent); backdrop-filter: blur(6px); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-top: 12px; box-shadow: 0 8px 26px var(--shadow); }
+
+    .grid-2, .grid-3 { display: grid; gap: 10px; }
 <body>
-  <main class="shell">
-    <section class="header">
-      <div>
-        <div class="brand">💪 BODYXP PRO</div>
-        <div class="subtitle">Complex Mode: Meal Engine + Workouts + Reminders + Testimonials + Theme + Orientation support</div>
-      </div>
-      <div class="toolbar">
-        <button class="btn ghost" onclick="toggleTheme()" id="themeBtn">Switch Theme</button>
-        <button class="btn ghost" onclick="requestRotate()">Auto Rotate</button>
-              </div>
-    </section>
+    .grid-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
 
-    <section class="card">
-      <h3>Advanced Meal Planner</h3>
-      <div class="grid-3">
-        <div><label>Age</label><input id="age" type="number" min="1" max="120" placeholder="Age" /></div>
-        <div><label>Diet</label><select id="diet"><option value="veg">Veg</option><option value="non-veg">Non-Veg</option></select></div>
-        <div><label>Cuisine</label><select id="cuisine"><option value="indian">Indian</option><option value="english">English</option><option value="indian-english">Indian+English</option></select></div>
-      </div>
-      <div class="grid-3" style="margin-top:8px;">
-        <div><label>Height (cm)</label><input id="height" type="number" min="40" max="260" /></div>
-        <div><label>Weight (kg)</label><input id="weight" type="number" min="15" max="350" /></div>
-        <div><label>Target (kg)</label><input id="target" type="number" min="15" max="350" /></div>
-      </div>
-      <div style="margin-top:10px"><button class="btn" onclick="generatePlan()">Generate Complex Plan</button></div>
-      <div id="error" class="small" style="margin-top:6px"></div>
-    </section>
+    .grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+<div class="header">
+    label { display:block; margin-bottom: 5px; color: var(--muted); font-size: 12px; font-weight: 600; }
+<div class="logo">⚡ BODYXP</div>
+    input, select, textarea { width: 100%; padding: 10px; }
+</div>
+    textarea { min-height: 90px; resize: vertical; }
 
-    <section class="card" id="output">Fill details and click Generate.</section>
+    .kpis { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:10px; }
+<div class="app">
+    .kpi { border:1px solid var(--border); border-radius: 12px; padding:10px; background:var(--card); }
 
-    <section class="card">
-      <h3>Workout Tracker</h3>
-      <div class="grid-2">
-        <input id="workoutInput" placeholder="Add workout" />
-        <button class="btn success" onclick="addWorkout()">Add Workout</button>
-      </div>
-      <div id="workoutList"></div>
-    </section>
+    .kpi .v { font-size: 22px; font-weight: 800; }
+<div class="card">
+    .small { color: var(--muted); font-size: 12px; }
+<input id="age" placeholder="Age">
 
-    <section class="card">
-      <h3>Reminders</h3>
-      <div class="grid-2">
-        <input id="reminderText" placeholder="Reminder text" />
-        <input id="reminderTime" type="datetime-local" />
-      </div>
-      <div style="margin-top:8px"><button class="btn success" onclick="addReminder()">Add Reminder</button></div>
-      <div id="reminderList"></div>
-    </section>
+<input id="height" placeholder="Height (cm)">
+    .plan-list li { margin: 8px 0; }
+<input id="weight" placeholder="Weight">
+    .list-item { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; border:1px solid var(--border); border-radius: 12px; padding: 8px; margin-top: 8px; background: var(--card); }
+<input id="target" placeholder="Target Weight">
+    .done { text-decoration: line-through; opacity: .75; }
+<input id="water" placeholder="Water Intake">
+    .chip { font-size:11px; border-radius: 999px; background: color-mix(in oklab, var(--primary) 17%, transparent); color: var(--primary); padding: 2px 8px; font-weight: 700; }
 
-    <section class="card">
-      <h3>Testimonials</h3>
-      <div class="grid-2">
-        <input id="tName" placeholder="Name" />
-        <select id="tRating"><option>⭐ 1</option><option>⭐ 2</option><option>⭐ 3</option><option>⭐ 4</option><option selected>⭐ 5</option></select>
-      </div>
-      <textarea id="tMsg" placeholder="Write your testimonial"></textarea>
-      <div style="margin-top:8px"><button class="btn" onclick="addTestimonial()">Submit Testimonial</button></div>
-      <div id="testimonialList"></div>
-    </section>
+    .orientation-tip { margin-top:8px; }
+<select id="diet">
 
-    <section class="card">
-      <h3>Device / Orientation</h3>
-      <div id="orientationInfo" class="small"></div>
-      <div class="orientation-tip small">Auto Rotate tries Screen Orientation API (works on supported mobile browsers only).</div>
-    </section>
-  </main>
+<option value="veg">Veg</option>
+    @media (max-width: 760px) {
+<option value="non-veg">Non-Veg</option>
+      .grid-2, .grid-3, .kpis { grid-template-columns: 1fr; }
+</select>
+      .brand { font-size: 24px; }
 
+    }
+<button onclick="generate()">Generate Plan</button>
+
+</div>
+    @media (orientation: landscape) and (max-width: 900px) {
+
+      .shell { max-width: 100%; padding: 10px; }
+<div id="output" class="card"></div>
+      .card { padding: 10px; }
+<div id="tip"></div>
+    }
+
+  </style>
+</div>
+</head>
+
+<body>
 <script>
+  <main class="shell">
+
+    <section class="header">
+// FULL MEAL SYSTEM
+      <div>
+let meals={
+        <div class="brand">💪 BODYXP PRO</div>
+veg:{
+        <div class="subtitle">Meal Planner + Workouts + Reminders + Testimonials + Theme + Orientation support</div>
+child:{
+      </div>
+lose:{
+      <div class="toolbar">
+Monday:["Fruit","Dal","Soup"],
+        <button class="btn ghost" onclick="toggleTheme()" id="themeBtn">Switch Theme</button>
+Tuesday:["Milk","Roti","Khichdi"],
+        <button class="btn ghost" onclick="requestRotate()">Auto Rotate</button>
+Wednesday:["Oats","Dal","Soup"],
+              </div>
+Thursday:["Apple","Paneer","Veg"],
+    </section>
+Friday:["Poha","Rice","Soup"]
+
+},
+    <section class="card">
+gain:{
+      <h3>Google Sign-In</h3>
+Monday:["Milkshake","Paneer","Roti"],
+      <div class="small">Add your Google Web Client ID once, then sign in to sync your profile on this browser.</div>
+Tuesday:["Banana milk","Dal","Paneer"],
+      <div class="grid-2" style="margin-top:8px;">
+Wednesday:["Oats nuts","Rice","Curd"],
+        <input id="googleClientId" placeholder="Google Web Client ID" />
+Thursday:["Smoothie","Paneer","Veg"],
+        <button class="btn" onclick="saveGoogleClientId()">Save Client ID</button>
+Friday:["Upma","Dal","Curd"]
+      </div>
+},
+      <div class="toolbar" style="margin-top:8px;">
+maintain:{
+        <button class="btn success" onclick="startGoogleSignIn()" id="googleSignInBtn">Sign in with Google</button>
+Monday:["Poha","Dal","Veg"],
+        <button class="btn danger" onclick="signOutGoogle()">Sign out</button>
+Tuesday:["Milk fruit","Rice","Light"],
+      </div>
+Wednesday:["Upma","Roti","Soup"],
+      <div id="googleUser" class="small" style="margin-top:8px;">Not signed in.</div>
+Thursday:["Oats","Paneer","Veg"],
+    </section>
+Friday:["Idli","Dal","Sabzi"]
+
+}
+    <section class="card">
+},
+      <h3>Advanced Meal Planner</h3>
+
+      <div class="grid-3">
+teen:{
+        <div><label>Age</label><input id="age" type="number" min="1" max="120" placeholder="Age" /></div>
+lose:{
+        <div><label>Diet</label><select id="diet"><option value="veg">Veg</option><option value="non-veg">Non-Veg</option></select></div>
+Monday:["Oats","Salad","Soup"],
+        <div><label>Cuisine</label><select id="cuisine"><option value="indian">Indian</option><option value="english">English</option><option value="indian-english">Indian+English</option></select></div>
+Tuesday:["Fruit","Roti","Light"],
+      </div>
+Wednesday:["Smoothie","Dal","Soup"],
+      <div class="grid-3" style="margin-top:8px;">
+Thursday:["Apple","Paneer","Light"],
+        <div><label>Height (cm)</label><input id="height" type="number" min="40" max="260" /></div>
+Friday:["Poha","Dal","Soup"]
+        <div><label>Weight (kg)</label><input id="weight" type="number" min="15" max="350" /></div>
+},
+        <div><label>Target (kg)</label><input id="target" type="number" min="15" max="350" /></div>
+gain:{
+      </div>
+Monday:["Shake","Rice","Paneer"],
+      <div style="margin-top:10px"><button class="btn" onclick="generatePlan()">Generate Plan</button></div>
+Tuesday:["Banana shake","Dal","Paneer"],
+      <div id="error" class="small" style="margin-top:6px"></div>
+Wednesday:["Oats nuts","Rice","Curd"],
+    </section>
+Thursday:["Smoothie","Paneer","Veg"],
+
+Friday:["Upma","Dal","Curd"]
+    <section class="card" id="output">Fill details and click Generate.</section>
+},
+
+maintain:{
+    <section class="card">
+Monday:["Poha","Dal","Veg"],
+      <h3>Workout Tracker</h3>
+Tuesday:["Milk","Rice","Light"],
+      <div class="grid-2">
+Wednesday:["Upma","Roti","Soup"],
+        <input id="workoutInput" placeholder="Add workout" />
+Thursday:["Oats","Paneer","Veg"],
+        <button class="btn success" onclick="addWorkout()">Add Workout</button>
+Friday:["Idli","Dal","Sabzi"]
+      </div>
+}
+      <div id="workoutList"></div>
+},
+    </section>
+
+
+adult:{
+    <section class="card">
+lose:{
+      <h3>Reminders</h3>
+Monday:["Oats","Veg","Soup"],
+      <div class="grid-2">
+Tuesday:["Fruit","Salad","Light"],
+        <input id="reminderText" placeholder="Reminder text" />
+Wednesday:["Smoothie","Dal","Soup"],
+        <input id="reminderTime" type="datetime-local" />
+Thursday:["Apple","Paneer","Light"],
+      </div>
+Friday:["Poha","Dal","Soup"]
+      <div style="margin-top:8px"><button class="btn success" onclick="addReminder()">Add Reminder</button></div>
+},
+      <div id="reminderList"></div>
+gain:{
+    </section>
+Monday:["Protein shake","Paneer","Meal"],
+
+Tuesday:["Banana shake","Dal","Paneer"],
+    <section class="card">
+Wednesday:["Oats","Rice","Curd"],
+      <h3>Testimonials</h3>
+Thursday:["Smoothie","Paneer","Veg"],
+      <div class="grid-2">
+Friday:["Upma","Dal","Curd"]
+        <input id="tName" placeholder="Name" />
+},
+        <select id="tRating"><option>⭐ 1</option><option>⭐ 2</option><option>⭐ 3</option><option>⭐ 4</option><option selected>⭐ 5</option></select>
+maintain:{
+      </div>
+Monday:["Idli","Meal","Light"],
+      <textarea id="tMsg" placeholder="Write your testimonial"></textarea>
+Tuesday:["Poha","Dal","Veg"],
+      <div style="margin-top:8px"><button class="btn" onclick="addTestimonial()">Submit Testimonial</button></div>
+Wednesday:["Upma","Rice","Sabzi"],
+      <div id="testimonialList"></div>
+Thursday:["Oats","Paneer","Veg"],
+    </section>
+Friday:["Roti","Dal","Light"]
+
+}
+    <section class="card">
+},
+      <h3>Device / Orientation</h3>
+
+      <div id="orientationInfo" class="small"></div>
+senior:{
+      <div class="orientation-tip small">Auto Rotate tries Screen Orientation API (works on supported mobile browsers only).</div>
+lose:{
+    </section>
+Monday:["Porridge","Dal","Soup"],
+  </main>
+Tuesday:["Fruit","Khichdi","Light"],
+
+Wednesday:["Oats","Dal","Soup"],
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+Thursday:["Apple","Paneer","Light"],
+<script>
+Friday:["Poha","Dal","Soup"]
 const K = {
+},
   workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials',
-  theme: 'bodyxp_theme', visits: 'bodyxp_visits', lastVisit: 'bodyxp_last_visit'
+gain:{
+  theme: 'bodyxp_theme', visits: 'bodyxp_visits', lastVisit: 'bodyxp_last_visit',
+Monday:["Milk","Rice","Paneer"],
+  googleClientId: 'bodyxp_google_client_id', googleProfile: 'bodyxp_google_profile'
+Tuesday:["Banana","Dal","Curd"],
 };
+Wednesday:["Oats","Rice","Curd"],
 const mealCore = {
+Thursday:["Smoothie","Paneer","Veg"],
   indian: {
+Friday:["Upma","Dal","Curd"]
     veg: ['Poha','Idli-Sambar','Roti+Dal','Paneer Bhurji','Khichdi','Upma','Rajma Rice','Dosa','Veg Pulao'],
+},
     'non-veg': ['Egg Bhurji','Chicken Curry','Fish Curry','Keema','Omelette+Roti','Chicken Soup','Tandoori Chicken']
+maintain:{
   },
+Monday:["Soft idli","Dal","Light"],
   english: {
+Tuesday:["Poha","Dal","Veg"],
     veg: ['Oatmeal','Veg Sandwich','Quinoa Bowl','Greek Yogurt','Pasta Primavera','Avocado Toast','Veg Wrap'],
+Wednesday:["Upma","Rice","Sabzi"],
     'non-veg': ['Scrambled Eggs','Grilled Chicken','Baked Fish','Turkey Wrap','Chicken Salad','Roast Chicken']
+Thursday:["Oats","Paneer","Veg"],
   }
+Friday:["Roti","Dal","Light"]
 };
+}
 const tipPool = ['Hydrate every 2 hours','Train smart, not just hard','Sleep is anabolic','Track consistency daily','Fiber keeps you full'];
+}
 
+},
 function read(key, fallback = []) { try { const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; } catch { return fallback; } }
+
 function write(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+"non-veg":{
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+child:{
 function clamp(n,min,max){ return Math.min(max, Math.max(min,n)); }
+lose:{
 function ageGroup(age){ return age < 13 ? 'Child' : age < 18 ? 'Teen' : age >= 80 ? 'Senior' : 'Adult'; }
+Monday:["Eggs","Chicken","Soup"],
 function bmi(weight,height){ return weight / ((height / 100) ** 2); }
+Tuesday:["Egg","Chicken","Light"],
 function bmiStatus(b){ return b<18.5?'Underweight': b<25?'Healthy': b<30?'Overweight':'Obese'; }
+Wednesday:["Eggs","Chicken","Soup"],
 function goalStatus(weight,target){ return target<weight?'Fat Loss': target>weight?'Muscle Gain':'Maintenance'; }
+Thursday:["Fish","Roti","Light"],
 
+Friday:["Eggs","Chicken","Soup"]
 function buildComplexWeeklyPlan(cuisine,diet,goal){
+},
   const base = cuisine === "indian-english"
+gain:{
     ? [...mealCore.indian[diet], ...mealCore.english[diet]]
+Monday:["Egg","Chicken","Fish"],
     : mealCore[cuisine][diet];
+Tuesday:["Omelette","Chicken","Egg"],
   const goalBias = goal === 'Fat Loss' ? ['Salad','Soup','Steamed Veggies'] : goal === 'Muscle Gain' ? ['Protein Shake','Nuts','Egg Whites'] : ['Fruit Bowl','Yogurt','Mixed Seeds'];
+Wednesday:["Egg","Chicken","Fish"],
   const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+Thursday:["Chicken","Rice","Egg"],
   return days.map(day => {
+Friday:["Omelette","Chicken","Fish"]
     const breakfast = pickRandom(base);
+},
     const lunch = pickRandom(base);
+maintain:{
     const dinner = pickRandom(base);
+Monday:["Egg","Chicken","Light"],
     const booster = pickRandom(goalBias);
+Tuesday:["Omelette","Chicken","Soup"],
     return { day, breakfast, lunch, dinner, booster };
+Wednesday:["Egg","Fish","Light"],
   });
+Thursday:["Chicken","Soup","Light"],
 }
+Friday:["Egg","Chicken","Light"]
 
+}
 function validateForm(v){
+},
   if (![v.age,v.height,v.weight,v.target].every(Number.isFinite)) return 'Please fill all numeric fields.';
+
   if (v.age<1||v.age>120) return 'Age out of range.';
+teen:{
   if (v.height<40||v.height>260) return 'Height out of range.';
+lose:{
   if (v.weight<15||v.weight>350) return 'Weight out of range.';
+Monday:["Eggs","Chicken","Soup"],
   if (v.target<15||v.target>350) return 'Target out of range.';
+Tuesday:["Egg whites","Chicken","Light"],
   return '';
+Wednesday:["Eggs","Chicken","Soup"],
 }
+Thursday:["Fish","Light","Meal"],
 
+Friday:["Eggs","Chicken","Soup"]
 function generatePlan(){
+},
   const payload = {
+gain:{
     age: Number(age.value), height: Number(height.value), weight: Number(weight.value), target: Number(target.value),
+Monday:["Eggs","Chicken","Fish"],
     diet: diet.value, cuisine: cuisine.value
+Tuesday:["Omelette","Chicken","Egg"],
   };
+Wednesday:["Eggs","Chicken","Fish"],
   const err = validateForm(payload);
+Thursday:["Chicken","Rice","Egg"],
   if (err) { error.textContent = err; return; }
+Friday:["Omelette","Chicken","Fish"]
   error.textContent = '';
+},
 
+maintain:{
   const group = ageGroup(payload.age);
+Monday:["Egg","Chicken","Light"],
   const b = bmi(payload.weight, payload.height);
+Tuesday:["Omelette","Chicken","Soup"],
   const goal = goalStatus(payload.weight, payload.target);
+Wednesday:["Egg","Fish","Light"],
   const weekly = buildComplexWeeklyPlan(payload.cuisine, payload.diet, goal);
+Thursday:["Chicken","Soup","Light"],
   const weeklyHtml = weekly.map(d => `<li><b>${d.day}:</b> 🍳 ${d.breakfast} | 🍛 ${d.lunch} | 🌙 ${d.dinner} <span class='chip'>Booster: ${d.booster}</span></li>`).join('');
+Friday:["Egg","Chicken","Light"]
 
+}
   output.innerHTML = `
+},
     <h3>Health & Plan Analytics</h3>
+
     <div class='kpis'>
+adult:{
       <div class='kpi'><div class='small'>BMI</div><div class='v'>${b.toFixed(1)}</div><div class='small'>${bmiStatus(b)}</div></div>
+lose:{
       <div class='kpi'><div class='small'>Age Group</div><div class='v'>${group}</div><div class='small'>Auto detected</div></div>
+Monday:["Egg whites","Chicken","Soup"],
       <div class='kpi'><div class='small'>Goal</div><div class='v'>${goal}</div><div class='small'>From current vs target</div></div>
+Tuesday:["Eggs","Chicken","Light"],
     </div>
+Wednesday:["Eggs","Chicken","Soup"],
     <p><b>Meal Plan for - ${group}</b> | Cuisine: <b>${payload.cuisine === "indian-english" ? "INDIAN+ENGLISH" : payload.cuisine.toUpperCase()}</b> | Diet: <b>${payload.diet.toUpperCase()}</b></p>
+Thursday:["Fish","Meal","Light"],
     <ul class='plan-list'>${weeklyHtml}</ul>
+Friday:["Eggs","Chicken","Soup"]
     <p class='small'>Tip Cycle: ${pickRandom(tipPool)} • ${pickRandom(tipPool)}</p>
+},
   `;
+gain:{
 }
+Monday:["Egg","Chicken","Fish"],
 
+Tuesday:["Omelette","Chicken","Egg"],
 function renderWorkouts(){
+Wednesday:["Egg","Chicken","Fish"],
   const list = read(K.workouts, []);
+Thursday:["Chicken","Rice","Egg"],
   workoutList.innerHTML = list.length ? list.map((w,i)=>`<div class='list-item'><div class='${w.done?'done':''}'><b>${w.text}</b><div class='small'>${w.createdAt}</div></div><div><button class='btn ghost' onclick='toggleWorkout(${i})'>${w.done?'Undo':'Done'}</button> <button class='btn danger' onclick='removeWorkout(${i})'>Delete</button></div></div>`).join('') : '<div class="small">No workouts yet.</div>';
+Friday:["Omelette","Chicken","Fish"]
 }
+},
 function addWorkout(){ const text = workoutInput.value.trim(); if (!text) return; const list = read(K.workouts, []); list.push({ text, done:false, createdAt:new Date().toLocaleString() }); write(K.workouts, list); workoutInput.value=''; renderWorkouts(); }
+maintain:{
 function toggleWorkout(i){ const list = read(K.workouts, []); if (!list[i]) return; list[i].done = !list[i].done; write(K.workouts, list); renderWorkouts(); }
+Monday:["Egg","Chicken","Light"],
 function removeWorkout(i){ const list = read(K.workouts, []); list.splice(i,1); write(K.workouts, list); renderWorkouts(); }
+Tuesday:["Omelette","Chicken","Soup"],
 
+Wednesday:["Egg","Fish","Light"],
 function renderReminders(){
+Thursday:["Chicken","Soup","Light"],
   const list = read(K.reminders, []).sort((a,b)=>new Date(a.time)-new Date(b.time));
+Friday:["Egg","Chicken","Light"]
   reminderList.innerHTML = list.length ? list.map((r,i)=>`<div class='list-item'><div><b>${r.text}</b><div class='small'>${new Date(r.time).toLocaleString()}</div></div><button class='btn danger' onclick='removeReminder(${i})'>Delete</button></div>`).join('') : '<div class="small">No reminders yet.</div>';
 }
+}
+},
 function addReminder(){ const text=reminderText.value.trim(), time=reminderTime.value; if(!text||!time) return; const list=read(K.reminders, []); list.push({text,time,createdAt:Date.now()}); write(K.reminders,list); reminderText.value=''; reminderTime.value=''; renderReminders(); }
+
 function removeReminder(i){ const list=read(K.reminders, []).sort((a,b)=>new Date(a.time)-new Date(b.time)); list.splice(i,1); write(K.reminders,list); renderReminders(); }
+senior:{
 
+lose:{
 function renderTestimonials(){
+Monday:["Egg","Chicken","Soup"],
   const list = read(K.testimonials, []);
+Tuesday:["Egg","Fish","Light"],
   testimonialList.innerHTML = list.length ? list.map(t=>`<div class='list-item'><div><b>${t.name}</b> ${t.rating}<div>${t.msg}</div><div class='small'>${t.createdAt}</div></div><button class='btn danger' onclick='removeTestimonial("${t.id}")'>Delete</button></div>`).join('') : '<div class="small">No testimonials yet. Add one above.</div>';
+Wednesday:["Egg","Soup","Light"],
 }
+Thursday:["Fish","Soft","Light"],
 function addTestimonial(){ const name=tName.value.trim(), msg=tMsg.value.trim(), rating=tRating.value; if(!name||!msg) return; const list=read(K.testimonials, []); list.unshift({ id:`t_${Date.now()}_${Math.random().toString(16).slice(2,8)}`, name, msg, rating, createdAt:new Date().toLocaleString() }); write(K.testimonials, list); tName.value=''; tMsg.value=''; renderTestimonials(); }
+Friday:["Egg","Chicken","Soup"]
 function removeTestimonial(id){ const list=read(K.testimonials, []).filter(t=>t.id!==id); write(K.testimonials,list); renderTestimonials(); }
+},
 
-function toggleTheme(){
-  const makeDark = !document.body.classList.contains('dark');
-  document.body.classList.toggle('dark', makeDark);
-  localStorage.setItem(K.theme, makeDark ? 'dark':'light');
-  themeBtn.textContent = makeDark ? 'Switch to Light' : 'Switch to Dark';
+gain:{
+
+Monday:["Egg","Chicken","Fish"],
+function saveGoogleClientId(){
+Tuesday:["Egg","Rice","Chicken"],
+  const cid = googleClientId.value.trim();
+Wednesday:["Egg","Chicken","Fish"],
+  if (!cid) { googleUser.textContent = 'Please enter a Google Web Client ID.'; return; }
+Thursday:["Fish","Rice","Egg"],
+  localStorage.setItem(K.googleClientId, cid);
+Friday:["Egg","Chicken","Fish"]
+  googleUser.textContent = 'Client ID saved. Click "Sign in with Google".';
+},
 }
+maintain:{
 
-async function requestRotate(){
+Monday:["Egg","Chicken","Light"],
+function parseJwt(token){
+Tuesday:["Egg","Rice","Soup"],
   try {
+Wednesday:["Egg","Fish","Light"],
+    const payload = token.split('.')[1];
+Thursday:["Chicken","Soup","Light"],
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+Friday:["Egg","Rice","Light"]
+    const json = decodeURIComponent(atob(normalized).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
+}
+    return JSON.parse(json);
+}
+  } catch {
+}
+    return null;
+};
+  }
+
+}
+// BMI
+
+function bmi(w,h){
+function handleGoogleCredentialResponse(response){
+return (w/((h/100)**2)).toFixed(2);
+  const profile = parseJwt(response.credential);
+}
+  if (!profile) { googleUser.textContent = 'Google sign-in failed. Please try again.'; return; }
+
+  const safeProfile = {
+// TIPS
+    name: profile.name || '',
+function tips(extra){
+    email: profile.email || '',
+let list=["Stay hydrated","Exercise","Eat healthy","Sleep well"];
+    picture: profile.picture || '',
+if(extra) list.push(extra);
+    loginAt: new Date().toISOString()
+
+  };
+let i=0;
+  localStorage.setItem(K.googleProfile, JSON.stringify(safeProfile));
+setInterval(()=>{
+  renderGoogleUser();
+tip.classList.remove("show");
+}
+setTimeout(()=>{
+
+tip.innerText=list[i];
+function startGoogleSignIn(){
+tip.classList.add("show");
+  const cid = (googleClientId.value || localStorage.getItem(K.googleClientId) || '').trim();
+i=(i+1)%list.length;
+  if (!cid) {
+},500);
+    googleUser.textContent = 'Save your Google Web Client ID first.';
+},3000);
+    return;
+}
+  }
+
+  if (!window.google || !google.accounts || !google.accounts.id) {
+// MAIN
+    googleUser.textContent = 'Google library not loaded. Check internet and refresh.';
+function generate(){
+    return;
+let a=Number(age.value);
+  }
+let h=Number(height.value);
+  localStorage.setItem(K.googleClientId, cid);
+let w=Number(weight.value);
+  google.accounts.id.initialize({
+let t=Number(target.value);
+    client_id: cid,
+let diet=document.getElementById("diet").value;
+    callback: handleGoogleCredentialResponse,
+
+    auto_select: false
+// AGE GROUP
+  });
+let group="adult";
+  google.accounts.id.prompt();
+if(a<13) group="child";
+}
+else if(a<18) group="teen";
+
+else if(a<80) group="adult";
+function signOutGoogle(){
+else group="senior";
+  localStorage.removeItem(K.googleProfile);
+
+  renderGoogleUser();
+// GOAL
+}
+let goal="maintain";
+
+if(t<w) goal="lose";
+function renderGoogleUser(){
+else if(t>w) goal="gain";
+  const raw = localStorage.getItem(K.googleProfile);
+
+  if (!raw) {
+// GET WEEK
+    googleUser.textContent = 'Not signed in.';
+let week=meals[diet][group][goal];
+    return;
+
+  }
+// OUTPUT
+  try {
+let out="<h3>Meal Plan</h3>";
+    const p = JSON.parse(raw);
+
+    googleUser.textContent = `Signed in as ${p.name || 'User'} (${p.email || 'no-email'})`;
+["Monday","Tuesday","Wednesday","Thursday","Friday"].forEach(day=>{
+  } catch {
+let m=week[day];
+    googleUser.textContent = 'Not signed in.';
+
+  }
+out+=`<p><b>${day}</b><br>
+}
+🍳 ${m[0]}<br>
+
+🍛 ${m[1]}<br>
+function toggleTheme(){
+🌙 ${m[2]}</p>`;
+  const makeDark = !document.body.classList.contains('dark');
+});
+  document.body.classList.toggle('dark', makeDark);
+
+  localStorage.setItem(K.theme, makeDark ? 'dark':'light');
+output.innerHTML=out;
+  themeBtn.textContent = makeDark ? 'Switch to Light' : 'Switch to Dark';
+
+}
+// RULE
+
+let extra=null;
+async function requestRotate(){
+if(diet==="non-veg") extra="Avoid milk with fish";
+  try {
+
     if (screen.orientation && screen.orientation.lock) {
+tips(extra);
       const current = screen.orientation.type || 'portrait-primary';
+}
       const target = current.startsWith('portrait') ? 'landscape-primary' : 'portrait-primary';
+
       await screen.orientation.lock(target);
+</script>
       refreshOrientationInfo('Orientation lock success: ' + target);
+
     } else {
+</body>
       refreshOrientationInfo('Orientation lock not supported on this browser. Rotate device manually.');
+</html>
     }
   } catch (e) {
     refreshOrientationInfo('Orientation lock blocked by browser. Try full-screen/PWA mode.');
@@ -288,6 +734,8 @@ function trackVisit(){
 
 (function init(){
   const theme = localStorage.getItem(K.theme) || 'light';
+  googleClientId.value = localStorage.getItem(K.googleClientId) || '';
+  renderGoogleUser();
   document.body.classList.toggle('dark', theme === 'dark');
   themeBtn.textContent = theme === 'dark' ? 'Switch to Light' : 'Switch to Dark';
   renderWorkouts();
