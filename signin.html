@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,7 +32,7 @@
     <small id="msg"></small>
   </div>
 <script>
-function saveSession(session){ localStorage.setItem('bodyxp_session', JSON.stringify(session)); window.location.href='/'; }
+function saveSession(session){ localStorage.setItem('bodyxp_session', JSON.stringify(session)); window.location.href='../'; }
 function continueGuest(){ const name=(document.getElementById('name').value||'Guest').trim(); saveSession({mode:'guest',name,createdAt:new Date().toISOString()}); }
 function parseJwt(token){ try{const b=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));}catch{return null;} }
 function renderGoogleButton(){
