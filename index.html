@@ -87,11 +87,26 @@
   </style>
 </head>
 <body>
+<script>
+(function enforceSignIn(){
+  try {
+    const sessionRaw = localStorage.getItem('bodyxp_session');
+    const session = sessionRaw ? JSON.parse(sessionRaw) : null;
+    if (!session || !session.mode) {
+      window.location.href = '/signin';
+    }
+  } catch (_) {
+    window.location.href = '/signin';
+  }
+})();
+</script>
+
   <main class="shell">
     <section class="header">
       <div>
         <div class="brand">💪 BODYXP PRO</div>
         <div class="subtitle">Meal Planner + Workouts + Reminders + Testimonials + Theme + Orientation support</div>
+        <div id="sessionBadge" class="small"></div>
       </div>
       <div class="toolbar">
         <button class="btn ghost" onclick="toggleTheme()" id="themeBtn">Switch Theme</button>
@@ -300,6 +315,7 @@ function handleGoogleCredentialResponse(response){
   };
   localStorage.setItem(K.googleProfile, JSON.stringify(safeProfile));
   renderGoogleUser();
+  renderSessionBadge();
 }
 
 function startGoogleSignIn(){
@@ -337,6 +353,21 @@ function renderGoogleUser(){
     googleUser.textContent = `Signed in as ${p.name || 'User'} (${p.email || 'no-email'})`;
   } catch {
     googleUser.textContent = 'Not signed in.';
+  }
+}
+
+
+function renderSessionBadge(){
+  try {
+    const session = JSON.parse(localStorage.getItem('bodyxp_session') || 'null');
+    if (!session || !session.mode) {
+      sessionBadge.textContent = '';
+      return;
+    }
+    const who = session.mode === 'guest' ? 'Guest Mode' : `Signed in as ${session.name || 'User'}`;
+    sessionBadge.textContent = who;
+  } catch {
+    sessionBadge.textContent = 'Guest Mode';
   }
 }
 
