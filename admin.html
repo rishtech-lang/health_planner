@@ -3,83 +3,55 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BodyXP Admin Live</title>
+  <title>BodyXP Sign In</title>
   <style>
-    :root{--bg:#07142c;--card:#10274d;--text:#ecf3ff;--muted:#a8bee7;--border:#2b4e88;--accent:#70abff;}
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:linear-gradient(140deg,#07142c,#123770);color:var(--text)}
-    .wrap{max-width:980px;margin:0 auto;padding:16px}
-    .row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-    .card{background:color-mix(in oklab,var(--card) 94%, transparent);border:1px solid var(--border);border-radius:14px;padding:12px;margin-top:12px}
-    .metric{border:1px solid var(--border);border-radius:10px;padding:10px;background:#0c1f40}
-    .metric .v{font-size:20px;font-weight:800}
-    .small{color:var(--muted);font-size:12px}
-    .list-item{border:1px solid var(--border);border-radius:12px;padding:8px;margin-top:8px;background:#0d2144}
-    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
-    button,a{border:none;background:linear-gradient(90deg,#5293ff,#79b1ff);color:#08214c;padding:8px 12px;border-radius:9px;font-weight:800;cursor:pointer;text-decoration:none;display:inline-block}
-    @media (max-width: 820px){.row{grid-template-columns:1fr 1fr}}
-    @media (max-width: 520px){.row{grid-template-columns:1fr}}
+    :root { --bg:#021024; --card:#0b2a4a; --text:#e8f6ff; --muted:#9ec5dd; --primary:#4cc9f0; }
+    *{box-sizing:border-box} body{margin:0; min-height:100vh; display:grid; place-items:center; font-family:Segoe UI,sans-serif; color:var(--text);
+      background:radial-gradient(circle at 20% 20%, #0b3b75 0%, transparent 40%),radial-gradient(circle at 80% 10%, #12529a 0%, transparent 35%),var(--bg);} 
+    .card{width:min(92vw,460px); background:var(--card); border:1px solid #3f84bf; border-radius:18px; padding:22px;}
+    h1{margin:0 0 8px} p{margin:0 0 14px; color:var(--muted)}
+    input,button{width:100%; border-radius:10px; border:1px solid #3f84bf; padding:12px; font-size:15px; margin-top:10px}
+    input{background:#082543; color:var(--text)} button{background:var(--primary); color:#003049; font-weight:700; border:none; cursor:pointer}
+    .ghost{background:#0f3963; color:#c7ebff; border:1px solid #5aa7dc}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    small{display:block; margin-top:10px; color:var(--muted)}
   </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-<main class="wrap">
-  <h2>BodyXP Admin — Live Monitor</h2>
-  <div class="small">Auto-refreshing analytics and testimonials</div>
-  <div class="toolbar" style="margin-top:8px">
-    <button onclick="refreshAdmin()">Refresh Now</button>
-    <button onclick="toggleAutoRefresh()" id="autoBtn">Pause Auto-Refresh</button>
-    <a href="index.html">Back to App</a>
-  </div>
-
-  <section class="card">
-    <h3>Fresh Usage Panel</h3>
+  <div class="card">
+    <h1>Welcome to BODYXP</h1>
+    <p>Sign in with Google or continue in Guest mode.</p>
+    <input id="name" placeholder="Your name (for guest mode)" />
+    <input id="googleClientId" placeholder="Google Web Client ID (optional)" />
     <div class="row">
-      <div class="metric"><div class="small">Visits</div><div class="v" id="mVisits">0</div></div>
-      <div class="metric"><div class="small">Workouts</div><div class="v" id="mWorkouts">0</div></div>
-      <div class="metric"><div class="small">Reminders</div><div class="v" id="mReminders">0</div></div>
-      <div class="metric"><div class="small">Testimonials</div><div class="v" id="mTestimonials">0</div></div>
+      <button onclick="renderGoogleButton()">Load Google Button</button>
+      <button class="ghost" onclick="continueGuest()">Guest Mode</button>
     </div>
-    <div class="small" id="lastSynced" style="margin-top:8px">Last synced: --</div>
-  </section>
-
-  <section class="card">
-    <h3>Testimonials Feed</h3>
-    <div id="testimonialFeed"></div>
-  </section>
-</main>
+    <div id="googleBtn" style="margin-top:10px; display:flex; justify-content:center; min-height:44px"></div>
+    <small id="msg"></small>
+  </div>
 <script>
-const K = { workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials', visits: 'bodyxp_visits', lastVisit: 'bodyxp_last_visit' };
-let refreshTimer = null;
-let autoRefreshEnabled = true;
-function read(key, fallback = []) { try { const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; } catch { return fallback; } }
-function refreshAdmin(){
-  const workouts = read(K.workouts, []);
-  const reminders = read(K.reminders, []);
-  const testimonials = read(K.testimonials, []);
-  const visits = Number(localStorage.getItem(K.visits) || '0');
-  const lastVisit = localStorage.getItem(K.lastVisit) || '--';
-
-  mVisits.textContent = visits;
-  mWorkouts.textContent = workouts.length;
-  mReminders.textContent = reminders.length;
-  mTestimonials.textContent = testimonials.length;
-  lastSynced.textContent = `Last synced: ${new Date().toLocaleString()} | Last app visit: ${lastVisit}`;
-
-  testimonialFeed.innerHTML = testimonials.length
-    ? testimonials.map(t => `<div class='list-item'><b>${t.name}</b> ${t.rating}<div>${t.msg}</div><div class='small'>${t.createdAt || '--'}</div></div>`).join('')
-    : '<div class="small">No testimonials yet.</div>';
+function saveSession(session){ localStorage.setItem('bodyxp_session', JSON.stringify(session)); window.location.href='../'; }
+function continueGuest(){ const name=(document.getElementById('name').value||'Guest').trim(); saveSession({mode:'guest',name,createdAt:new Date().toISOString()}); }
+function parseJwt(token){ try{const b=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));}catch{return null;} }
+function renderGoogleButton(){
+  const cid=(document.getElementById('googleClientId').value||'').trim();
+  if(!cid){ document.getElementById('msg').textContent='Enter Google Web Client ID first.'; return; }
+  if(!window.google||!google.accounts||!google.accounts.id){ document.getElementById('msg').textContent='Google library not loaded. Refresh and try again.'; return; }
+  google.accounts.id.initialize({client_id:cid,callback:(res)=>{ const p=parseJwt(res.credential); if(!p){msg.textContent='Sign in failed';return;} saveSession({mode:'google',name:p.name||'User',email:p.email||'',createdAt:new Date().toISOString()}); }});
+  localStorage.setItem('bodyxp_google_client_id', cid);
+  const holder=document.getElementById('googleBtn'); holder.innerHTML='';
+  google.accounts.id.renderButton(holder,{theme:'outline',size:'large',text:'signin_with'});
+  google.accounts.id.prompt();
+  msg.textContent='Google button loaded. Click it to continue.';
 }
-function toggleAutoRefresh(){
-  autoRefreshEnabled = !autoRefreshEnabled;
-  autoBtn.textContent = autoRefreshEnabled ? 'Pause Auto-Refresh' : 'Resume Auto-Refresh';
-  if (autoRefreshEnabled) startAutoRefresh();
-  else stopAutoRefresh();
-}
-function startAutoRefresh(){ stopAutoRefresh(); refreshTimer = setInterval(refreshAdmin, 2000); }
-function stopAutoRefresh(){ if (refreshTimer) clearInterval(refreshTimer); refreshTimer = null; }
-window.addEventListener('storage', refreshAdmin);
-refreshAdmin();
-startAutoRefresh();
+
+window.addEventListener('load',()=>{
+  const saved=localStorage.getItem('bodyxp_google_client_id')||'';
+  document.getElementById('googleClientId').value=saved;
+  if(saved){ setTimeout(renderGoogleButton, 300); }
+});
 </script>
 </body>
 </html>
