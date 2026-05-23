@@ -93,10 +93,10 @@
     const sessionRaw = localStorage.getItem('bodyxp_session');
     const session = sessionRaw ? JSON.parse(sessionRaw) : null;
     if (!session || !session.mode) {
-      window.location.href = '/signin';
+      window.location.href = 'signin/';
     }
   } catch (_) {
-    window.location.href = '/signin';
+    window.location.href = 'signin/';
   }
 })();
 </script>
