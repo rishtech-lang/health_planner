@@ -16,7 +16,7 @@
     .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
     small{display:block; margin-top:10px; color:var(--muted)}
   </style>
-  <script src="https://accounts.google.com/v3/signin/accountchooser?dsh=S453784387%3A1779525597644111&elo=1&flowName=GlifWebSignIn&flowEntry=ServiceLogin&ifkv=AWa2PavpkWj3AIPzcHaWxdExsl1Vj3COcWhkHwUb2mQqUacbLDEdvQmgDo1EJi04C7w5KSKusEXamA" async defer></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
   <div class="card">
@@ -29,22 +29,22 @@
       <button class="ghost" onclick="continueGuest()">Guest Mode</button>
     </div>
     <div id="googleBtn" style="margin-top:10px; display:flex; justify-content:center; min-height:44px"></div>
-    <small id="msg"></small>
+    <small id="msg"></small><small>For Google Sign-In to work, create a Web Client ID in Google Cloud and add your site URL (for example, <code>https://YOUR_USERNAME.github.io</code> or <code>http://localhost</code>) to Authorized JavaScript origins.</small>
   </div>
 <script>
-function saveSession(session){ localStorage.setItem('bodyxp_session', JSON.stringify(session)); window.location.href='../'; }
+function saveSession(session){ localStorage.setItem('bodyxp_session', JSON.stringify(session)); window.location.href='index.html'; }
 function continueGuest(){ const name=(document.getElementById('name').value||'Guest').trim(); saveSession({mode:'guest',name,createdAt:new Date().toISOString()}); }
 function parseJwt(token){ try{const b=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));}catch{return null;} }
 function renderGoogleButton(){
   const cid=(document.getElementById('googleClientId').value||'').trim();
-  if(!cid){ document.getElementById('msg').textContent='Enter Google Web Client ID first.'; return; }
+  if(!cid){ document.getElementById('msg').textContent='Enter a valid Google Web Client ID first.'; return; }
   if(!window.google||!google.accounts||!google.accounts.id){ document.getElementById('msg').textContent='Google library not loaded. Refresh and try again.'; return; }
-  google.accounts.id.initialize({client_id:cid,callback:(res)=>{ const p=parseJwt(res.credential); if(!p){msg.textContent='Sign in failed';return;} saveSession({mode:'google',name:p.name||'User',email:p.email||'',createdAt:new Date().toISOString()}); }});
+  google.accounts.id.initialize({client_id:cid,callback:(res)=>{ const p=parseJwt(res.credential); if(!p){msg.textContent='Sign in failed. Check your Client ID and allowed origins in Google Cloud.';return;} saveSession({mode:'google',name:p.name||'User',email:p.email||'',createdAt:new Date().toISOString()}); }});
   localStorage.setItem('bodyxp_google_client_id', cid);
   const holder=document.getElementById('googleBtn'); holder.innerHTML='';
   google.accounts.id.renderButton(holder,{theme:'outline',size:'large',text:'signin_with'});
   google.accounts.id.prompt();
-  msg.textContent='Google button loaded. Click it to continue.';
+  msg.textContent='Google button loaded. If you see Error 401 invalid_client, fix Client ID or Authorized origins.';
 }
 
 window.addEventListener('load',()=>{
