@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BodyXP Sign In</title>
+  <style>
+    :root { --bg:#021024; --card:#0b2a4a; --text:#e8f6ff; --muted:#9ec5dd; --primary:#4cc9f0; }
+    *{box-sizing:border-box} body{margin:0; min-height:100vh; display:grid; place-items:center; font-family:Segoe UI,sans-serif; color:var(--text);
+      background:radial-gradient(circle at 20% 20%, #0b3b75 0%, transparent 40%),radial-gradient(circle at 80% 10%, #12529a 0%, transparent 35%),var(--bg);} 
+    .card{width:min(92vw,460px); background:var(--card); border:1px solid #3f84bf; border-radius:18px; padding:22px;}
+    h1{margin:0 0 8px} p{margin:0 0 14px; color:var(--muted)}
+    input,button{width:100%; border-radius:10px; border:1px solid #3f84bf; padding:12px; font-size:15px; margin-top:10px}
+    input{background:#082543; color:var(--text)} button{background:var(--primary); color:#003049; font-weight:700; border:none; cursor:pointer}
+    .ghost{background:#0f3963; color:#c7ebff; border:1px solid #5aa7dc}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    small{display:block; margin-top:10px; color:var(--muted)}
+  </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div class="card">
+    <h1>Welcome to BODYXP</h1>
+    <p>Sign in with Google or continue in Guest mode.</p>
+    <input id="name" placeholder="Your name (for guest mode)" />
+    <input id="googleClientId" placeholder="Google Web Client ID (optional)" />
+    <div class="row">
+      <button onclick="renderGoogleButton()">Load Google Button</button>
+      <button class="ghost" onclick="continueGuest()">Guest Mode</button>
+    </div>
+    <div id="googleBtn" style="margin-top:10px; display:flex; justify-content:center; min-height:44px"></div>
+    <small id="msg"></small>
+  </div>
+<script>
+function saveSession(session){ localStorage.setItem('bodyxp_session', JSON.stringify(session)); window.location.href='/'; }
+function continueGuest(){ const name=(document.getElementById('name').value||'Guest').trim(); saveSession({mode:'guest',name,createdAt:new Date().toISOString()}); }
+function parseJwt(token){ try{const b=token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/'); return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%' + ('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));}catch{return null;} }
+function renderGoogleButton(){
+  const cid=(document.getElementById('googleClientId').value||'').trim();
+  if(!cid){ document.getElementById('msg').textContent='Enter Google Web Client ID first.'; return; }
+  if(!window.google||!google.accounts||!google.accounts.id){ document.getElementById('msg').textContent='Google library not loaded. Refresh and try again.'; return; }
+  google.accounts.id.initialize({client_id:cid,callback:(res)=>{ const p=parseJwt(res.credential); if(!p){msg.textContent='Sign in failed';return;} saveSession({mode:'google',name:p.name||'User',email:p.email||'',createdAt:new Date().toISOString()}); }});
+  localStorage.setItem('bodyxp_google_client_id', cid);
+  const holder=document.getElementById('googleBtn'); holder.innerHTML='';
+  google.accounts.id.renderButton(holder,{theme:'outline',size:'large',text:'signin_with'});
+  google.accounts.id.prompt();
+  msg.textContent='Google button loaded. Click it to continue.';
+}
+
+window.addEventListener('load',()=>{
+  const saved=localStorage.getItem('bodyxp_google_client_id')||'';
+  document.getElementById('googleClientId').value=saved;
+  if(saved){ setTimeout(renderGoogleButton, 300); }
+});
+</script>
+</body>
+</html>
