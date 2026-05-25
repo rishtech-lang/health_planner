@@ -1,51 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    chrome.identity.getAuthToken({ interactive: true }, function(token) {     console.log(token); });
+<head>
+  <title>Health Planner Login</title>
+</head>
 
-    <script>
-      function decodeJWT(token) {
+<body>
 
-        let base64Url = token.split(".")[1];
-        let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-        let jsonPayload = decodeURIComponent(
-          atob(base64)
-            .split("")
-            .map(function (c) {
-              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join("")
-        );
-        return JSON.parse(jsonPayload);
-      }
+<h2>Health Planner Login</h2>
 
-      function handleCredentialResponse(response) {
+<button id="login">Login with Google</button>
 
-        console.log("Encoded JWT ID token: " + response.credential);
+<script>
 
-        const responsePayload = decodeJWT(response.credential);
+document.getElementById("login").addEventListener("click", () => {
 
-        console.log("Decoded JWT ID token fields:");
-        console.log("  Full Name: " + responsePayload.name);
-        console.log("  Given Name: " + responsePayload.given_name);
-        console.log("  Family Name: " + responsePayload.family_name);
-        console.log("  Unique ID: " + responsePayload.sub);
-        console.log("  Profile image URL: " + responsePayload.picture);
-        console.log("  Email: " + responsePayload.email);
-      }
-    </script>
-  </head>
-  <body>
-    <!-- g_id_onload contains Google Identity Services settings -->
-    <div
-      id="g_id_onload"
-      data-auto_prompt="false"
-      data-callback="handleCredentialResponse"
-      data-client_id="1073424233199-p71sarqblpq7ej09ldbf0esud34lnni6.apps.googleusercontent.com"
-    ></div>
-    <!-- g_id_signin places the button on a page and supports customization -->
-    <div class="g_id_signin"></div>
-    $ python3 -m http.server
-Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
-  </body>
+    chrome.identity.getAuthToken(
+        { interactive: true },
+
+        function(token) {
+
+            if (chrome.runtime.lastError) {
+                console.error(chrome.runtime.lastError);
+                alert(chrome.runtime.lastError.message);
+                return;
+            }
+
+            console.log("Google Access Token:", token);
+
+            alert("Login Successful!");
+
+            window.location.href = "index.html";
+        }
+    );
+
+});
+
+</script>
+
+</body>
 </html>
