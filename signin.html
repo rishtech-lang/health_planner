@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <script src="https://accounts.google.com/gsi/client" async></script>
+    chrome.identity.getAuthToken({ interactive: true }, function(token) {     console.log(token); });
 
     <script>
       function decodeJWT(token) {
