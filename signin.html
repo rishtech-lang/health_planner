@@ -1,41 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Health Planner Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BodyXP Sign In</title>
+  <style>
+    :root { --bg:#021024; --card:#0b2a4a; --text:#e8f6ff; --muted:#9ec5dd; --primary:#4cc9f0; }
+    *{box-sizing:border-box}
+    body{margin:0; min-height:100vh; display:grid; place-items:center; font-family:Segoe UI,sans-serif; color:var(--text);
+      background:radial-gradient(circle at 20% 20%, #0b3b75 0%, transparent 40%),radial-gradient(circle at 80% 10%, #12529a 0%, transparent 35%),var(--bg);} 
+    .card{width:min(92vw,500px); background:var(--card); border:1px solid #3f84bf; border-radius:18px; padding:22px;}
+    h1{margin:0 0 8px} p{margin:0 0 14px; color:var(--muted)}
+    input,button{width:100%; border-radius:10px; border:1px solid #3f84bf; padding:12px; font-size:15px; margin-top:10px}
+    input{background:#082543; color:var(--text)} button{background:var(--primary); color:#003049; font-weight:700; border:none; cursor:pointer}
+    .ghost{background:#0f3963; color:#c7ebff; border:1px solid #5aa7dc}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .google-wrap { margin-top: 12px; display:flex; justify-content:center; }
+    small{display:block; margin-top:10px; color:var(--muted)}
+    code{word-break:break-word}
+  </style>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
-
 <body>
+  <div class="card">
+    <h1>Welcome to BODYXP</h1>
+    <p>Sign in with Google or continue in Guest mode.</p>
 
-<h2>Health Planner Login</h2>
+    <input id="name" placeholder="Your name (for guest mode)" />
+    <input id="googleClientId" placeholder="Google Web Client ID" />
 
-<button id="login">Login with Google</button>
+    <div class="row">
+      <button type="button" onclick="saveClientIdAndRender()">Load Google Button</button>
+      <button type="button" class="ghost" onclick="continueGuest()">Guest Mode</button>
+    </div>
+
+    <button type="button" class="ghost" onclick="useAnotherGoogleAccount()">Use Another Google Account</button>
+
+    <div id="googleMount" class="google-wrap"></div>
+    <small id="msg"></small>
+    <small>Client ID must be a <b>Web application</b> ID ending in <code>.apps.googleusercontent.com</code>. Add your site origin (for example <code>https://YOUR_USERNAME.github.io</code>) in Google Cloud → Authorized JavaScript origins.</small>
+  </div>
 
 <script>
+const OAUTH = {
+  clientIdKey: 'bodyxp_google_client_id',
+  sessionKey: 'bodyxp_session',
+  profileKey: 'bodyxp_google_profile',
+  nonceKey: 'bodyxp_google_nonce'
+};
 
-document.getElementById("login").addEventListener("click", () => {
+function saveSession(session) {
+  localStorage.setItem(OAUTH.sessionKey, JSON.stringify(session));
+  window.location.href = 'index.html';
+}
 
-    chrome.identity.getAuthToken(
-        { interactive: true },
+function continueGuest() {
+  const name = (document.getElementById('name').value || 'Guest').trim();
+  saveSession({ mode: 'guest', name, createdAt: new Date().toISOString() });
+}
 
-        function(token) {
+function createNonce() {
+  const bytes = new Uint8Array(16);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+}
 
-            if (chrome.runtime.lastError) {
-                console.error(chrome.runtime.lastError);
-                alert(chrome.runtime.lastError.message);
-                return;
-            }
+function decodeJWT(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('')
+  );
+  return JSON.parse(jsonPayload);
+}
 
-            console.log("Google Access Token:", token);
+/**
+ * Basic client-side ID token checks (issuer, audience, exp, nonce).
+ * For production-grade security, verify the token signature server-side.
+ */
+function isTokenPayloadValid(profile, expectedClientId) {
+  const now = Math.floor(Date.now() / 1000);
+  const allowedIssuers = ['accounts.google.com', 'https://accounts.google.com'];
+  const nonce = sessionStorage.getItem(OAUTH.nonceKey);
+  return (
+    profile &&
+    allowedIssuers.includes(profile.iss) &&
+    profile.aud === expectedClientId &&
+    typeof profile.exp === 'number' && profile.exp > now &&
+    (!nonce || profile.nonce === nonce)
+  );
+}
 
-            alert("Login Successful!");
+function handleCredentialResponse(response) {
+  const msgEl = document.getElementById('msg');
+  try {
+    const clientId = (document.getElementById('googleClientId').value || '').trim();
+    const profile = decodeJWT(response.credential);
+    if (!isTokenPayloadValid(profile, clientId)) {
+      msgEl.textContent = 'Google token validation failed. Please verify client ID and origin setup.';
+      return;
+    }
 
-            window.location.href = "index.html";
-        }
-    );
+    localStorage.setItem(OAUTH.profileKey, JSON.stringify({
+      name: profile.name || 'User',
+      email: profile.email || '',
+      picture: profile.picture || '',
+      loginAt: new Date().toISOString()
+    }));
+    sessionStorage.removeItem(OAUTH.nonceKey);
 
+    saveSession({
+      mode: 'google',
+      name: profile.name || 'User',
+      email: profile.email || '',
+      createdAt: new Date().toISOString()
+    });
+  } catch (_) {
+    msgEl.textContent = 'Google sign-in failed. Please verify your Client ID and origin settings.';
+  }
+}
+
+function useAnotherGoogleAccount() {
+  const msgEl = document.getElementById('msg');
+  localStorage.removeItem(OAUTH.profileKey);
+  localStorage.removeItem(OAUTH.sessionKey);
+  sessionStorage.removeItem(OAUTH.nonceKey);
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+  msgEl.textContent = 'Account chooser reset. Click the Google button again.';
+}
+
+function renderGoogleButton(clientId) {
+  const mount = document.getElementById('googleMount');
+  const msgEl = document.getElementById('msg');
+
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    msgEl.textContent = 'Google script not loaded yet. Refresh and try again.';
+    return;
+  }
+
+  const nonce = createNonce();
+  sessionStorage.setItem(OAUTH.nonceKey, nonce);
+
+  google.accounts.id.initialize({
+    client_id: clientId,
+    callback: handleCredentialResponse,
+    auto_select: false,
+    cancel_on_tap_outside: true,
+    nonce
+  });
+
+  mount.innerHTML = '';
+  google.accounts.id.renderButton(mount, {
+    theme: 'outline',
+    size: 'large',
+    text: 'signin_with',
+    shape: 'pill',
+    width: 280
+  });
+
+  msgEl.textContent = 'Google button ready.';
+}
+
+function saveClientIdAndRender() {
+  const msgEl = document.getElementById('msg');
+  const clientId = (document.getElementById('googleClientId').value || '').trim();
+
+  if (!clientId || !clientId.endsWith('.apps.googleusercontent.com')) {
+    msgEl.textContent = 'Enter a valid Web Client ID ending with .apps.googleusercontent.com';
+    return;
+  }
+
+  localStorage.setItem(OAUTH.clientIdKey, clientId);
+  renderGoogleButton(clientId);
+}
+
+window.addEventListener('load', () => {
+  const savedClientId = localStorage.getItem(OAUTH.clientIdKey) || '';
+  document.getElementById('googleClientId').value = savedClientId;
+
+  if (savedClientId.endsWith('.apps.googleusercontent.com')) {
+    setTimeout(() => renderGoogleButton(savedClientId), 250);
+  }
 });
-
 </script>
-
 </body>
 </html>
