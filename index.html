@@ -74,6 +74,7 @@
     .done { text-decoration: line-through; opacity: .75; }
     .chip { font-size:11px; border-radius: 999px; background: color-mix(in oklab, var(--primary) 17%, transparent); color: var(--primary); padding: 2px 8px; font-weight: 700; }
     .orientation-tip { margin-top:8px; }
+    .avatar-circle { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; color:#fff; background:linear-gradient(90deg,var(--primary),var(--primary-2)); border:1px solid var(--border); }
 
     @media (max-width: 760px) {
       .grid-2, .grid-3, .kpis { grid-template-columns: 1fr; }
@@ -106,27 +107,16 @@
       <div>
         <div class="brand">💪 BODYXP PRO</div>
         <div class="subtitle">Meal Planner + Workouts + Reminders + Testimonials + Theme + Orientation support</div>
-        <div id="sessionBadge" class="small"></div>
+        
       </div>
       <div class="toolbar">
         <button class="btn ghost" onclick="toggleTheme()" id="themeBtn">Switch Theme</button>
         <button class="btn ghost" onclick="requestRotate()">Auto Rotate</button>
-              </div>
+        <div id="avatarCircle" class="avatar-circle" title="User initials">GU</div>
+      </div>
     </section>
 
-    <section class="card">
-      <h3>Google Sign-In</h3>
-      <div class="small">Add your Google Web Client ID once, then sign in to sync your profile on this browser.</div>
-      <div class="grid-2" style="margin-top:8px;">
-        <input id="googleClientId" placeholder="Google Web Client ID" />
-        <button class="btn" onclick="saveGoogleClientId()">Save Client ID</button>
-      </div>
-      <div class="toolbar" style="margin-top:8px;">
-        <button class="btn success" onclick="startGoogleSignIn()" id="googleSignInBtn">Sign in with Google</button>
-        <button class="btn danger" onclick="signOutGoogle()">Sign out</button>
-      </div>
-      <div id="googleUser" class="small" style="margin-top:8px;">Not signed in.</div>
-    </section>
+    
 
     <section class="card">
       <h3>Meal Planner</h3>
@@ -187,8 +177,7 @@
 <script>
 const K = {
   workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials',
-  theme: 'bodyxp_theme', visits: 'bodyxp_visits', lastVisit: 'bodyxp_last_visit',
-  googleClientId: 'bodyxp_google_client_id', googleProfile: 'bodyxp_google_profile'
+  theme: 'bodyxp_theme', visits: 'bodyxp_visits', lastVisit: 'bodyxp_last_visit'
 };
 const mealCore = {
   indian: {
@@ -286,101 +275,18 @@ function addTestimonial(){ const name=tName.value.trim(), msg=tMsg.value.trim(),
 function removeTestimonial(id){ const list=read(K.testimonials, []).filter(t=>t.id!==id); write(K.testimonials,list); renderTestimonials(); }
 
 
-function saveGoogleClientId(){
-  const cid = googleClientId.value.trim();
-  if (!cid) { googleUser.textContent = 'Please enter a Google Web Client ID.'; return; }
-  localStorage.setItem(K.googleClientId, cid);
-  googleUser.textContent = 'Client ID saved. Click "Sign in with Google".';
-}
-
-function parseJwt(token){
-  try {
-    const payload = token.split('.')[1];
-    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
-    const json = decodeURIComponent(atob(normalized).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-    return JSON.parse(json);
-  } catch {
-    return null;
-  }
-}
-
-function handleGoogleCredentialResponse(response){
-  const profile = parseJwt(response.credential);
-  if (!profile) { googleUser.textContent = 'Google sign-in failed. Please try again.'; return; }
-  const safeProfile = {
-    name: profile.name || '',
-    email: profile.email || '',
-    picture: profile.picture || '',
-    loginAt: new Date().toISOString()
-  };
-  localStorage.setItem(K.googleProfile, JSON.stringify(safeProfile));
-  renderGoogleUser();
-  renderSessionBadge();
-}
-
-function startGoogleSignIn(){
-  const cid = (googleClientId.value || localStorage.getItem(K.googleClientId) || '').trim();
-  if (!cid) {
-    googleUser.textContent = 'Save your Google Web Client ID first.';
-    return;
-  }
-  if (!window.google || !google.accounts || !google.accounts.id) {
-    googleUser.textContent = 'Google library not loaded. Check internet and refresh.';
-    return;
-  }
-  localStorage.setItem(K.googleClientId, cid);
-  google.accounts.id.initialize({
-    client_id: cid,
-    callback: handleGoogleCredentialResponse,
-    auto_select: false,
-    cancel_on_tap_outside: true
-  });
-  google.accounts.id.disableAutoSelect();
-  google.accounts.id.prompt();
-}
-
-function signOutGoogle(){
-  const raw = localStorage.getItem(K.googleProfile);
-  let email = '';
-  try { email = raw ? JSON.parse(raw).email || '' : ''; } catch (_) {}
-  localStorage.removeItem(K.googleProfile);
-  localStorage.removeItem('bodyxp_session');
-  if (window.google && google.accounts && google.accounts.id) {
-    google.accounts.id.disableAutoSelect();
-    if (email) {
-      google.accounts.id.revoke(email, () => {});
-    }
-  }
-  renderGoogleUser();
-  renderSessionBadge();
-}
-
-function renderGoogleUser(){
-  const raw = localStorage.getItem(K.googleProfile);
-  if (!raw) {
-    googleUser.textContent = 'Not signed in.';
-    return;
-  }
-  try {
-    const p = JSON.parse(raw);
-    googleUser.textContent = `Signed in as ${p.name || 'User'} (${p.email || 'no-email'})`;
-  } catch {
-    googleUser.textContent = 'Not signed in.';
-  }
-}
-
-
 function renderSessionBadge(){
+  const avatar = document.getElementById('avatarCircle');
   try {
     const session = JSON.parse(localStorage.getItem('bodyxp_session') || 'null');
     if (!session || !session.mode) {
-      sessionBadge.textContent = '';
+      avatar.textContent = 'GU';
       return;
     }
-    const who = session.mode === 'guest' ? 'Guest Mode' : `Signed in as ${session.name || 'User'}`;
-    sessionBadge.textContent = who;
+    avatar.textContent = (session.initials || 'GU').slice(0,2).toUpperCase();
+    avatar.title = session.name || 'User';
   } catch {
-    sessionBadge.textContent = 'Guest Mode';
+    avatar.textContent = 'GU';
   }
 }
 
@@ -418,8 +324,6 @@ function trackVisit(){
 
 (function init(){
   const theme = localStorage.getItem(K.theme) || 'light';
-  googleClientId.value = localStorage.getItem(K.googleClientId) || '';
-  renderGoogleUser();
   document.body.classList.toggle('dark', theme === 'dark');
   themeBtn.textContent = theme === 'dark' ? 'Switch to Light' : 'Switch to Dark';
   renderWorkouts();
