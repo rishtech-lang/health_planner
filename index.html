@@ -332,14 +332,27 @@ function startGoogleSignIn(){
   google.accounts.id.initialize({
     client_id: cid,
     callback: handleGoogleCredentialResponse,
-    auto_select: false
+    auto_select: false,
+    cancel_on_tap_outside: true
   });
+  google.accounts.id.disableAutoSelect();
   google.accounts.id.prompt();
 }
 
 function signOutGoogle(){
+  const raw = localStorage.getItem(K.googleProfile);
+  let email = '';
+  try { email = raw ? JSON.parse(raw).email || '' : ''; } catch (_) {}
   localStorage.removeItem(K.googleProfile);
+  localStorage.removeItem('bodyxp_session');
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+    if (email) {
+      google.accounts.id.revoke(email, () => {});
+    }
+  }
   renderGoogleUser();
+  renderSessionBadge();
 }
 
 function renderGoogleUser(){
