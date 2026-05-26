@@ -49,8 +49,19 @@ const OAUTH = {
   nonceKey: 'bodyxp_google_nonce'
 };
 
+function getInitials(name) {
+  const clean = (name || '').trim();
+  if (!clean) return 'GU';
+  const parts = clean.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return clean.slice(0, 2).toUpperCase();
+}
+
 function saveSession(session) {
-  localStorage.setItem(OAUTH.sessionKey, JSON.stringify(session));
+  const withInitials = { ...session, initials: getInitials(session.name || 'Guest') };
+  localStorage.setItem(OAUTH.sessionKey, JSON.stringify(withInitials));
   window.location.href = 'index.html';
 }
 
@@ -112,9 +123,10 @@ function handleCredentialResponse(response) {
     }));
     sessionStorage.removeItem(OAUTH.nonceKey);
 
+    const enteredName = prompt('Enter your name for BODYXP profile:', profile.name || '') || profile.name || 'User';
     saveSession({
       mode: 'google',
-      name: profile.name || 'User',
+      name: enteredName.trim() || profile.name || 'User',
       email: profile.email || '',
       createdAt: new Date().toISOString()
     });
