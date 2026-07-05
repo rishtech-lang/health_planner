@@ -89,13 +89,24 @@
 </head>
 <body>
 <script>
-(function enforceSignIn(){
+(async function enforceSignIn(){
+  try {
+    const res = await fetch('/api/session', { credentials: 'include' });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.authenticated && data.session) {
+        localStorage.setItem('bodyxp_session', JSON.stringify(data.session));
+        return;
+      }
+    }
+  } catch (_) {
+    // Static hosting fallback: use localStorage guest/session if backend is unavailable.
+  }
+
   try {
     const sessionRaw = localStorage.getItem('bodyxp_session');
     const session = sessionRaw ? JSON.parse(sessionRaw) : null;
-    if (!session || !session.mode) {
-      window.location.href = 'signin.html';
-    }
+    if (!session || !session.mode) window.location.href = 'signin.html';
   } catch (_) {
     window.location.href = 'signin.html';
   }
@@ -173,7 +184,6 @@
     </section>
   </main>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 const K = {
   workouts: 'bodyxp_workouts', reminders: 'bodyxp_reminders', testimonials: 'bodyxp_testimonials',
@@ -329,6 +339,7 @@ function trackVisit(){
   renderWorkouts();
   renderReminders();
   renderTestimonials();
+  renderSessionBadge();
   refreshOrientationInfo();
   window.addEventListener('resize', () => refreshOrientationInfo());
   if (screen.orientation) screen.orientation.addEventListener?.('change', () => refreshOrientationInfo());
